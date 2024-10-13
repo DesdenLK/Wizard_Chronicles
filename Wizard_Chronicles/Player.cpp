@@ -19,6 +19,7 @@ enum PlayerAnims
 void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 {
 	bJumping = false;
+	playerVelocity = glm::vec2(0, 0);
 	spritesheet.loadFromFile("images/bub.png", TEXTURE_PIXEL_FORMAT_RGBA);
 	sprite = Sprite::createSprite(glm::ivec2(32, 32), glm::vec2(0.25, 0.25), &spritesheet, &shaderProgram);
 	sprite->setNumberAnimations(4);
@@ -48,14 +49,15 @@ void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 void Player::update(int deltaTime)
 {
 	sprite->update(deltaTime);
+	playerVelocity.x = 2;
 	if(Game::instance().getKey(GLFW_KEY_LEFT))
 	{
 		if(sprite->animation() != MOVE_LEFT)
 			sprite->changeAnimation(MOVE_LEFT);
-		posPlayer.x -= 2;
+		posPlayer.x -= playerVelocity.x;
 		if(map->collisionMoveLeft(posPlayer, glm::ivec2(32, 32)))
 		{
-			posPlayer.x += 2;
+			posPlayer.x += playerVelocity.x;
 			sprite->changeAnimation(STAND_LEFT);
 		}
 	}
@@ -63,19 +65,24 @@ void Player::update(int deltaTime)
 	{
 		if(sprite->animation() != MOVE_RIGHT)
 			sprite->changeAnimation(MOVE_RIGHT);
-		posPlayer.x += 2;
+		posPlayer.x += playerVelocity.x;
 		if(map->collisionMoveRight(posPlayer, glm::ivec2(32, 32)))
 		{
-			posPlayer.x -= 2;
+			posPlayer.x -= playerVelocity.x;
 			sprite->changeAnimation(STAND_RIGHT);
 		}
 	}
 	else
 	{
-		if(sprite->animation() == MOVE_LEFT)
+		if (sprite->animation() == MOVE_LEFT) {
 			sprite->changeAnimation(STAND_LEFT);
-		else if(sprite->animation() == MOVE_RIGHT)
+			playerVelocity.x = 0;
+		}
+			
+		else if (sprite->animation() == MOVE_RIGHT) {
 			sprite->changeAnimation(STAND_RIGHT);
+			playerVelocity.x = 0;
+		}
 	}
 	
 	if(bJumping)
@@ -123,12 +130,19 @@ void Player::setTileMap(TileMap *tileMap)
 	map = tileMap;
 }
 
+glm::vec2 Player::getPosition() {
+	return posPlayer;
+}
+
 void Player::setPosition(const glm::vec2 &pos)
 {
 	posPlayer = pos;
 	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
 }
 
+glm::vec2 Player::getVelocity() {
+	return playerVelocity;
+}
 
 
 

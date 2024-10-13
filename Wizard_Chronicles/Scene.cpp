@@ -8,8 +8,8 @@
 #define SCREEN_X 32
 #define SCREEN_Y 16
 
-#define INIT_PLAYER_X_TILES 0
-#define INIT_PLAYER_Y_TILES 11
+#define INIT_PLAYER_X_TILES 10
+#define INIT_PLAYER_Y_TILES 7
 
 
 Scene::Scene()
@@ -31,7 +31,7 @@ Scene::~Scene()
 void Scene::init()
 {
 	initShaders();
-	map = TileMap::createTileMap("levels/level01.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
+	map = TileMap::createTileMap("levels/proba.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
 	player = new Player();
 	player->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
 	player->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize(), INIT_PLAYER_Y_TILES * map->getTileSize()));
@@ -49,7 +49,28 @@ void Scene::update(int deltaTime)
 void Scene::render()
 {
 	glm::mat4 modelview;
+	glm::vec2 posPlayer = player->getPosition();
+	glm::vec2 playerV = player->getVelocity();
 
+
+	int cameraVx = 0;
+
+	if (playerV.x > 0) {
+		if ((posPlayer.x - cameraPos.x) > int(SCREEN_WIDTH / 3))
+			cameraVx = 2 * playerV.x;
+	}
+	else {
+		if ((posPlayer.x - cameraPos.x) < int(SCREEN_WIDTH / 3))
+			cameraVx = 2 * playerV.x;
+	}
+
+	cameraPos.x = std::max(cameraPos.x, posPlayer.x - 2 * SCREEN_WIDTH / 3);
+	cameraPos.x = std::min(cameraPos.x, posPlayer.x - SCREEN_WIDTH / 3);
+	
+
+
+	
+	projection = glm::ortho(float(cameraPos.x), float(cameraPos.x + SCREEN_WIDTH), float(SCREEN_HEIGHT), 0.f);
 	texProgram.use();
 	texProgram.setUniformMatrix4f("projection", projection);
 	texProgram.setUniform4f("color", 1.0f, 1.0f, 1.0f, 1.0f);
