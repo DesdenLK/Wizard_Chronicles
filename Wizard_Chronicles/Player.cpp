@@ -87,6 +87,7 @@ void Player::update(int deltaTime)
 	
 	if(bJumping)
 	{
+		playerVelocity.y = 96 * sin(3.14159f * jumpAngle / 180.f);
 		jumpAngle += JUMP_ANGLE_STEP;
 		if(jumpAngle == 180)
 		{
@@ -106,8 +107,10 @@ void Player::update(int deltaTime)
 	else
 	{
 		posPlayer.y += FALL_STEP;
+		playerVelocity.y = FALL_STEP;
 		if(map->collisionMoveDown(posPlayer, glm::ivec2(32, 32), &posPlayer.y))
 		{
+			playerVelocity.y = 0;
 			if(Game::instance().getKey(GLFW_KEY_UP))
 			{
 				bJumping = true;

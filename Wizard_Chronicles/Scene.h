@@ -23,6 +23,10 @@ public:
 	void update(int deltaTime);
 	void render();
 
+	void cameraPositionNOCENTRAT();
+	void cameraPositionCENTRAT();
+	void cameraPositionMix();
+
 private:
 	void initShaders();
 

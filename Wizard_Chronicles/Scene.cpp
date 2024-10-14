@@ -5,11 +5,11 @@
 #include "Game.h"
 
 
-#define SCREEN_X 32
+#define SCREEN_X 0
 #define SCREEN_Y 16
 
-#define INIT_PLAYER_X_TILES 10
-#define INIT_PLAYER_Y_TILES 7
+#define INIT_PLAYER_X_TILES 0
+#define INIT_PLAYER_Y_TILES 3
 
 
 Scene::Scene()
@@ -31,6 +31,7 @@ Scene::~Scene()
 void Scene::init()
 {
 	initShaders();
+	cameraPos = glm::vec2(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
 	map = TileMap::createTileMap("levels/proba.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
 	player = new Player();
 	player->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
@@ -49,28 +50,11 @@ void Scene::update(int deltaTime)
 void Scene::render()
 {
 	glm::mat4 modelview;
-	glm::vec2 posPlayer = player->getPosition();
-	glm::vec2 playerV = player->getVelocity();
-
-
-	int cameraVx = 0;
-
-	if (playerV.x > 0) {
-		if ((posPlayer.x - cameraPos.x) > int(SCREEN_WIDTH / 3))
-			cameraVx = 2 * playerV.x;
-	}
-	else {
-		if ((posPlayer.x - cameraPos.x) < int(SCREEN_WIDTH / 3))
-			cameraVx = 2 * playerV.x;
-	}
-
-	cameraPos.x = std::max(cameraPos.x, posPlayer.x - 2 * SCREEN_WIDTH / 3);
-	cameraPos.x = std::min(cameraPos.x, posPlayer.x - SCREEN_WIDTH / 3);
-	
+	cameraPositionMix();
 
 
 	
-	projection = glm::ortho(float(cameraPos.x), float(cameraPos.x + SCREEN_WIDTH), float(SCREEN_HEIGHT), 0.f);
+	projection = glm::ortho(float(cameraPos.x), float(cameraPos.x + SCREEN_WIDTH), float(cameraPos.y + SCREEN_HEIGHT), float(cameraPos.y));
 	texProgram.use();
 	texProgram.setUniformMatrix4f("projection", projection);
 	texProgram.setUniform4f("color", 1.0f, 1.0f, 1.0f, 1.0f);
@@ -79,6 +63,118 @@ void Scene::render()
 	texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);
 	map->render();
 	player->render();
+}
+
+void Scene::cameraPositionNOCENTRAT()
+{
+	glm::vec2 posPlayer = player->getPosition();
+	glm::vec2 playerV = player->getVelocity();
+
+	if ((posPlayer.x - cameraPos.x) < SCREEN_WIDTH / 3) {
+		cameraPos.x = posPlayer.x - SCREEN_WIDTH / 3;
+	}
+	if ((posPlayer.x - cameraPos.x) > (2*SCREEN_WIDTH / 3)) {
+		cameraPos.x = posPlayer.x - (2*SCREEN_WIDTH / 3);
+	}
+
+	if ((posPlayer.y - cameraPos.y) < SCREEN_HEIGHT / 3) {
+		cameraPos.y = posPlayer.y - SCREEN_HEIGHT / 3;
+	}
+	if ((posPlayer.y - cameraPos.y) > (2 * SCREEN_HEIGHT / 3)) {
+		cameraPos.y = posPlayer.y - (2 * SCREEN_HEIGHT / 3);
+	}
+
+}
+
+void Scene::cameraPositionCENTRAT()
+{
+	glm::vec2 posPlayer = player->getPosition();
+	glm::vec2 playerV = player->getVelocity();
+
+
+	//POSICIO PER X
+	int cameraVx = 0;
+
+	if (playerV.x > 0) {
+		if ((posPlayer.x - cameraPos.x) > int(SCREEN_WIDTH / 3))
+		{
+			cameraVx = 2 * playerV.x;
+
+		}
+
+
+	}
+	else {
+		if ((posPlayer.x - cameraPos.x) < int(2 * SCREEN_WIDTH / 3))
+		{
+			cameraVx = 2 * playerV.x;
+		}
+	}
+
+	int cameraVy = 0;
+	if (playerV.y > 0)
+	{
+		if ((posPlayer.y - cameraPos.y) > int(SCREEN_HEIGHT / 3))
+		{
+			cameraVy = 2 * playerV.y;
+		}
+	}
+	else
+	{
+		if ((posPlayer.y - cameraPos.y) < int(2 * SCREEN_HEIGHT / 3))
+		{
+			cameraVy = 2 * playerV.y;
+		}
+	}
+
+	cameraPos.x += cameraVx;
+	cameraPos.y += cameraVy;
+	//std::cout << "POSPLAYER 1: " << posPlayer.x - 2 * SCREEN_WIDTH / 3 << std::endl;
+	cameraPos.x = std::max(cameraPos.x, posPlayer.x - 2 * SCREEN_WIDTH / 3);
+	cameraPos.y = std::max(cameraPos.y, posPlayer.y - 2 * SCREEN_HEIGHT / 3);
+	//std::cout << "POSPLAYER 2: " << cameraPos.x << std::endl;
+	cameraPos.x = std::min(cameraPos.x, posPlayer.x - SCREEN_WIDTH / 3);
+	cameraPos.y = std::min(cameraPos.y, posPlayer.y - SCREEN_HEIGHT / 3);
+	//std::cout << "MIN :" << cameraPos.x << std::endl;
+}
+
+void Scene::cameraPositionMix()
+{
+	glm::vec2 posPlayer = player->getPosition();
+	glm::vec2 playerV = player->getVelocity();
+
+
+	//POSICIO PER X
+	int cameraVx = 0;
+
+	if (playerV.x > 0) {
+		if ((posPlayer.x - cameraPos.x) > int(SCREEN_WIDTH / 3))
+		{
+			cameraVx = 2 * playerV.x;
+
+		}
+
+
+	}
+	else {
+		if ((posPlayer.x - cameraPos.x) < int(2 * SCREEN_WIDTH / 3))
+		{
+			cameraVx = 2 * playerV.x;
+		}
+	}
+
+	cameraPos.x += cameraVx;
+	cameraPos.x = std::max(cameraPos.x, posPlayer.x - 2 * SCREEN_WIDTH / 3);
+	cameraPos.x = std::min(cameraPos.x, posPlayer.x - SCREEN_WIDTH / 3);
+
+
+	if ((posPlayer.y - cameraPos.y) < SCREEN_HEIGHT / 3) {
+		cameraPos.y = posPlayer.y - SCREEN_HEIGHT / 3;
+	}
+	if ((posPlayer.y - cameraPos.y) > (2 * SCREEN_HEIGHT / 3)) {
+		cameraPos.y = posPlayer.y - (2 * SCREEN_HEIGHT / 3);
+	}
+
 }
 
 void Scene::initShaders()
