@@ -76,12 +76,12 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\..\libs\Simple OpenGL Image Library\src;..\..\libs\glew-1.13.0\include;..\..\libs\glm;..\..\libs\glfw-3.3.8\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\libs\Simple OpenGL Image Library\src;..\..\libs\glew-1.13.0\include;..\..\libs\glm;..\..\libs\glfw-3.3.8\include;..\..\libs\nlohmann;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>..\..\libs\Simple OpenGL Image Library\projects\VC9\Debug;..\..\libs\glew-1.13.0\lib\Release\Win32;..\..\libs\glfw-3.3.8\lib-vc2015;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\libs\Simple OpenGL Image Library\projects\VC9\Debug;..\..\libs\glew-1.13.0\lib\Release\Win32;..\..\libs\glfw-3.3.8\lib-vc2015;..\..\libs\nlohmann;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>SOIL.lib;glew32.lib;glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>

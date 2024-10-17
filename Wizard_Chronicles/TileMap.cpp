@@ -6,6 +6,7 @@
 
 
 using namespace std;
+using json = nlohmann::json;
 
 
 TileMap *TileMap::createTileMap(const string &levelFile, const glm::vec2 &minCoords, ShaderProgram &program)
@@ -45,68 +46,40 @@ void TileMap::free()
 	glDeleteBuffers(1, &vbo);
 }
 
-bool TileMap::loadLevel(const string &levelFile)
+bool TileMap::loadLevel(const string& levelFile)
 {
-	ifstream fin;
-	string line, tilesheetFile;
-	stringstream sstream;
-	char tile;
-	
-	fin.open(levelFile.c_str());
-	if(!fin.is_open())
+	ifstream file(levelFile);
+	string tileSheetFile;
+	json mapFile;
+
+	if (!file.is_open())
+	{
+		cout << "Error opening file" << endl;
 		return false;
-	getline(fin, line);
-	if(line.compare(0, 7, "TILEMAP") != 0)
-		return false;
-	getline(fin, line);
-	sstream.str(line);
-	sstream >> mapSize.x >> mapSize.y;
-	getline(fin, line);
-	sstream.str(line);
-	sstream >> tileSize >> blockSize;
-	getline(fin, line);
-	sstream.str(line);
-	sstream >> tilesheetFile;
-	tilesheet.loadFromFile(tilesheetFile, TEXTURE_PIXEL_FORMAT_RGBA);
+	}
+
+	file >> mapFile; //carrega el fitxer json
+
+	mapSize.x = mapFile["width"];
+	mapSize.y = mapFile["height"];
+	tileSize = mapFile["tilewidth"];
+	blockSize = mapFile["tileheight"];
+	tileSheetFile = "images/Swamp.png";
+	tilesheet.loadFromFile(tileSheetFile, TEXTURE_PIXEL_FORMAT_RGBA);
 	tilesheet.setWrapS(GL_CLAMP_TO_EDGE);
 	tilesheet.setWrapT(GL_CLAMP_TO_EDGE);
 	tilesheet.setMinFilter(GL_NEAREST);
 	tilesheet.setMagFilter(GL_NEAREST);
-	getline(fin, line);
-	sstream.str(line);
-	sstream >> tilesheetSize.x >> tilesheetSize.y;
+	tilesheetSize.x = 20;
+	tilesheetSize.y = 27;
 	tileTexSize = glm::vec2(1.f / tilesheetSize.x, 1.f / tilesheetSize.y);
-	
-	//std::cout << "size x of map: " << mapSize.x;
-	//std::cout << "size y of map: " << mapSize.y << endl;
 
+	vector<int> mapData = mapFile["layers"][0]["data"].get<vector<int>>();
 	map = new int[mapSize.x * mapSize.y];
+	copy(mapData.begin(), mapData.end(), map);
 
-	for (int j = 0; j < mapSize.y; j++) {
-		std::getline(fin, line);  // Leer una línea entera
-		sstream.str(line);        // Configurar el stringstream con la línea leída
-		sstream.clear();          // Limpia el estado del stream
-
-		for (int i = 0; i < mapSize.x; i++) {
-			int tileValue;
-			sstream >> tileValue;  // Lee cada valor como entero
-			map[j * mapSize.x + i] = tileValue;  // Asigna el valor al arreglo
-		}
-	}
-		fin.get(tile);
-#ifndef _WIN32
-		fin.get(tile);
-#endif
-	fin.close();
-	/*for (int j = 0; j < mapSize.y; j++)
-	{
-		for (int i = 0; i < mapSize.x; i++)
-		{
-			std::cout << map[j * mapSize.x + i] << ' ';
-		}
-		std::cout << std::endl;
-	}*/
 	return true;
+
 }
 
 void TileMap::prepareArrays(const glm::vec2 &minCoords, ShaderProgram &program)
@@ -201,11 +174,12 @@ bool TileMap::collisionMoveDown(const glm::ivec2 &pos, const glm::ivec2 &size, i
 	x0 = pos.x / tileSize;
 	x1 = (pos.x + size.x - 1) / tileSize;
 	y = (pos.y + size.y - 1) / tileSize;
+	cout << "Y: " << y << endl;
 	for(int x=x0; x<=x1; x++)
 	{
 		if(map[y*mapSize.x+x] != 0)
 		{
-			if(*posY - tileSize * y + size.y <= 4)
+			if(*posY - tileSize * y + size.y <= 200000000)
 			{
 				*posY = tileSize * y - size.y;
 				return true;
