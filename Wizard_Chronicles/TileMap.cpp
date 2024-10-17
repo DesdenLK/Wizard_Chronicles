@@ -27,6 +27,12 @@ TileMap::~TileMap()
 {
 	if(map != NULL)
 		delete map;
+	if (background != NULL)
+		delete background;
+	if (middle != NULL)
+		delete middle;
+	if (foreground != NULL)
+		delete foreground;
 }
 
 
@@ -34,16 +40,33 @@ void TileMap::render() const
 {
 	glEnable(GL_TEXTURE_2D);
 	tilesheet.use();
-	glBindVertexArray(vao);
+
+	// Render background layer
+	glBindVertexArray(vaoBackground);
 	glEnableVertexAttribArray(posLocation);
 	glEnableVertexAttribArray(texCoordLocation);
-	glDrawArrays(GL_TRIANGLES, 0, 6 * nTiles);
+	glDrawArrays(GL_TRIANGLES, 0, 6 * nBackgroundTiles);
+
+	// Render middle layer
+	glBindVertexArray(vaoMiddle);
+	glEnableVertexAttribArray(posLocation);
+	glEnableVertexAttribArray(texCoordLocation);
+	glDrawArrays(GL_TRIANGLES, 0, 6 * nMiddleTiles);
+
+	// Render foreground layer
+	glBindVertexArray(vaoForeground);
+	glEnableVertexAttribArray(posLocation);
+	glEnableVertexAttribArray(texCoordLocation);
+	glDrawArrays(GL_TRIANGLES, 0, 6 * nForegroundTiles);
+
 	glDisable(GL_TEXTURE_2D);
 }
 
 void TileMap::free()
 {
-	glDeleteBuffers(1, &vbo);
+	glDeleteBuffers(1, &vboBackground);
+	glDeleteBuffers(1, &vboMiddle);
+	glDeleteBuffers(1, &vboForeground);
 }
 
 bool TileMap::loadLevel(const string& levelFile)
@@ -74,9 +97,36 @@ bool TileMap::loadLevel(const string& levelFile)
 	tilesheetSize.y = 27;
 	tileTexSize = glm::vec2(1.f / tilesheetSize.x, 1.f / tilesheetSize.y);
 
-	vector<int> mapData = mapFile["layers"][0]["data"].get<vector<int>>();
+	vector<int> background_json = mapFile["layers"][0]["data"].get<vector<int>>();
+	vector<int> middle_json = mapFile["layers"][1]["data"].get<vector<int>>();
+	vector<int> foreground_json = mapFile["layers"][2]["data"].get<vector<int>>();
+
+	
 	map = new int[mapSize.x * mapSize.y];
-	copy(mapData.begin(), mapData.end(), map);
+	background = new int[mapSize.x * mapSize.y];
+	middle = new int[mapSize.x * mapSize.y];
+	foreground = new int[mapSize.x * mapSize.y];
+
+	copy(background_json.begin(), background_json.end(), background);
+	copy(middle_json.begin(), middle_json.end(), middle);
+	copy(foreground_json.begin(), foreground_json.end(), foreground);
+
+	for (int i = 0; i < mapSize.x * mapSize.y; i++)
+	{
+		map[i] = 0;
+		if (background[i] != 0)
+		{
+			map[i] = background[i];
+		}
+		if (middle[i] != 0)
+		{
+			map[i] = middle[i];
+		}
+		if (foreground[i] != 0)
+		{
+			map[i] = foreground[i];
+		}
+	}
 
 	return true;
 
@@ -86,49 +136,86 @@ void TileMap::prepareArrays(const glm::vec2 &minCoords, ShaderProgram &program)
 {
 	int tile;
 	glm::vec2 posTile, texCoordTile[2], halfTexel;
-	vector<float> vertices;
-	
-	nTiles = 0;
+
+	vector<float> backgroundVertices;
+	vector<float> middleVertices;
+	vector<float> foregroundVertices;
+
+	nBackgroundTiles = 0;
+	nMiddleTiles = 0;
+	nForegroundTiles = 0;
 	halfTexel = glm::vec2(0.5f / tilesheet.width(), 0.5f / tilesheet.height());
-	for(int j=0; j<mapSize.y; j++)
-	{
-		for(int i=0; i<mapSize.x; i++)
-		{
-			tile = map[j * mapSize.x + i];
-			if(tile != 0)
+
+	for (int j = 0; j < mapSize.y; j++) {
+		for (int i = 0; i < mapSize.x; i++) {
+			posTile = glm::vec2(minCoords.x + i * tileSize, minCoords.y + j * tileSize);
+
+			// Background layer
+			tile = background[j * mapSize.x + i];
+			if (tile != 0)
 			{
-				// Non-empty tile
-				nTiles++;
-				posTile = glm::vec2(minCoords.x + i * tileSize, minCoords.y + j * tileSize);
-				texCoordTile[0] = glm::vec2(float((tile-1)%tilesheetSize.x) / tilesheetSize.x, float((tile-1)/tilesheetSize.x) / tilesheetSize.y);
+				nBackgroundTiles++;
+				texCoordTile[0] = glm::vec2(float((tile - 1) % tilesheetSize.x) / tilesheetSize.x, float((tile - 1) / tilesheetSize.x) / tilesheetSize.y);
 				texCoordTile[1] = texCoordTile[0] + tileTexSize;
-				//texCoordTile[0] += halfTexel;
 				texCoordTile[1] -= halfTexel;
-				// First triangle
-				vertices.push_back(posTile.x); vertices.push_back(posTile.y);
-				vertices.push_back(texCoordTile[0].x); vertices.push_back(texCoordTile[0].y);
-				vertices.push_back(posTile.x + blockSize); vertices.push_back(posTile.y);
-				vertices.push_back(texCoordTile[1].x); vertices.push_back(texCoordTile[0].y);
-				vertices.push_back(posTile.x + blockSize); vertices.push_back(posTile.y + blockSize);
-				vertices.push_back(texCoordTile[1].x); vertices.push_back(texCoordTile[1].y);
-				// Second triangle
-				vertices.push_back(posTile.x); vertices.push_back(posTile.y);
-				vertices.push_back(texCoordTile[0].x); vertices.push_back(texCoordTile[0].y);
-				vertices.push_back(posTile.x + blockSize); vertices.push_back(posTile.y + blockSize);
-				vertices.push_back(texCoordTile[1].x); vertices.push_back(texCoordTile[1].y);
-				vertices.push_back(posTile.x); vertices.push_back(posTile.y + blockSize);
-				vertices.push_back(texCoordTile[0].x); vertices.push_back(texCoordTile[1].y);
+				addTileVertices(backgroundVertices, posTile, texCoordTile);
+			}
+
+			// Middle layer
+			tile = middle[j * mapSize.x + i];
+			if (tile != 0)
+			{
+				nMiddleTiles++;
+				texCoordTile[0] = glm::vec2(float((tile - 1) % tilesheetSize.x) / tilesheetSize.x, float((tile - 1) / tilesheetSize.x) / tilesheetSize.y);
+				texCoordTile[1] = texCoordTile[0] + tileTexSize;
+				texCoordTile[1] -= halfTexel;
+				addTileVertices(middleVertices, posTile, texCoordTile);
+			}
+
+			// Foreground layer
+			tile = foreground[j * mapSize.x + i];
+			if (tile != 0)
+			{
+				nForegroundTiles++;
+				texCoordTile[0] = glm::vec2(float((tile - 1) % tilesheetSize.x) / tilesheetSize.x, float((tile - 1) / tilesheetSize.x) / tilesheetSize.y);
+				texCoordTile[1] = texCoordTile[0] + tileTexSize;
+				texCoordTile[1] -= halfTexel;
+				addTileVertices(foregroundVertices, posTile, texCoordTile);
 			}
 		}
 	}
+	createVAO(vaoBackground, vboBackground, backgroundVertices, program);
+	createVAO(vaoMiddle, vboMiddle, middleVertices, program);
+	createVAO(vaoForeground, vboForeground, foregroundVertices, program);
+}
 
+void TileMap::addTileVertices(vector<float>& vertices, const glm::vec2& posTile, const glm::vec2 texCoordTile[2])
+{
+	// First triangle
+	vertices.push_back(posTile.x); vertices.push_back(posTile.y);
+	vertices.push_back(texCoordTile[0].x); vertices.push_back(texCoordTile[0].y);
+	vertices.push_back(posTile.x + blockSize); vertices.push_back(posTile.y);
+	vertices.push_back(texCoordTile[1].x); vertices.push_back(texCoordTile[0].y);
+	vertices.push_back(posTile.x + blockSize); vertices.push_back(posTile.y + blockSize);
+	vertices.push_back(texCoordTile[1].x); vertices.push_back(texCoordTile[1].y);
+	// Second triangle
+	vertices.push_back(posTile.x); vertices.push_back(posTile.y);
+	vertices.push_back(texCoordTile[0].x); vertices.push_back(texCoordTile[0].y);
+	vertices.push_back(posTile.x + blockSize); vertices.push_back(posTile.y + blockSize);
+	vertices.push_back(texCoordTile[1].x); vertices.push_back(texCoordTile[1].y);
+	vertices.push_back(posTile.x); vertices.push_back(posTile.y + blockSize);
+	vertices.push_back(texCoordTile[0].x); vertices.push_back(texCoordTile[1].y);
+}
+
+void TileMap::createVAO(GLuint& vao, GLuint& vbo, const std::vector<float>& vertices, ShaderProgram& program)
+{
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
 	glGenBuffers(1, &vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, 24 * nTiles * sizeof(float), &vertices[0], GL_STATIC_DRAW);
-	posLocation = program.bindVertexAttribute("position", 2, 4*sizeof(float), 0);
-	texCoordLocation = program.bindVertexAttribute("texCoord", 2, 4*sizeof(float), (void *)(2*sizeof(float)));
+	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices[0], GL_STATIC_DRAW);
+	posLocation = program.bindVertexAttribute("position", 2, 4 * sizeof(float), 0);
+	texCoordLocation = program.bindVertexAttribute("texCoord", 2, 4 * sizeof(float), (void*)(2 * sizeof(float)));
 }
 
 // Collision tests for axis aligned bounding boxes.
@@ -144,7 +231,7 @@ bool TileMap::collisionMoveLeft(const glm::ivec2 &pos, const glm::ivec2 &size) c
 	y1 = (pos.y + size.y - 1) / tileSize;
 	for(int y=y0; y<=y1; y++)
 	{
-		if(map[y*mapSize.x+x] != 0)
+		if(middle[y*mapSize.x+x] != 0)
 			return true;
 	}
 	
@@ -160,7 +247,7 @@ bool TileMap::collisionMoveRight(const glm::ivec2 &pos, const glm::ivec2 &size) 
 	y1 = (pos.y + size.y - 1) / tileSize;
 	for(int y=y0; y<=y1; y++)
 	{
-		if(map[y*mapSize.x+x] != 0)
+		if(middle[y*mapSize.x+x] != 0)
 			return true;
 	}
 	
@@ -177,7 +264,7 @@ bool TileMap::collisionMoveDown(const glm::ivec2 &pos, const glm::ivec2 &size, i
 	cout << "Y: " << y << endl;
 	for(int x=x0; x<=x1; x++)
 	{
-		if(map[y*mapSize.x+x] != 0)
+		if(middle[y*mapSize.x+x] != 0)
 		{
 			if(*posY - tileSize * y + size.y <= 200000000)
 			{
@@ -199,7 +286,7 @@ bool TileMap::collisionMoveUp(const glm::ivec2& pos, const glm::ivec2& size, int
 	y = (pos.y - size.y + 1) / tileSize;
 	for (int x = x0; x <= x1; x++)
 	{
-		if (map[y * mapSize.x + x] != 0)
+		if (middle[y * mapSize.x + x] != 0)
 		{
 			if (*posY - tileSize * y - size.y <= 4)
 			{

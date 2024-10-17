@@ -39,17 +39,21 @@ public:
 private:
 	bool loadLevel(const string &levelFile);
 	void prepareArrays(const glm::vec2 &minCoords, ShaderProgram &program);
+	void addTileVertices(vector<float>& vertices, const glm::vec2& posTile, const glm::vec2 texCoordTile[2]);
+	void createVAO(GLuint& vao, GLuint& vbo, const std::vector<float>& vertices, ShaderProgram& program);
 
 private:
-	GLuint vao;
-	GLuint vbo;
+	GLuint vaoBackground, vaoMiddle, vaoForeground;
+	GLuint vboBackground, vboMiddle, vboForeground;
 	GLint posLocation, texCoordLocation;
-	int nTiles;
+	int nBackgroundTiles, nMiddleTiles, nForegroundTiles;
+
 	glm::ivec2 position, mapSize, tilesheetSize;
 	int tileSize, blockSize;
 	Texture tilesheet;
 	glm::vec2 tileTexSize;
-	int *map;
+
+	int *map, *background, *middle, *foreground;
 
 };
 
