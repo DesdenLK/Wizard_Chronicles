@@ -6,6 +6,7 @@
 #include "ShaderProgram.h"
 #include "TileMap.h"
 #include "Player.h"
+#include "Camera.h"
 
 
 // Scene contains all the entities of our game.
@@ -29,9 +30,12 @@ private:
 private:
 	TileMap *map;
 	Player *player;
+	Camera* camera;
 	ShaderProgram texProgram;
 	float currentTime;
 	glm::mat4 projection;
+
+	glm::vec2 cameraPos;
 
 };
 

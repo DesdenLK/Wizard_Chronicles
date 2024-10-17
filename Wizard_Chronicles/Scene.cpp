@@ -5,17 +5,18 @@
 #include "Game.h"
 
 
-#define SCREEN_X 32
+#define SCREEN_X 0
 #define SCREEN_Y 16
 
-#define INIT_PLAYER_X_TILES 0
-#define INIT_PLAYER_Y_TILES 11
+#define INIT_PLAYER_X_TILES 4
+#define INIT_PLAYER_Y_TILES 15
 
 
 Scene::Scene()
 {
 	map = NULL;
 	player = NULL;
+	camera = NULL;
 }
 
 Scene::~Scene()
@@ -24,6 +25,8 @@ Scene::~Scene()
 		delete map;
 	if(player != NULL)
 		delete player;
+	if (camera != NULL)
+		delete camera;
 }
 
 
@@ -31,12 +34,14 @@ Scene::~Scene()
 void Scene::init()
 {
 	initShaders();
-	map = TileMap::createTileMap("levels/level01.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
+	cameraPos = glm::vec2(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
+	map = TileMap::createTileMap("levels/prueba.tmj", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
 	player = new Player();
+	camera = new Camera();
 	player->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
 	player->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize(), INIT_PLAYER_Y_TILES * map->getTileSize()));
 	player->setTileMap(map);
-	projection = glm::ortho(0.f, float(SCREEN_WIDTH), float(SCREEN_HEIGHT), 0.f);
+	projection = camera->init(glm::vec2(0,0), 640, 480);
 	currentTime = 0.0f;
 }
 
@@ -50,6 +55,9 @@ void Scene::render()
 {
 	glm::mat4 modelview;
 
+
+	
+	projection = camera->cameraPositionNOCENTRAT(player->getPosition());
 	texProgram.use();
 	texProgram.setUniformMatrix4f("projection", projection);
 	texProgram.setUniform4f("color", 1.0f, 1.0f, 1.0f, 1.0f);
@@ -59,6 +67,7 @@ void Scene::render()
 	map->render();
 	player->render();
 }
+
 
 void Scene::initShaders()
 {
