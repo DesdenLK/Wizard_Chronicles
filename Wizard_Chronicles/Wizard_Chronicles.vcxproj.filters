@@ -42,6 +42,9 @@
     <ClInclude Include="TileMap.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Game.cpp">
@@ -71,5 +74,22 @@
     <ClCompile Include="TileMap.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Archivos de origen</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\simple.frag">
+      <Filter>Archivos de recursos</Filter>
+    </None>
+    <None Include="shaders\simple.vert">
+      <Filter>Archivos de recursos</Filter>
+    </None>
+    <None Include="shaders\texture.frag">
+      <Filter>Archivos de recursos</Filter>
+    </None>
+    <None Include="shaders\texture.vert">
+      <Filter>Archivos de recursos</Filter>
+    </None>
   </ItemGroup>
 </Project>
