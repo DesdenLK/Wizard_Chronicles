@@ -20,6 +20,8 @@ public:
 	
 	void setTileMap(TileMap *tileMap);
 	void setPosition(const glm::vec2 &pos);
+	void setAnimations();
+
 	glm::vec2 getPosition();
 	glm::vec2 getVelocity();
 	
