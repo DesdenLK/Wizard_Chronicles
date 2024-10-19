@@ -287,7 +287,7 @@ bool TileMap::collisionMoveUp(const glm::vec2& pos, const glm::ivec2& size, floa
 	{
 		if (middle[y * mapSize.x + x] != 0)
 		{
-			if (*posY - tileSize * y - size.y <= 4)
+			if (*posY - tileSize * y - size.y <= 200000000)
 			{
 				*posY = tileSize * y + size.y;
 				return true;

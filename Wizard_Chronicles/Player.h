@@ -21,7 +21,11 @@ public:
 	void updatePlayerMovement(int deltaTime);
 	void playerKey_A(int deltaTime);
 	void playerKey_D(int deltaTime);
+	void playerKey_W(int deltaTime);
+	void playerKey_S(int deltaTime);
 	void playerNOKeys(int deltaTime);
+
+	void playerFalling(int deltaTime);
 	
 	void setTileMap(TileMap *tileMap);
 	void setPosition(const glm::vec2 &pos);
@@ -33,7 +37,8 @@ public:
 	glm::vec2 getVelocity();
 	
 private:
-	bool Jumping, Falling;
+	bool Jumping;
+	int loopTimesInactive;
 	glm::ivec2 tileMapDispl;
 	glm::vec2 posPlayer, playerVelocity, playerAcceleration;
 	int jumpAngle, startY;
