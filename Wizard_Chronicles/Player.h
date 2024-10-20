@@ -17,16 +17,30 @@ public:
 	void init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram);
 	void update(int deltaTime);
 	void render();
+
+	void updatePlayerMovement(int deltaTime);
+	void playerKey_A(int deltaTime);
+	void playerKey_D(int deltaTime);
+	void playerKey_W(int deltaTime);
+	void playerKey_S(int deltaTime);
+	void playerNOKeys(int deltaTime);
+
+	void playerFalling(int deltaTime);
 	
 	void setTileMap(TileMap *tileMap);
 	void setPosition(const glm::vec2 &pos);
+	void setAnimations();
+
+
+
 	glm::vec2 getPosition();
 	glm::vec2 getVelocity();
 	
 private:
-	bool bJumping;
-	glm::ivec2 tileMapDispl, posPlayer;
-	glm::vec2 playerVelocity;
+	bool Jumping;
+	int loopTimesInactive;
+	glm::ivec2 tileMapDispl;
+	glm::vec2 posPlayer, playerVelocity, playerAcceleration;
 	int jumpAngle, startY;
 	Texture spritesheet;
 	Sprite *sprite;
