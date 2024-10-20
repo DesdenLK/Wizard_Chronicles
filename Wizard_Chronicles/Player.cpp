@@ -179,14 +179,23 @@ void Player::playerKey_A(int deltaTime) {
 	playerAcceleration.x = 0.01f;
 	playerVelocity.x = min(2.f, playerVelocity.x + playerAcceleration.x * deltaTime);
 	//cout << "A: " << playerVelocity.x << endl;
+	glm::vec2 initialPosPlayer = posPlayer;
 	posPlayer.x -= playerVelocity.x;
 
 	if (!Jumping) {
 		if (sprite->animation() != MOVE_LEFT) sprite->changeAnimation(MOVE_LEFT);
-		if (map->collisionMoveLeft(posPlayer, glm::ivec2(32, 32)))
-		{
-			posPlayer.x += playerVelocity.x;
+	}
+
+	// Poisicio final
+	glm::vec2 targetPosPlayer = posPlayer;
+
+	// Mirar colisions en el path del jugador
+	for (float t = 0.0f; t <= 1.0f; t += 1.0f / playerVelocity.x) {
+		glm::vec2 interpolatedPos = initialPosPlayer + t * (targetPosPlayer - initialPosPlayer);
+		if (map->collisionMoveLeft(interpolatedPos, glm::ivec2(32, 32))) {
+			posPlayer.x = initialPosPlayer.x;
 			sprite->changeAnimation(STAND_LEFT);
+			break;
 		}
 	}
 }
@@ -196,14 +205,22 @@ void Player::playerKey_D(int deltaTime) {
 	playerAcceleration.x = 0.01f;
 	playerVelocity.x = min(2.f, playerVelocity.x + playerAcceleration.x * deltaTime);
 	//cout << "D: " << playerVelocity.x << endl;
+	glm::vec2 initialPosPlayer = posPlayer;
 	posPlayer.x += playerVelocity.x;
 
 	if (!Jumping) {
 		if (sprite->animation() != MOVE_RIGHT) sprite->changeAnimation(MOVE_RIGHT);
-		if (map->collisionMoveRight(posPlayer, glm::ivec2(32, 32)))
-		{
-			posPlayer.x -= playerVelocity.x;
+	}
+	// Poisicio final
+	glm::vec2 targetPosPlayer = posPlayer;
+
+	// Mirar colisions en el path del jugador
+	for (float t = 0.0f; t <= 1.0f; t += 1.0f / playerVelocity.x) {
+		glm::vec2 interpolatedPos = initialPosPlayer + t * (targetPosPlayer - initialPosPlayer);
+		if (map->collisionMoveRight(interpolatedPos, glm::ivec2(32, 32))) {
+			posPlayer.x = initialPosPlayer.x;
 			sprite->changeAnimation(STAND_RIGHT);
+			break;
 		}
 	}
 }
