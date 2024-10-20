@@ -6,6 +6,7 @@
 #include "Texture.h"
 #include "ShaderProgram.h"
 #include <json.hpp>
+#include <map>
 
 
 // Class Tilemap is capable of loading a tile map from a text file in a very
@@ -35,12 +36,16 @@ public:
 	bool collisionMoveRight(const glm::vec2 &pos, const glm::ivec2 &size) const;
 	bool collisionMoveDown(const glm::vec2 &pos, const glm::ivec2 &size, float *posY) const;
 	bool collisionMoveUp(const glm::vec2& pos, const glm::ivec2& size, float* posY) const;
+	bool objectCollision(const glm::vec2& pos, const glm::vec2& size);
+	bool isOnLadderTop(const glm::vec2& posPlayer, const glm::vec2& playerSize);
+	bool isOnLadderBottom(const glm::vec2& posPlayer, const glm::vec2& playerSize);
 	
 private:
 	bool loadLevel(const string &levelFile);
 	void prepareArrays(const glm::vec2 &minCoords, ShaderProgram &program);
 	void addTileVertices(vector<float>& vertices, const glm::vec2& posTile, const glm::vec2 texCoordTile[2]);
 	void createVAO(GLuint& vao, GLuint& vbo, const std::vector<float>& vertices, ShaderProgram& program);
+	bool boundingBoxCollision(glm::vec2 coordsMin1, glm::vec2 widthHeight1, glm::vec2 coordsMin2, glm::vec2 widthHeight2);
 
 private:
 	GLuint vaoBackground, vaoMiddle, vaoForeground;
@@ -53,8 +58,8 @@ private:
 	Texture tilesheet;
 	glm::vec2 tileTexSize;
 
-	int *map, *background, *middle, *foreground;
-
+	int* map, * background, * middle, * foreground;
+	vector<std::map<string,string>>* objects;
 };
 
 

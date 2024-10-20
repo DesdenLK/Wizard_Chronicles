@@ -34,7 +34,7 @@ Scene::~Scene()
 void Scene::init()
 {
 	initShaders();
-	map = TileMap::createTileMap("levels/prueba.tmj", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
+	map = TileMap::createTileMap("levels/prueba2.tmj", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
 	player = new Player();
 	camera = new Camera();
 	player->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);

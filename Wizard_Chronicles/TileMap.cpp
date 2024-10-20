@@ -33,6 +33,8 @@ TileMap::~TileMap()
 		delete middle;
 	if (foreground != NULL)
 		delete foreground;
+	if (objects != NULL)
+		delete objects;
 }
 
 
@@ -100,16 +102,30 @@ bool TileMap::loadLevel(const string& levelFile)
 	vector<int> background_json = mapFile["layers"][0]["data"].get<vector<int>>();
 	vector<int> middle_json = mapFile["layers"][1]["data"].get<vector<int>>();
 	vector<int> foreground_json = mapFile["layers"][2]["data"].get<vector<int>>();
-
+	auto objects_json = mapFile["layers"][3]["objects"];
 	
 	map = new int[mapSize.x * mapSize.y];
 	background = new int[mapSize.x * mapSize.y];
 	middle = new int[mapSize.x * mapSize.y];
 	foreground = new int[mapSize.x * mapSize.y];
+	objects = new vector<std::map<string, string>>();
 
 	copy(background_json.begin(), background_json.end(), background);
 	copy(middle_json.begin(), middle_json.end(), middle);
 	copy(foreground_json.begin(), foreground_json.end(), foreground);
+	// carregar els objectes a this.objects
+	for (const auto& obj : objects_json) {
+		std::map<string, string> objectMap;
+		for (auto it = obj.begin(); it != obj.end(); ++it) {
+			objectMap[it.key()] = (string) it.value().dump();
+			cout << objectMap[it.key()];
+			cout << endl;
+		}
+		
+		objects->push_back(objectMap);
+	}
+
+
 
 	for (int i = 0; i < mapSize.x * mapSize.y; i++)
 	{
@@ -296,6 +312,49 @@ bool TileMap::collisionMoveUp(const glm::vec2& pos, const glm::ivec2& size, floa
 	}
 
 	return false;
+}
+
+bool TileMap::boundingBoxCollision(glm::vec2 coordsMin1, glm::vec2 widthHeight1, glm::vec2 coordsMin2, glm::vec2 widthHeight2) {
+	// separardes eix x
+	if (coordsMin1.x + widthHeight1[0] < coordsMin2.x || coordsMin2.x + widthHeight2[0] < coordsMin1.x)
+		return false;
+
+	// separades eix y
+	if (coordsMin1.y + widthHeight1[1] < coordsMin2.y || coordsMin2.y + widthHeight2[1] < coordsMin1.y)
+		return false;
+
+	return true;
+}
+
+bool TileMap::objectCollision(const glm::vec2& pos, const glm::vec2& size)
+{
+	for (const auto& obj : *objects) {
+		glm::vec2 objectPos = glm::vec2(std::stof(obj.at("x")), std::stof(obj.at("y")));
+		glm::vec2 objectSize = glm::vec2(std::stof(obj.at("width")), std::stof(obj.at("height")));
+		/*cout << "player position checking collision: " << '(' << pos.x << ',' << pos.y << ')' << endl;
+		cout << "object position checking collision: " << '(' << objectPos.x << ',' << objectPos.y << ')' << endl;*/
+		if (boundingBoxCollision(pos,size,objectPos,objectSize)) {
+			//std::cout << "boundingBoxCollision" << endl;
+			//std::cout << "object type: " << obj.at("type") << endl;
+			if (obj.at("type") == "\"Stair\"") {
+				//std::cout << "collided with stair" << endl;
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+bool TileMap::isOnLadderTop(const glm::vec2& posPlayer, const glm::vec2& playerSize) {
+	// objects[0] es l escala, si es canvia canviar aquest codi
+	std::map<string,string> ladderObj = (*objects)[0];
+	return posPlayer.y <= std::stof(ladderObj.at("y"));
+}
+
+bool TileMap::isOnLadderBottom(const glm::vec2& posPlayer, const glm::vec2& playerSize) {
+	// objects[0] es l escala, si es canvia canviar aquest codi
+	std::map<string, string> ladderObj = (*objects)[0];
+	return posPlayer.y + playerSize.y  >= std::stof(ladderObj.at("y")) + std::stof(ladderObj.at("height"));
 }
 
 

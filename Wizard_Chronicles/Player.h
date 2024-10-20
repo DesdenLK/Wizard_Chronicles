@@ -37,7 +37,7 @@ public:
 	glm::vec2 getVelocity();
 	
 private:
-	bool Jumping;
+	bool Jumping, Climbing, isOnLadderTop;
 	int loopTimesInactive;
 	glm::ivec2 tileMapDispl;
 	glm::vec2 posPlayer, playerVelocity, playerAcceleration;

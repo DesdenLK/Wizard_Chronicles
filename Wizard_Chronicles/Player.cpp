@@ -16,7 +16,7 @@
 enum PlayerAnims
 {
 	HELLO_LEFT, HELLO_RIGHT, STAND_LEFT, STAND_RIGHT, MOVE_LEFT, MOVE_RIGHT, STOPPING_LEFT, STOPPING_RIGHT, 
-		JUMP_LEFT, JUMP_RIGHT, FALL_LEFT, FALL_RIGHT, CROUCH_LEFT, CROUCH_RIGHT, NUM_ANIMS
+		JUMP_LEFT, JUMP_RIGHT, FALL_LEFT, FALL_RIGHT, CROUCH_LEFT, CROUCH_RIGHT, CLIMB, NUM_ANIMS
 };
 
 
@@ -155,13 +155,21 @@ void Player::setAnimations() {
 	sprite->addKeyframe(FALL_RIGHT, glm::vec2(5 * SPRITE_WIDTH, 6 * SPRITE_HEIGHT));
 	sprite->addKeyframe(FALL_RIGHT, glm::vec2(5 * SPRITE_WIDTH, 7 * SPRITE_HEIGHT));
 
-
+	//CLIMB
+	sprite->setAnimationSpeed(CLIMB, 4);
+	sprite->addKeyframe(CLIMB, glm::vec2(4 * SPRITE_WIDTH, 0.0f));
+	sprite->addKeyframe(CLIMB, glm::vec2(4 * SPRITE_WIDTH, SPRITE_HEIGHT));
+	sprite->addKeyframe(CLIMB, glm::vec2(4 * SPRITE_WIDTH, 2*SPRITE_HEIGHT));
 
 	sprite->changeAnimation(2);
 }
 
 void Player::updatePlayerMovement(int deltaTime) {
-
+	bool ladderCollision = map->objectCollision(posPlayer, glm::vec2(32, 32));
+	if (!ladderCollision) {
+		Climbing = false;
+		isOnLadderTop = false;
+	}
 	if (Game::instance().getKey(GLFW_KEY_A)) playerKey_A(deltaTime);
 
 	else if (Game::instance().getKey(GLFW_KEY_D)) playerKey_D(deltaTime);
@@ -170,9 +178,8 @@ void Player::updatePlayerMovement(int deltaTime) {
 	
 	if (Game::instance().getKey(GLFW_KEY_S)) playerKey_S(deltaTime);
 
-
-	if (Jumping) playerKey_W(deltaTime);
-	else playerFalling(deltaTime);
+	if (Game::instance().getKey(GLFW_KEY_W) && ladderCollision || Jumping) playerKey_W(deltaTime);
+	else if (!ladderCollision) playerFalling(deltaTime);
 }
 
 void Player::playerKey_A(int deltaTime) {
@@ -226,7 +233,6 @@ void Player::playerKey_D(int deltaTime) {
 }
 
 void Player::playerNOKeys(int deltaTime) {
-
 	switch (sprite->animation()) {
 
 		case STAND_LEFT:
@@ -293,7 +299,6 @@ void Player::playerNOKeys(int deltaTime) {
 
 void Player::playerFalling(int deltaTime)
 {
-
 	posPlayer.y += FALL_STEP;
 	playerVelocity.y = FALL_STEP;
 	if (map->collisionMoveDown(posPlayer, glm::ivec2(32, 32), &posPlayer.y))
@@ -312,7 +317,24 @@ void Player::playerFalling(int deltaTime)
 }
 
 void Player::playerKey_W(int deltaTime) {
-	switch (sprite->animation()) {
+	// fet per l'escala, adaptar metodes per quan tinguem objectes que no es poden traspassar
+	if (map->objectCollision(posPlayer, glm::vec2(32, 32))) {
+		Climbing = true;
+		if (!isOnLadderTop) {
+			playerVelocity.y = 0.1 * deltaTime;
+			posPlayer.y -= playerVelocity.y;
+			if (sprite->animation() != CLIMB) sprite->changeAnimation(CLIMB);
+			if (map->isOnLadderTop(posPlayer, glm::vec2(32, 32))) {
+				isOnLadderTop = true;
+				playerVelocity.y = 0;
+				cout << "on top of the ladder" << endl;
+			}
+		}
+	}
+	else {
+		Climbing = false;
+		isOnLadderTop = false;
+		switch (sprite->animation()) {
 		case MOVE_LEFT:
 			sprite->changeAnimation(JUMP_LEFT);
 			break;
@@ -320,7 +342,7 @@ void Player::playerKey_W(int deltaTime) {
 		case MOVE_RIGHT:
 			sprite->changeAnimation(JUMP_RIGHT);
 			break;
-		
+
 		case STAND_LEFT:
 			sprite->changeAnimation(JUMP_LEFT);
 			break;
@@ -336,29 +358,52 @@ void Player::playerKey_W(int deltaTime) {
 		case CROUCH_RIGHT:
 			sprite->changeAnimation(JUMP_RIGHT);
 			break;
-	}
-
-	playerVelocity.y = 96 * sin(3.14159f * jumpAngle / 180.f);
-	jumpAngle += JUMP_ANGLE_STEP;
-	if (jumpAngle == 180)
-	{
-		Jumping = false;
-		posPlayer.y = startY;
-	}
-	else
-	{
-		posPlayer.y = startY - 96 * sin(3.14159f * jumpAngle / 180.f);
-		if (jumpAngle > 90)
-			Jumping = !map->collisionMoveDown(posPlayer, glm::ivec2(32, 32), &posPlayer.y);
-		if (jumpAngle <= 90) {	// player going up
-			Jumping = !map->collisionMoveUp(posPlayer, glm::ivec2(32, 32), &posPlayer.y);
+		
+		case CLIMB:
+			sprite->changeAnimation(STAND_RIGHT);
+			break;
+		}
+		playerVelocity.y = 96 * sin(3.14159f * jumpAngle / 180.f);
+		jumpAngle += JUMP_ANGLE_STEP;
+		if (jumpAngle == 180)
+		{
+			Jumping = false;
+			posPlayer.y = startY;
+		}
+		else
+		{
+			posPlayer.y = startY - 96 * sin(3.14159f * jumpAngle / 180.f);
+			if (jumpAngle > 90)
+				Jumping = !map->collisionMoveDown(posPlayer, glm::ivec2(32, 32), &posPlayer.y);
+			if (jumpAngle <= 90) {	// player going up
+				Jumping = !map->collisionMoveUp(posPlayer, glm::ivec2(32, 32), &posPlayer.y);
+			}
 		}
 	}
 }
 
 void Player::playerKey_S(int deltaTime)
 {
-	if (sprite->animation() == MOVE_LEFT || sprite->animation() == STAND_LEFT || sprite->animation() == HELLO_LEFT) sprite->changeAnimation(CROUCH_LEFT);
+	if (isOnLadderTop) {
+		Climbing = true;
+		isOnLadderTop = false;
+		Jumping = false;
+	}
+	if (Climbing) {
+		playerVelocity.y = 0.1f * deltaTime;
+		posPlayer.y += playerVelocity.y;
+
+		if (sprite->animation() != CLIMB) {
+			sprite->changeAnimation(CLIMB);
+		}
+		if (map->isOnLadderBottom(posPlayer, glm::vec2(32, 32))) {
+			Climbing = false;
+			playerVelocity.y = 0;
+			cout << "on BOTTOM of the ladder" << endl;
+		}
+	}
+
+	else if (sprite->animation() == MOVE_LEFT || sprite->animation() == STAND_LEFT || sprite->animation() == HELLO_LEFT) sprite->changeAnimation(CROUCH_LEFT);
 	else if (sprite->animation() == MOVE_RIGHT || sprite->animation() == STAND_RIGHT || sprite->animation() == HELLO_RIGHT) sprite->changeAnimation(CROUCH_RIGHT);
 
 	else if (sprite->animation() == JUMP_LEFT) sprite->changeAnimation(FALL_LEFT);
