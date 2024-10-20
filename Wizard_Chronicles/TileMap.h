@@ -36,7 +36,7 @@ public:
 	bool collisionMoveRight(const glm::vec2 &pos, const glm::ivec2 &size) const;
 	bool collisionMoveDown(const glm::vec2 &pos, const glm::ivec2 &size, float *posY) const;
 	bool collisionMoveUp(const glm::vec2& pos, const glm::ivec2& size, float* posY) const;
-	bool objectCollision(const glm::vec2& pos, const glm::vec2& size);
+	bool ladderCollision(const glm::vec2& pos, const glm::vec2& size);
 	bool isOnLadderTop(const glm::vec2& posPlayer, const glm::vec2& playerSize);
 	bool isOnLadderBottom(const glm::vec2& posPlayer, const glm::vec2& playerSize);
 	

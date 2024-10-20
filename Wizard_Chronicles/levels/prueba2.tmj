@@ -102,7 +102,7 @@
          "name":"Objects",
          "objects":[
                 {
-                 "height":203.5,
+                 "height":185.5,
                  "id":3,
                  "name":"Stair1",
                  "rotation":0,
@@ -110,7 +110,7 @@
                  "visible":true,
                  "width":12.5,
                  "x":778,
-                 "y":308.5
+                 "y":326.5
                 }, 
                 {
                  "height":26,

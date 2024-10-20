@@ -326,7 +326,7 @@ bool TileMap::boundingBoxCollision(glm::vec2 coordsMin1, glm::vec2 widthHeight1,
 	return true;
 }
 
-bool TileMap::objectCollision(const glm::vec2& pos, const glm::vec2& size)
+bool TileMap::ladderCollision(const glm::vec2& pos, const glm::vec2& size)
 {
 	for (const auto& obj : *objects) {
 		glm::vec2 objectPos = glm::vec2(std::stof(obj.at("x")), std::stof(obj.at("y")));

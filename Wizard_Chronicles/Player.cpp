@@ -165,7 +165,7 @@ void Player::setAnimations() {
 }
 
 void Player::updatePlayerMovement(int deltaTime) {
-	bool ladderCollision = map->objectCollision(posPlayer, glm::vec2(32, 32));
+	bool ladderCollision = map->ladderCollision(posPlayer, glm::vec2(32, 32));
 	if (!ladderCollision) {
 		Climbing = false;
 		isOnLadderTop = false;
@@ -318,7 +318,7 @@ void Player::playerFalling(int deltaTime)
 
 void Player::playerKey_W(int deltaTime) {
 	// fet per l'escala, adaptar metodes per quan tinguem objectes que no es poden traspassar
-	if (map->objectCollision(posPlayer, glm::vec2(32, 32))) {
+	if (map->ladderCollision(posPlayer, glm::vec2(32, 32))) {
 		Climbing = true;
 		if (!isOnLadderTop) {
 			playerVelocity.y = 0.1 * deltaTime;
@@ -384,6 +384,9 @@ void Player::playerKey_W(int deltaTime) {
 
 void Player::playerKey_S(int deltaTime)
 {
+	if (map->ladderCollision(posPlayer, glm::vec2(32,32))) {
+		Climbing = true;
+	}
 	if (isOnLadderTop) {
 		Climbing = true;
 		isOnLadderTop = false;
@@ -399,7 +402,7 @@ void Player::playerKey_S(int deltaTime)
 		if (map->isOnLadderBottom(posPlayer, glm::vec2(32, 32))) {
 			Climbing = false;
 			playerVelocity.y = 0;
-			cout << "on BOTTOM of the ladder" << endl;
+			//cout << "on BOTTOM of the ladder" << endl;
 		}
 	}
 
