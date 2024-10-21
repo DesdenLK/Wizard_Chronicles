@@ -170,13 +170,13 @@ void Player::updatePlayerMovement(int deltaTime) {
 		Climbing = false;
 		isOnLadderTop = false;
 	}
+
 	if (Game::instance().getKey(GLFW_KEY_A)) playerKey_A(deltaTime);
 
 	else if (Game::instance().getKey(GLFW_KEY_D)) playerKey_D(deltaTime);
 
 	else playerNOKeys(deltaTime);
 	
-	if (Game::instance().getKey(GLFW_KEY_S)) playerKey_S(deltaTime);
 
 	if (Game::instance().getKey(GLFW_KEY_W) && ladderCollision || Jumping) playerKey_W(deltaTime);
 	else if (!ladderCollision) playerFalling(deltaTime);
@@ -289,6 +289,14 @@ void Player::playerNOKeys(int deltaTime) {
 			break;
 
 		case JUMP_RIGHT:
+			sprite->changeAnimation(STAND_RIGHT);
+			break;
+
+		case CROUCH_LEFT:
+			sprite->changeAnimation(STAND_LEFT);
+			break;
+
+		case CROUCH_RIGHT:
 			sprite->changeAnimation(STAND_RIGHT);
 			break;
 
@@ -407,8 +415,8 @@ void Player::playerKey_S(int deltaTime)
 		}
 	}
 
-	else if (sprite->animation() == MOVE_LEFT || sprite->animation() == STAND_LEFT || sprite->animation() == HELLO_LEFT) sprite->changeAnimation(CROUCH_LEFT);
-	else if (sprite->animation() == MOVE_RIGHT || sprite->animation() == STAND_RIGHT || sprite->animation() == HELLO_RIGHT) sprite->changeAnimation(CROUCH_RIGHT);
+	else if (sprite->animation() == MOVE_LEFT || sprite->animation() == STAND_LEFT || sprite->animation() == HELLO_LEFT || sprite->animation() == STOPPING_LEFT) sprite->changeAnimation(CROUCH_LEFT);
+	else if (sprite->animation() == MOVE_RIGHT || sprite->animation() == STAND_RIGHT || sprite->animation() == HELLO_RIGHT || sprite->animation() == STOPPING_RIGHT) sprite->changeAnimation(CROUCH_RIGHT);
 
 	else if (sprite->animation() == JUMP_LEFT) sprite->changeAnimation(FALL_LEFT);
 	else if (sprite->animation() == JUMP_RIGHT) sprite->changeAnimation(FALL_RIGHT);
