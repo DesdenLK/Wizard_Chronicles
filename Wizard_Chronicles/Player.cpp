@@ -165,21 +165,26 @@ void Player::setAnimations() {
 }
 
 void Player::updatePlayerMovement(int deltaTime) {
+
+	bool KeysPressed = Game::instance().getKey(GLFW_KEY_W) || Game::instance().getKey(GLFW_KEY_A) || Game::instance().getKey(GLFW_KEY_S) || Game::instance().getKey(GLFW_KEY_D);
 	bool ladderCollision = map->ladderCollision(posPlayer, glm::vec2(32, 32));
 	if (!ladderCollision) {
 		Climbing = false;
 		isOnLadderTop = false;
 	}
 
-	if (Game::instance().getKey(GLFW_KEY_A)) playerKey_A(deltaTime);
-
-	else if (Game::instance().getKey(GLFW_KEY_D)) playerKey_D(deltaTime);
-
-	else playerNOKeys(deltaTime);
-	
-
 	if (Game::instance().getKey(GLFW_KEY_W) && ladderCollision || Jumping) playerKey_W(deltaTime);
 	else if (!ladderCollision) playerFalling(deltaTime);
+
+	if (Game::instance().getKey(GLFW_KEY_A)) playerKey_A(deltaTime);
+
+	if (Game::instance().getKey(GLFW_KEY_D)) playerKey_D(deltaTime);
+
+	if (Game::instance().getKey(GLFW_KEY_S)) playerKey_S(deltaTime);
+
+	if (!KeysPressed) playerNOKeys(deltaTime);
+	
+
 }
 
 void Player::playerKey_A(int deltaTime) {
@@ -284,14 +289,6 @@ void Player::playerNOKeys(int deltaTime) {
 			else posPlayer.x += playerVelocity.x;
 			break;
 
-		case JUMP_LEFT:
-			sprite->changeAnimation(STAND_LEFT);
-			break;
-
-		case JUMP_RIGHT:
-			sprite->changeAnimation(STAND_RIGHT);
-			break;
-
 		case CROUCH_LEFT:
 			sprite->changeAnimation(STAND_LEFT);
 			break;
@@ -311,8 +308,8 @@ void Player::playerFalling(int deltaTime)
 	playerVelocity.y = FALL_STEP;
 	if (map->collisionMoveDown(posPlayer, glm::ivec2(32, 32), &posPlayer.y))
 	{
-		if (sprite->animation() == FALL_LEFT) sprite->changeAnimation(STAND_LEFT);
-		else if (sprite->animation() == FALL_RIGHT) sprite->changeAnimation(STAND_RIGHT);
+		if (sprite->animation() == FALL_LEFT || sprite->animation() == JUMP_LEFT) sprite->changeAnimation(STAND_LEFT);
+		else if (sprite->animation() == FALL_RIGHT || sprite->animation() == JUMP_RIGHT) sprite->changeAnimation(STAND_RIGHT);
 
 		playerVelocity.y = 0;
 		if (Game::instance().getKey(GLFW_KEY_W))
@@ -370,6 +367,14 @@ void Player::playerKey_W(int deltaTime) {
 		
 		case CLIMB:
 			sprite->changeAnimation(STAND_RIGHT);
+			break;
+
+		case HELLO_LEFT:
+			sprite->changeAnimation(JUMP_LEFT);
+			break;
+		
+		case HELLO_RIGHT:
+			sprite->changeAnimation(JUMP_RIGHT);
 			break;
 		}
 		playerVelocity.y = 96 * sin(3.14159f * jumpAngle / 180.f);
