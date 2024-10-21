@@ -320,6 +320,7 @@ void Player::playerKey_W(int deltaTime) {
 	// fet per l'escala, adaptar metodes per quan tinguem objectes que no es poden traspassar
 	if (map->ladderCollision(posPlayer, glm::vec2(32, 32))) {
 		Climbing = true;
+		Jumping = false;
 		if (!isOnLadderTop) {
 			playerVelocity.y = 0.1 * deltaTime;
 			posPlayer.y -= playerVelocity.y;
@@ -327,7 +328,7 @@ void Player::playerKey_W(int deltaTime) {
 			if (map->isOnLadderTop(posPlayer, glm::vec2(32, 32))) {
 				isOnLadderTop = true;
 				playerVelocity.y = 0;
-				cout << "on top of the ladder" << endl;
+				//cout << "on top of the ladder" << endl;
 			}
 		}
 	}
