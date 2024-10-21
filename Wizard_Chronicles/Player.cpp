@@ -176,11 +176,11 @@ void Player::updatePlayerMovement(int deltaTime) {
 	if (Game::instance().getKey(GLFW_KEY_W) && ladderCollision || Jumping) playerKey_W(deltaTime);
 	else if (!ladderCollision) playerFalling(deltaTime);
 
-	if (Game::instance().getKey(GLFW_KEY_A)) playerKey_A(deltaTime);
+	if (Game::instance().getKey(GLFW_KEY_A)) { playerKey_A(deltaTime); loopTimesInactive = 0; }
 
-	if (Game::instance().getKey(GLFW_KEY_D)) playerKey_D(deltaTime);
+	if (Game::instance().getKey(GLFW_KEY_D)) { playerKey_D(deltaTime); loopTimesInactive = 0; }
 
-	if (Game::instance().getKey(GLFW_KEY_S)) playerKey_S(deltaTime);
+	if (Game::instance().getKey(GLFW_KEY_S)) { playerKey_S(deltaTime); loopTimesInactive = 0; }
 
 	if (!KeysPressed) playerNOKeys(deltaTime);
 	
