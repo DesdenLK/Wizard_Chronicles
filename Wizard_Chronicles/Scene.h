@@ -6,6 +6,7 @@
 #include "ShaderProgram.h"
 #include "TileMap.h"
 #include "Player.h"
+#include "Enemy.h"
 #include "Camera.h"
 
 
@@ -30,6 +31,7 @@ private:
 private:
 	TileMap *map;
 	Player *player;
+	vector<Enemy*> Enemies;
 	Camera* camera;
 	ShaderProgram texProgram;
 	float currentTime;

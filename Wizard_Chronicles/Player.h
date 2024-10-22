@@ -1,12 +1,12 @@
-#ifndef _PLAYER_INCLUDE
-#define _PLAYER_INCLUDE
+#ifndef _Player_INCLUDE
+#define _Player_INCLUDE
 
 
 #include "Sprite.h"
 #include "TileMap.h"
 
 
-// Player is basically a Sprite that represents the player. As such it has
+// Player is basically a Sprite that represents the Player. As such it has
 // all properties it needs to track its movement, jumping, and collisions.
 
 
@@ -19,13 +19,13 @@ public:
 	void render();
 
 	void updatePlayerMovement(int deltaTime);
-	void playerKey_A(int deltaTime);
-	void playerKey_D(int deltaTime);
-	void playerKey_W(int deltaTime);
-	void playerKey_S(int deltaTime);
-	void playerNOKeys(int deltaTime);
+	void PlayerKey_A(int deltaTime);
+	void PlayerKey_D(int deltaTime);
+	void PlayerKey_W(int deltaTime);
+	void PlayerKey_S(int deltaTime);
+	void PlayerNOKeys(int deltaTime);
 
-	void playerFalling(int deltaTime);
+	void PlayerFalling(int deltaTime);
 	
 	void setTileMap(TileMap *tileMap);
 	void setPosition(const glm::vec2 &pos);
@@ -40,7 +40,7 @@ private:
 	bool Jumping, Climbing, isOnLadderTop;
 	int loopTimesInactive;
 	glm::ivec2 tileMapDispl;
-	glm::vec2 posPlayer, playerVelocity, playerAcceleration;
+	glm::vec2 posPlayer, PlayerVelocity, PlayerAcceleration;
 	int jumpAngle, startY;
 	Texture spritesheet;
 	Sprite *sprite;
@@ -49,6 +49,6 @@ private:
 };
 
 
-#endif // _PLAYER_INCLUDE
+#endif // _Player_INCLUDE
 
 

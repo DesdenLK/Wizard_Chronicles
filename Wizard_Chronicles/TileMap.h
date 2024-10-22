@@ -37,8 +37,9 @@ public:
 	bool collisionMoveDown(const glm::vec2 &pos, const glm::ivec2 &size, float *posY) const;
 	bool collisionMoveUp(const glm::vec2& pos, const glm::ivec2& size, float* posY) const;
 	bool ladderCollision(const glm::vec2& pos, const glm::vec2& size);
-	bool isOnLadderTop(const glm::vec2& posPlayer, const glm::vec2& playerSize);
-	bool isOnLadderBottom(const glm::vec2& posPlayer, const glm::vec2& playerSize);
+	bool isOnLadderTop(const glm::vec2& posPlayer, const glm::vec2& PlayerSize);
+	bool isOnLadderBottom(const glm::vec2& posPlayer, const glm::vec2& PlayerSize);
+	vector<std::pair<glm::vec2, glm::vec2>> getEnemyBoundingBoxes();
 	
 private:
 	bool loadLevel(const string &levelFile);
@@ -60,6 +61,7 @@ private:
 
 	int* map, * background, * middle, * foreground;
 	vector<std::map<string,string>>* objects;
+	vector<std::map<string, string>>* enemies;
 };
 
 
