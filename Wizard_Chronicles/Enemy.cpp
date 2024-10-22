@@ -8,12 +8,14 @@
 #define JUMP_ANGLE_STEP 4
 #define JUMP_HEIGHT 30
 #define FALL_STEP 4
+#define INI_VELOCITY_X 0.5f
+#define INI_VELOCITY_Y 0
 
 void Enemy::init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram, string pathToSpritesheet, const glm::ivec2& spriteDimensions, const glm::vec2& spriteWidthHeight)
 {
 	Jumping = false;
 	loopTimesInactive = 0;
-	EnemyVelocity = glm::vec2(0, 0);
+	EnemyVelocity = glm::vec2(INI_VELOCITY_X, INI_VELOCITY_Y);
 	EnemyAcceleration = glm::vec2(0, 0);
 
 	bool loaded = spritesheet.loadFromFile(pathToSpritesheet, TEXTURE_PIXEL_FORMAT_RGBA);

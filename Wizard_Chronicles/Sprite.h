@@ -33,6 +33,7 @@ public:
 	void changeAnimation(int animId);
 	int animation() const;
 	
+	glm::vec2 getPosition();
 	void setPosition(const glm::vec2 &pos);
 
 private:

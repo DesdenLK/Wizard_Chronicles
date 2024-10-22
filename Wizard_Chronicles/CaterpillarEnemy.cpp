@@ -13,7 +13,21 @@ enum EnemyAnims
 };
 
 void CaterpillarEnemy::updateEnemyMovement(int deltaTime) {
-	return;
+	posEnemy += EnemyVelocity;
+	if ((EnemyVelocity.x < 0 and map->collisionMoveLeft(posEnemy, glm::ivec2(25, 25))) or (EnemyVelocity.x > 0 and map->collisionMoveRight(posEnemy, glm::ivec2(25, 25)))) {
+		posEnemy -= EnemyVelocity;
+		EnemyVelocity = -EnemyVelocity;
+		switch (sprite->animation()) {
+			case WALK_LEFT:
+				sprite->changeAnimation(WALK_RIGHT);
+				break;
+			case WALK_RIGHT:
+				sprite->changeAnimation(WALK_LEFT);
+				break;
+			default:
+				break;
+		}
+	}
 }
 
 void CaterpillarEnemy::setAnimations() {
@@ -37,6 +51,6 @@ void CaterpillarEnemy::setAnimations() {
 	sprite->setAnimationSpeed(DIE_RIGHT, 4);
 	sprite->addKeyframe(DIE_RIGHT, glm::vec2(SPRITE_WIDTH, 0.0f));
 	
-	sprite->changeAnimation(WALK_LEFT);
+	sprite->changeAnimation(WALK_RIGHT);
 
 }
