@@ -141,8 +141,8 @@
                  "rotation":0,
                  "type":"Caterpillar",
                  "visible":true,
-                 "width":25,
-                 "x":860,
+                 "width":15,
+                 "x":870,
                  "y":486.5
                 }],
          "opacity":1,

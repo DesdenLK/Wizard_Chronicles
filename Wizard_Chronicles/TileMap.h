@@ -6,6 +6,7 @@
 #include "Texture.h"
 #include "ShaderProgram.h"
 #include <json.hpp>
+#include "CaterpillarEnemy.h"
 #include <map>
 
 
@@ -14,6 +15,7 @@
 // it builds a single VBO that contains all tiles. As a result the render
 // method draws the whole map independently of what is visible.
 
+class Enemy;
 
 class TileMap
 {
@@ -39,10 +41,10 @@ public:
 	bool ladderCollision(const glm::vec2& pos, const glm::vec2& size);
 	bool isOnLadderTop(const glm::vec2& posPlayer, const glm::vec2& PlayerSize);
 	bool isOnLadderBottom(const glm::vec2& posPlayer, const glm::vec2& PlayerSize);
-	vector<std::pair<glm::vec2, glm::vec2>> getEnemyBoundingBoxes();
+	void update(int deltaTime);
 	
 private:
-	bool loadLevel(const string &levelFile);
+	bool loadLevel(const string &levelFile, ShaderProgram& program);
 	void prepareArrays(const glm::vec2 &minCoords, ShaderProgram &program);
 	void addTileVertices(vector<float>& vertices, const glm::vec2& posTile, const glm::vec2 texCoordTile[2]);
 	void createVAO(GLuint& vao, GLuint& vbo, const std::vector<float>& vertices, ShaderProgram& program);
@@ -52,6 +54,8 @@ private:
 	GLuint vaoBackground, vaoMiddle, vaoForeground;
 	GLuint vboBackground, vboMiddle, vboForeground;
 	GLint posLocation, texCoordLocation;
+	//ShaderProgram* program;
+
 	int nBackgroundTiles, nMiddleTiles, nForegroundTiles;
 
 	glm::ivec2 position, mapSize, tilesheetSize;
@@ -61,7 +65,7 @@ private:
 
 	int* map, * background, * middle, * foreground;
 	vector<std::map<string,string>>* objects;
-	vector<std::map<string, string>>* enemies;
+	vector<Enemy*> enemies;
 };
 
 

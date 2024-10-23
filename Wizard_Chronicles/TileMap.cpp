@@ -4,7 +4,6 @@
 #include <vector>
 #include "TileMap.h"
 
-
 using namespace std;
 using json = nlohmann::json;
 
@@ -12,14 +11,14 @@ using json = nlohmann::json;
 TileMap *TileMap::createTileMap(const string &levelFile, const glm::vec2 &minCoords, ShaderProgram &program)
 {
 	TileMap *map = new TileMap(levelFile, minCoords, program);
-	
+
 	return map;
 }
 
 
 TileMap::TileMap(const string &levelFile, const glm::vec2 &minCoords, ShaderProgram &program)
 {
-	loadLevel(levelFile);
+	loadLevel(levelFile, program);
 	prepareArrays(minCoords, program);
 }
 
@@ -62,6 +61,10 @@ void TileMap::render() const
 	glDrawArrays(GL_TRIANGLES, 0, 6 * nForegroundTiles);
 
 	glDisable(GL_TEXTURE_2D);
+
+	for (auto& enemy : enemies) {
+		enemy->render();
+	}
 }
 
 void TileMap::free()
@@ -71,7 +74,7 @@ void TileMap::free()
 	glDeleteBuffers(1, &vboForeground);
 }
 
-bool TileMap::loadLevel(const string& levelFile)
+bool TileMap::loadLevel(const string& levelFile, ShaderProgram& program)
 {
 	ifstream file(levelFile);
 	string tileSheetFile;
@@ -110,7 +113,7 @@ bool TileMap::loadLevel(const string& levelFile)
 	middle = new int[mapSize.x * mapSize.y];
 	foreground = new int[mapSize.x * mapSize.y];
 	objects = new vector<std::map<string, string>>();
-	enemies = new vector<std::map<string, string>>();
+	enemies = vector<Enemy*>();
 
 	copy(background_json.begin(), background_json.end(), background);
 	copy(middle_json.begin(), middle_json.end(), middle);
@@ -127,15 +130,31 @@ bool TileMap::loadLevel(const string& levelFile)
 		objects->push_back(objectMap);
 	}
 	// carregar els enemmics a this.enemies
-	for (const auto& obj : enemies_json) {
-		std::map<string, string> objectMap;
-		cout << "object map: " << endl;
-		for (auto it = obj.begin(); it != obj.end(); ++it) {
-			objectMap[it.key()] = (string)it.value().dump();
-			cout << it.key() << ':' << objectMap[it.key()];
-			cout << endl;
+	for (const auto& objEnemy : enemies_json) {
+		glm::vec2 enemyStartPos = glm::vec2(0.f, 0.f);
+		glm::vec2 enemyBoundingBoxWH = glm::vec2(0.f, 0.f);
+		for (auto it = objEnemy.begin(); it != objEnemy.end(); ++it) {
+			if (it.key() == "x") enemyStartPos[0] = std::stof((string)it.value().dump());
+			else if (it.key() == "y") enemyStartPos[1] = std::stof((string)it.value().dump());
+			else if (it.key() == "width") enemyBoundingBoxWH[0] = std::stof((string)it.value().dump());
+			else if (it.key() == "height") enemyBoundingBoxWH[1] = std::stof((string)it.value().dump());
 		}
-		enemies->push_back(objectMap);
+
+		for (auto it = objEnemy.begin(); it != objEnemy.end(); ++it) {
+			//cout << "key: " << it.key() << ':' << "value: " << (string)it.value().dump() << endl;
+			if (it.key() == "type") {
+				if ((string)it.value().dump() == "\"Caterpillar\"") {
+					CaterpillarEnemy* caterpillar = new CaterpillarEnemy();
+					caterpillar->init(glm::ivec2(0,16), program, "images/enemics/caterpillar/spriteCaterpillarAmplifiedAlpha.png", glm::ivec2(25, 25), glm::vec2((1.f / 6.f), 1.f), enemyBoundingBoxWH);
+					caterpillar->setPosition(enemyStartPos);
+					caterpillar->setTileMap(this);
+					cout << "enemy start pos: " << '(' << enemyStartPos[0] << ',' << enemyStartPos[1] << ')' << endl;
+					enemies.push_back(caterpillar);
+				}
+				// afegir tipus enemics
+			}
+		}
+		//cout << "nombre d'enemics enregistrats: " << enemies.size() << endl;
 	}
 
 
@@ -369,15 +388,13 @@ bool TileMap::isOnLadderBottom(const glm::vec2& posPlayer, const glm::vec2& Play
 	return posPlayer.y + PlayerSize.y  >= std::stof(ladderObj.at("y")) + std::stof(ladderObj.at("height"));
 }
 
-vector<std::pair<glm::vec2, glm::vec2>> TileMap::getEnemyBoundingBoxes() {
-	vector<std::pair<glm::vec2, glm::vec2>> boundingBoxes = vector<std::pair<glm::vec2, glm::vec2>>();
-	for (auto& enemy : *enemies) {
-		glm::vec2 posIni = glm::vec2(std::stof(enemy.at("x")), std::stof(enemy.at("y")));
-		glm::vec2 widthHeight = glm::vec2(std::stof(enemy.at("width")), std::stof(enemy.at("height")));
-		boundingBoxes.push_back(make_pair(posIni,widthHeight));
+void TileMap::update(int deltaTime) {
+	for (auto& enemy : enemies) {
+		enemy->update(deltaTime);
 	}
-	return boundingBoxes;
 }
+
+
 
 
 

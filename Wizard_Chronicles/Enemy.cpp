@@ -3,6 +3,7 @@
 #include <GL/glew.h>
 #include "Enemy.h"
 #include "Game.h"
+#include "TileMap.h"
 
 
 #define JUMP_ANGLE_STEP 4
@@ -11,8 +12,10 @@
 #define INI_VELOCITY_X 0.5f
 #define INI_VELOCITY_Y 0
 
-void Enemy::init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram, string pathToSpritesheet, const glm::ivec2& spriteDimensions, const glm::vec2& spriteWidthHeight)
+
+void Enemy::init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram, string pathToSpritesheet, const glm::ivec2& spriteDimensions, const glm::vec2& spriteWidthHeight, const glm::vec2& hitboxWH)
 {
+	boundingBoxWidthHeight = hitboxWH;
 	Jumping = false;
 	loopTimesInactive = 0;
 	EnemyVelocity = glm::vec2(INI_VELOCITY_X, INI_VELOCITY_Y);
@@ -60,6 +63,10 @@ void Enemy::setPosition(const glm::vec2& pos)
 
 glm::vec2 Enemy::getVelocity() {
 	return EnemyVelocity;
+}
+
+glm::vec2 Enemy::getBoundingBoxWH() {
+	return boundingBoxWidthHeight;
 }
 
 void Enemy::EnemyFalling(int deltaTime)
