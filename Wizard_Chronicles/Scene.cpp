@@ -6,9 +6,9 @@
 
 
 #define SCREEN_X 0
-#define SCREEN_Y 16
+#define SCREEN_Y 0
 
-#define INIT_PLAYER_X_TILES 20
+#define INIT_PLAYER_X_TILES 21
 #define INIT_PLAYER_Y_TILES 14
 
 
@@ -48,6 +48,7 @@ void Scene::update(int deltaTime)
 {
 	currentTime += deltaTime;
 	player->update(deltaTime);
+	map->update(deltaTime);
 }
 
 void Scene::render()
@@ -63,8 +64,10 @@ void Scene::render()
 	modelview = glm::mat4(1.0f);
 	texProgram.setUniformMatrix4f("modelview", modelview);
 	texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);
+	//map->renderDynamicObjects();
 	map->render();
 	player->render();
+
 }
 
 

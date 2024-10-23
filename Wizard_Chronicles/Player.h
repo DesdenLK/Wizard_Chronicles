@@ -4,6 +4,7 @@
 
 #include "Sprite.h"
 #include "TileMap.h"
+#include "DynamicObject.h"
 
 
 // Player is basically a Sprite that represents the player. As such it has
@@ -25,6 +26,9 @@ public:
 	void playerKey_S(int deltaTime);
 	void playerNOKeys(int deltaTime);
 
+	void playerPickObject(int deltaTime);
+	void playerDropObject(int deltaTime);
+
 	void playerFalling(int deltaTime);
 	
 	void setTileMap(TileMap *tileMap);
@@ -37,7 +41,10 @@ public:
 	glm::vec2 getVelocity();
 	
 private:
-	bool Jumping, Climbing, isOnLadderTop;
+	struct State {
+		bool Jumping, Climbing, isOnLadderTop, PickingObject, canPickObject, canDropObject;
+	} playerState;
+
 	int loopTimesInactive;
 	glm::ivec2 tileMapDispl;
 	glm::vec2 posPlayer, playerVelocity, playerAcceleration;
@@ -45,6 +52,8 @@ private:
 	Texture spritesheet;
 	Sprite *sprite;
 	TileMap *map;
+
+	DynamicObject* objectPickedUp;
 
 };
 

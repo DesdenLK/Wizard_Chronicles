@@ -6,7 +6,7 @@
 
 
 #define JUMP_ANGLE_STEP 4
-#define JUMP_HEIGHT 96
+#define JUMP_HEIGHT 35
 #define FALL_STEP 4
 
 #define SPRITE_WIDTH 1/20.f
@@ -16,17 +16,18 @@
 enum PlayerAnims
 {
 	HELLO_LEFT, HELLO_RIGHT, STAND_LEFT, STAND_RIGHT, MOVE_LEFT, MOVE_RIGHT, STOPPING_LEFT, STOPPING_RIGHT, 
-		JUMP_LEFT, JUMP_RIGHT, FALL_LEFT, FALL_RIGHT, CROUCH_LEFT, CROUCH_RIGHT, CLIMB, NUM_ANIMS
+	JUMP_LEFT, JUMP_RIGHT, FALL_LEFT, FALL_RIGHT, CROUCH_LEFT, CROUCH_RIGHT, CLIMB, PICKING_LEFT, PICKING_RIGHT, NUM_ANIMS
 };
 
 
 void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 {
-	Jumping = false;
+	playerState = { false, false, false, false};
 	loopTimesInactive = 0;
 	playerVelocity = glm::vec2(0, 0);
 	playerAcceleration = glm::vec2(0, 0);
 
+	objectPickedUp = nullptr;
 
 	spritesheet.loadFromFile("images/Mickey.png", TEXTURE_PIXEL_FORMAT_RGBA);
 	sprite = Sprite::createSprite(glm::ivec2(32, 32), glm::vec2(SPRITE_WIDTH, SPRITE_HEIGHT), &spritesheet, &shaderProgram);
@@ -42,13 +43,21 @@ void Player::update(int deltaTime)
 {
 	sprite->update(deltaTime);
 	updatePlayerMovement(deltaTime);
-	
+
+
+	if (objectPickedUp != nullptr) {
+		objectPickedUp->update(deltaTime);
+		objectPickedUp->setPosicio(glm::vec2(posPlayer.x + 5, posPlayer.y - objectPickedUp->getMeasures().y));
+	}
 	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
+
+	//cout << "Player position: " << posPlayer.x << " " << posPlayer.y << endl;	
 }
 
 void Player::render()
 {
 	sprite->render();
+	if (objectPickedUp != nullptr) objectPickedUp->render();
 }
 
 void Player::setTileMap(TileMap *tileMap)
@@ -161,6 +170,21 @@ void Player::setAnimations() {
 	sprite->addKeyframe(CLIMB, glm::vec2(4 * SPRITE_WIDTH, SPRITE_HEIGHT));
 	sprite->addKeyframe(CLIMB, glm::vec2(4 * SPRITE_WIDTH, 2*SPRITE_HEIGHT));
 
+	//PICKING_OBJECT_LEFT
+	sprite->setAnimationSpeed(PICKING_LEFT, 1);
+	sprite->addKeyframe(PICKING_LEFT, glm::vec2(10 * SPRITE_WIDTH, 0.f));
+	sprite->addKeyframe(PICKING_LEFT, glm::vec2(10 * SPRITE_WIDTH, SPRITE_HEIGHT));
+	sprite->addKeyframe(PICKING_LEFT, glm::vec2(10 * SPRITE_WIDTH, 2 * SPRITE_HEIGHT));
+	sprite->addKeyframe(PICKING_LEFT, glm::vec2(10 * SPRITE_WIDTH, 3 * SPRITE_HEIGHT));
+
+	//PICKING_OBJECT_RIGHT
+	sprite->setAnimationSpeed(PICKING_RIGHT, 1);
+	sprite->addKeyframe(PICKING_RIGHT, glm::vec2(9 * SPRITE_WIDTH, 0.f));
+	sprite->addKeyframe(PICKING_RIGHT, glm::vec2(9 * SPRITE_WIDTH, SPRITE_HEIGHT));
+	sprite->addKeyframe(PICKING_RIGHT, glm::vec2(9 * SPRITE_WIDTH, 2 * SPRITE_HEIGHT));
+	sprite->addKeyframe(PICKING_RIGHT, glm::vec2(9 * SPRITE_WIDTH, 3 * SPRITE_HEIGHT));
+
+
 	sprite->changeAnimation(2);
 }
 
@@ -169,11 +193,11 @@ void Player::updatePlayerMovement(int deltaTime) {
 	bool KeysPressed = Game::instance().getKey(GLFW_KEY_W) || Game::instance().getKey(GLFW_KEY_A) || Game::instance().getKey(GLFW_KEY_S) || Game::instance().getKey(GLFW_KEY_D);
 	bool ladderCollision = map->ladderCollision(posPlayer, glm::vec2(32, 32));
 	if (!ladderCollision) {
-		Climbing = false;
-		isOnLadderTop = false;
+		playerState.Climbing = false;
+		playerState.isOnLadderTop = false;
 	}
 
-	if (Game::instance().getKey(GLFW_KEY_W) && ladderCollision || Jumping) playerKey_W(deltaTime);
+	if (Game::instance().getKey(GLFW_KEY_W) && ladderCollision || playerState.Jumping) playerKey_W(deltaTime);
 	else if (!ladderCollision) playerFalling(deltaTime);
 
 	if (Game::instance().getKey(GLFW_KEY_A)) { playerKey_A(deltaTime); loopTimesInactive = 0; }
@@ -181,6 +205,16 @@ void Player::updatePlayerMovement(int deltaTime) {
 	if (Game::instance().getKey(GLFW_KEY_D)) { playerKey_D(deltaTime); loopTimesInactive = 0; }
 
 	if (Game::instance().getKey(GLFW_KEY_S)) { playerKey_S(deltaTime); loopTimesInactive = 0; }
+
+	if (Game::instance().getKey(GLFW_KEY_ENTER)) { 
+		if (objectPickedUp == nullptr and playerState.canPickObject) playerPickObject(deltaTime); 
+		else if (objectPickedUp != nullptr and playerState.canDropObject) playerDropObject(deltaTime);
+		loopTimesInactive = 0; 
+	}
+	else {
+		if (objectPickedUp == nullptr) { playerState.canPickObject = true;  playerState.canDropObject = false; }
+		if (objectPickedUp != nullptr) { playerState.canDropObject = true;  playerState.canPickObject = false; }
+	}
 
 	if (!KeysPressed) playerNOKeys(deltaTime);
 	
@@ -194,7 +228,7 @@ void Player::playerKey_A(int deltaTime) {
 	glm::vec2 initialPosPlayer = posPlayer;
 	posPlayer.x -= playerVelocity.x;
 
-	if (!Jumping) {
+	if (!playerState.Jumping) {
 		if (sprite->animation() != MOVE_LEFT) sprite->changeAnimation(MOVE_LEFT);
 	}
 
@@ -204,6 +238,8 @@ void Player::playerKey_A(int deltaTime) {
 	// Mirar colisions en el path del jugador
 	for (float t = 0.0f; t <= 1.0f; t += 1.0f / playerVelocity.x) {
 		glm::vec2 interpolatedPos = initialPosPlayer + t * (targetPosPlayer - initialPosPlayer);
+
+
 		if (map->collisionMoveLeft(interpolatedPos, glm::ivec2(32, 32))) {
 			posPlayer.x = initialPosPlayer.x;
 			sprite->changeAnimation(STAND_LEFT);
@@ -220,7 +256,7 @@ void Player::playerKey_D(int deltaTime) {
 	glm::vec2 initialPosPlayer = posPlayer;
 	posPlayer.x += playerVelocity.x;
 
-	if (!Jumping) {
+	if (!playerState.Jumping) {
 		if (sprite->animation() != MOVE_RIGHT) sprite->changeAnimation(MOVE_RIGHT);
 	}
 	// Poisicio final
@@ -229,6 +265,7 @@ void Player::playerKey_D(int deltaTime) {
 	// Mirar colisions en el path del jugador
 	for (float t = 0.0f; t <= 1.0f; t += 1.0f / playerVelocity.x) {
 		glm::vec2 interpolatedPos = initialPosPlayer + t * (targetPosPlayer - initialPosPlayer);
+
 		if (map->collisionMoveRight(interpolatedPos, glm::ivec2(32, 32))) {
 			posPlayer.x = initialPosPlayer.x;
 			sprite->changeAnimation(STAND_RIGHT);
@@ -243,7 +280,7 @@ void Player::playerNOKeys(int deltaTime) {
 		case STAND_LEFT:
 			if (loopTimesInactive >= 500) { sprite->changeAnimation(HELLO_LEFT); loopTimesInactive = 0; }
 			else ++loopTimesInactive;
-			cout << "Loop: " << loopTimesInactive << endl;
+			//cout << "Loop: " << loopTimesInactive << endl;
 			break;
 		
 		case STAND_RIGHT:
@@ -262,7 +299,7 @@ void Player::playerNOKeys(int deltaTime) {
 		case STOPPING_LEFT:
 			if (playerVelocity.x == 0) sprite->changeAnimation(STAND_LEFT);
 			else playerVelocity.x = max(0.f, playerVelocity.x - playerAcceleration.x * deltaTime);
-			cout << "Vel: " << playerVelocity.x << endl;
+			//cout << "Vel: " << playerVelocity.x << endl;
 
 			if (map->collisionMoveLeft(posPlayer, glm::ivec2(32, 32)))
 			{
@@ -277,7 +314,7 @@ void Player::playerNOKeys(int deltaTime) {
 		case STOPPING_RIGHT:
 			if (playerVelocity.x == 0) sprite->changeAnimation(STAND_RIGHT);
 			else playerVelocity.x = max(0.f, playerVelocity.x - playerAcceleration.x * deltaTime);
-			cout << "Vel: " << playerVelocity.x << endl;
+			//cout << "Vel: " << playerVelocity.x << endl;
 
 			if (map->collisionMoveRight(posPlayer, glm::ivec2(32, 32)))
 			{
@@ -314,7 +351,7 @@ void Player::playerFalling(int deltaTime)
 		playerVelocity.y = 0;
 		if (Game::instance().getKey(GLFW_KEY_W))
 		{
-			Jumping = true;
+			playerState.Jumping = true;
 			jumpAngle = 0;
 			startY = int(posPlayer.y);
 		}
@@ -324,22 +361,22 @@ void Player::playerFalling(int deltaTime)
 void Player::playerKey_W(int deltaTime) {
 	// fet per l'escala, adaptar metodes per quan tinguem objectes que no es poden traspassar
 	if (map->ladderCollision(posPlayer, glm::vec2(32, 32))) {
-		Climbing = true;
-		Jumping = false;
-		if (!isOnLadderTop) {
+		playerState.Climbing = true;
+		playerState.Jumping = false;
+		if (!playerState.isOnLadderTop) {
 			playerVelocity.y = 0.1 * deltaTime;
 			posPlayer.y -= playerVelocity.y;
 			if (sprite->animation() != CLIMB) sprite->changeAnimation(CLIMB);
 			if (map->isOnLadderTop(posPlayer, glm::vec2(32, 32))) {
-				isOnLadderTop = true;
+				playerState.isOnLadderTop = true;
 				playerVelocity.y = 0;
 				//cout << "on top of the ladder" << endl;
 			}
 		}
 	}
 	else {
-		Climbing = false;
-		isOnLadderTop = false;
+		playerState.Climbing = false;
+		playerState.isOnLadderTop = false;
 		switch (sprite->animation()) {
 		case MOVE_LEFT:
 			sprite->changeAnimation(JUMP_LEFT);
@@ -377,20 +414,20 @@ void Player::playerKey_W(int deltaTime) {
 			sprite->changeAnimation(JUMP_RIGHT);
 			break;
 		}
-		playerVelocity.y = 96 * sin(3.14159f * jumpAngle / 180.f);
+		playerVelocity.y = JUMP_HEIGHT * sin(3.14159f * jumpAngle / 180.f);
 		jumpAngle += JUMP_ANGLE_STEP;
 		if (jumpAngle == 180)
 		{
-			Jumping = false;
+			playerState.Jumping = false;
 			posPlayer.y = startY;
 		}
 		else
 		{
-			posPlayer.y = startY - 96 * sin(3.14159f * jumpAngle / 180.f);
+			posPlayer.y = startY - playerVelocity.y;
 			if (jumpAngle > 90)
-				Jumping = !map->collisionMoveDown(posPlayer, glm::ivec2(32, 32), &posPlayer.y);
+				playerState.Jumping = (!map->collisionMoveDown(posPlayer, glm::ivec2(32, 32), &posPlayer.y));
 			if (jumpAngle <= 90) {	// player going up
-				Jumping = !map->collisionMoveUp(posPlayer, glm::ivec2(32, 32), &posPlayer.y);
+				playerState.Jumping = !map->collisionMoveUp(posPlayer, glm::ivec2(32, 32), &posPlayer.y);
 			}
 		}
 	}
@@ -399,14 +436,14 @@ void Player::playerKey_W(int deltaTime) {
 void Player::playerKey_S(int deltaTime)
 {
 	if (map->ladderCollision(posPlayer, glm::vec2(32,32))) {
-		Climbing = true;
+		playerState.Climbing = true;
 	}
-	if (isOnLadderTop) {
-		Climbing = true;
-		isOnLadderTop = false;
-		Jumping = false;
+	if (playerState.isOnLadderTop) {
+		playerState.Climbing = true;
+		playerState.isOnLadderTop = false;
+		playerState.Jumping = false;
 	}
-	if (Climbing) {
+	if (playerState.Climbing) {
 		playerVelocity.y = 0.1f * deltaTime;
 		posPlayer.y += playerVelocity.y;
 
@@ -414,7 +451,7 @@ void Player::playerKey_S(int deltaTime)
 			sprite->changeAnimation(CLIMB);
 		}
 		if (map->isOnLadderBottom(posPlayer, glm::vec2(32, 32))) {
-			Climbing = false;
+			playerState.Climbing = false;
 			playerVelocity.y = 0;
 			//cout << "on BOTTOM of the ladder" << endl;
 		}
@@ -425,6 +462,27 @@ void Player::playerKey_S(int deltaTime)
 
 	else if (sprite->animation() == JUMP_LEFT) sprite->changeAnimation(FALL_LEFT);
 	else if (sprite->animation() == JUMP_RIGHT) sprite->changeAnimation(FALL_RIGHT);
+}
+
+void Player::playerPickObject(int deltaTime) {
+	playerState.PickingObject = !playerState.PickingObject;
+	int objectIndex = map -> pickingObject(posPlayer, glm::vec2(32,32));
+	
+	cout << "Object index: " << objectIndex << endl;
+	if (objectIndex != -1) {
+		objectPickedUp = map->getDynamicObject(objectIndex);
+		objectPickedUp->pickObject();
+		if (sprite->animation() == MOVE_LEFT || sprite->animation() == STAND_LEFT || sprite->animation() == HELLO_LEFT || sprite->animation() == STOPPING_LEFT) sprite->changeAnimation(PICKING_LEFT);
+		else if (sprite->animation() == MOVE_RIGHT || sprite->animation() == STAND_RIGHT || sprite->animation() == HELLO_RIGHT || sprite->animation() == STOPPING_RIGHT) sprite->changeAnimation(PICKING_RIGHT);
+	}
+}
+
+void Player::playerDropObject(int deltaTime) {
+	playerState.PickingObject = !playerState.PickingObject;
+	objectPickedUp->dropObject();
+	objectPickedUp = nullptr;
+	if (sprite->animation() == PICKING_LEFT) sprite->changeAnimation(STAND_LEFT);
+	else if (sprite->animation() == PICKING_RIGHT) sprite->changeAnimation(STAND_RIGHT);
 }
 
 
