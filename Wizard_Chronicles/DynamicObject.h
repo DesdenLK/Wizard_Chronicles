@@ -27,19 +27,22 @@ protected:
 	TileMap* map;
 
 public:
-	void init(string pathToFile, float x, float y, float w, float h, glm::vec2 quadSize, int spriteWidth, int spriteHeight, glm::vec2 offSet, ShaderProgram& shaderProgram, TileMap *map);
-	//void update(int deltaTime);
+	virtual void init(string pathToFile, float x, float y, float w, float h, glm::vec2 quadSize, float spriteWidth, float spriteHeight, glm::vec2 offSet, ShaderProgram& shaderProgram, TileMap *map) = 0;
+
 	void render();
 	void update(int deltaTime);
 
 	void objectFalling();
 	void objectJump();
 
+	//virtual void setAnimations();
+
+
 
 	glm::vec2 getSpeed() const;
 
 	void pickObject();
-	void dropObject();
+	void dropObject(float XSpeed);
 	//void throwObject();
 
 

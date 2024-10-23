@@ -3,12 +3,14 @@
 #include "TileMap.h"
 
 
-void DynamicObject::init(string pathToFile, float x, float y, float w, float h, glm::vec2 quadSize, int spriteWidth, int spriteHeight, glm::vec2 offSet, ShaderProgram& shaderProgram, TileMap *map)
+/*
+void DynamicObject::init(string pathToFile, float x, float y, float w, float h, glm::vec2 quadSize, float spriteWidth, float spriteHeight, glm::vec2 offSet, ShaderProgram& shaderProgram, TileMap *map)
 {
 	posicio = glm::vec2(x, y);
 	measures = glm::vec2(w, h);
 	this -> spriteOffset = offSet;
 	this->map = map;
+
 
 	objectState = { false, false };
 
@@ -20,6 +22,7 @@ void DynamicObject::init(string pathToFile, float x, float y, float w, float h, 
 	sprite->setPosition(posicio);
 
 }
+*/
 
 void DynamicObject::update(int deltaTime)
 {
@@ -32,6 +35,7 @@ void DynamicObject::update(int deltaTime)
 	
 	sprite->update(deltaTime);
 	sprite->setPosition(posicio);
+	//cout << "X: " << posicio.x << " Y: " << posicio.y << endl;
 }
 
 void DynamicObject::render()
@@ -49,20 +53,28 @@ void DynamicObject::pickObject()
 	objectState.pickedUp = true;
 }
 
-void DynamicObject::dropObject()
+void DynamicObject::dropObject(float XSpeed)
 {
 	objectState.pickedUp = false;
 	objectState.Jumping = true;
 	jumpAngle = 0;
 	startY = posicio.y;
+	speed.x = XSpeed;
 }
 
 void DynamicObject::objectFalling()
 {
 	posicio.y += FALL_STEP;
 	speed.y = FALL_STEP;
+
+	if (speed.x > 0 and map->collisionMoveRight(posicio, measures)) speed.x = 0;
+	else if (speed.x < 0 and map->collisionMoveLeft(posicio, measures)) speed.x = 0;
+
+	posicio.x += speed.x;
 	if (map->collisionMoveDown(posicio, measures, &posicio.y))
 	{
+		//cout << "collision detected" << endl;
+		speed.x = 0;
 		speed.y = 0;
 	}
 }
@@ -71,6 +83,11 @@ void DynamicObject::objectJump()
 {
 	speed.y = JUMP_HEIGHT * sin(3.14159f * jumpAngle / 180.f);
 	jumpAngle += JUMP_ANGLE_STEP;
+
+	if (speed.x > 0 and map->collisionMoveRight(posicio, measures)) speed.x = 0;
+	else if (speed.x < 0 and map->collisionMoveLeft(posicio, measures)) speed.x = 0;
+	posicio.x += speed.x;
+
 	if (jumpAngle == 180)
 	{
 		objectState.Jumping = false;

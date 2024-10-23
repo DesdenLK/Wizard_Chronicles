@@ -16,7 +16,9 @@
 enum PlayerAnims
 {
 	HELLO_LEFT, HELLO_RIGHT, STAND_LEFT, STAND_RIGHT, MOVE_LEFT, MOVE_RIGHT, STOPPING_LEFT, STOPPING_RIGHT, 
-	JUMP_LEFT, JUMP_RIGHT, FALL_LEFT, FALL_RIGHT, CROUCH_LEFT, CROUCH_RIGHT, CLIMB, PICKING_LEFT, PICKING_RIGHT, NUM_ANIMS
+	JUMP_LEFT, JUMP_RIGHT, FALL_LEFT, FALL_RIGHT, CROUCH_LEFT, CROUCH_RIGHT, CLIMB, PICKING_LEFT, PICKING_RIGHT,
+	STAND_LEFT_OBJECT,STAND_RIGHT_OBJECT,
+	MOVING_LEFT_OBJECT, MOVING_RIGHT_OBJECT, NUM_ANIMS
 };
 
 
@@ -48,6 +50,7 @@ void Player::update(int deltaTime)
 	if (objectPickedUp != nullptr) {
 		objectPickedUp->update(deltaTime);
 		objectPickedUp->setPosicio(glm::vec2(posPlayer.x + 5, posPlayer.y - objectPickedUp->getMeasures().y));
+		//cout << "Object position: " << objectPickedUp->getPosicio().x << " " << objectPickedUp->getPosicio().y << endl;
 	}
 	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
 
@@ -171,18 +174,53 @@ void Player::setAnimations() {
 	sprite->addKeyframe(CLIMB, glm::vec2(4 * SPRITE_WIDTH, 2*SPRITE_HEIGHT));
 
 	//PICKING_OBJECT_LEFT
-	sprite->setAnimationSpeed(PICKING_LEFT, 1);
+	sprite->setAnimationSpeed(PICKING_LEFT, 8);
 	sprite->addKeyframe(PICKING_LEFT, glm::vec2(10 * SPRITE_WIDTH, 0.f));
 	sprite->addKeyframe(PICKING_LEFT, glm::vec2(10 * SPRITE_WIDTH, SPRITE_HEIGHT));
 	sprite->addKeyframe(PICKING_LEFT, glm::vec2(10 * SPRITE_WIDTH, 2 * SPRITE_HEIGHT));
 	sprite->addKeyframe(PICKING_LEFT, glm::vec2(10 * SPRITE_WIDTH, 3 * SPRITE_HEIGHT));
 
 	//PICKING_OBJECT_RIGHT
-	sprite->setAnimationSpeed(PICKING_RIGHT, 1);
+	sprite->setAnimationSpeed(PICKING_RIGHT, 8);
 	sprite->addKeyframe(PICKING_RIGHT, glm::vec2(9 * SPRITE_WIDTH, 0.f));
 	sprite->addKeyframe(PICKING_RIGHT, glm::vec2(9 * SPRITE_WIDTH, SPRITE_HEIGHT));
 	sprite->addKeyframe(PICKING_RIGHT, glm::vec2(9 * SPRITE_WIDTH, 2 * SPRITE_HEIGHT));
 	sprite->addKeyframe(PICKING_RIGHT, glm::vec2(9 * SPRITE_WIDTH, 3 * SPRITE_HEIGHT));
+
+	//STANDING_LEFT_OBJECT
+	sprite->setAnimationSpeed(STAND_LEFT_OBJECT, 8);
+	sprite->addKeyframe(STAND_LEFT_OBJECT, glm::vec2(10 * SPRITE_WIDTH, 4 * SPRITE_HEIGHT));
+	sprite->addKeyframe(STAND_LEFT_OBJECT, glm::vec2(10 * SPRITE_WIDTH, 5 * SPRITE_HEIGHT));
+
+	//STANDING_RIGHT_OBJECT
+	sprite->setAnimationSpeed(STAND_RIGHT_OBJECT, 8);
+	sprite->addKeyframe(STAND_RIGHT_OBJECT, glm::vec2(9 * SPRITE_WIDTH, 4 * SPRITE_HEIGHT));
+	sprite->addKeyframe(STAND_RIGHT_OBJECT, glm::vec2(9 * SPRITE_WIDTH, 5 * SPRITE_HEIGHT));
+
+
+	//MOVING_LEFT_OBJECT
+	sprite->setAnimationSpeed(MOVING_LEFT_OBJECT, 8);
+	sprite->addKeyframe(MOVING_LEFT_OBJECT, glm::vec2(14 * SPRITE_WIDTH, 0.f));
+	sprite->addKeyframe(MOVING_LEFT_OBJECT, glm::vec2(14 * SPRITE_WIDTH, SPRITE_HEIGHT));
+	sprite->addKeyframe(MOVING_LEFT_OBJECT, glm::vec2(14 * SPRITE_WIDTH, 2 * SPRITE_HEIGHT));
+	sprite->addKeyframe(MOVING_LEFT_OBJECT, glm::vec2(14 * SPRITE_WIDTH, 3 * SPRITE_HEIGHT));
+	sprite->addKeyframe(MOVING_LEFT_OBJECT, glm::vec2(14 * SPRITE_WIDTH, 4 * SPRITE_HEIGHT));
+	sprite->addKeyframe(MOVING_LEFT_OBJECT, glm::vec2(14 * SPRITE_WIDTH, 5 * SPRITE_HEIGHT));
+	sprite->addKeyframe(MOVING_LEFT_OBJECT, glm::vec2(14 * SPRITE_WIDTH, 6 * SPRITE_HEIGHT));
+	sprite->addKeyframe(MOVING_LEFT_OBJECT, glm::vec2(14 * SPRITE_WIDTH, 7 * SPRITE_HEIGHT));
+
+	//MOVING_RIGHT_OBJECT
+	sprite->setAnimationSpeed(MOVING_RIGHT_OBJECT, 8);
+	sprite->addKeyframe(MOVING_RIGHT_OBJECT, glm::vec2(13 * SPRITE_WIDTH, 0.f));
+	sprite->addKeyframe(MOVING_RIGHT_OBJECT, glm::vec2(13 * SPRITE_WIDTH, SPRITE_HEIGHT));
+	sprite->addKeyframe(MOVING_RIGHT_OBJECT, glm::vec2(13 * SPRITE_WIDTH, 2 * SPRITE_HEIGHT));
+	sprite->addKeyframe(MOVING_RIGHT_OBJECT, glm::vec2(13 * SPRITE_WIDTH, 3 * SPRITE_HEIGHT));
+	sprite->addKeyframe(MOVING_RIGHT_OBJECT, glm::vec2(13 * SPRITE_WIDTH, 4 * SPRITE_HEIGHT));
+	sprite->addKeyframe(MOVING_RIGHT_OBJECT, glm::vec2(13 * SPRITE_WIDTH, 5 * SPRITE_HEIGHT));
+	sprite->addKeyframe(MOVING_RIGHT_OBJECT, glm::vec2(13 * SPRITE_WIDTH, 6 * SPRITE_HEIGHT));
+	sprite->addKeyframe(MOVING_RIGHT_OBJECT, glm::vec2(13 * SPRITE_WIDTH, 7 * SPRITE_HEIGHT));
+	
+
 
 
 	sprite->changeAnimation(2);
@@ -229,7 +267,11 @@ void Player::playerKey_A(int deltaTime) {
 	posPlayer.x -= playerVelocity.x;
 
 	if (!playerState.Jumping) {
-		if (sprite->animation() != MOVE_LEFT) sprite->changeAnimation(MOVE_LEFT);
+		if (sprite->animation() != MOVE_LEFT and objectPickedUp == nullptr) sprite->changeAnimation(MOVE_LEFT);
+		else if (sprite->animation() != MOVING_LEFT_OBJECT and objectPickedUp != nullptr)  sprite->changeAnimation(MOVING_LEFT_OBJECT);
+	}
+	else {
+		if (sprite->animation() != JUMP_LEFT) sprite->changeAnimation(JUMP_LEFT);
 	}
 
 	// Poisicio final
@@ -257,7 +299,12 @@ void Player::playerKey_D(int deltaTime) {
 	posPlayer.x += playerVelocity.x;
 
 	if (!playerState.Jumping) {
-		if (sprite->animation() != MOVE_RIGHT) sprite->changeAnimation(MOVE_RIGHT);
+		if (sprite->animation() != MOVE_RIGHT and objectPickedUp == nullptr) sprite->changeAnimation(MOVE_RIGHT);
+		else if (sprite->animation() != MOVING_RIGHT_OBJECT and objectPickedUp != nullptr)  sprite->changeAnimation(MOVING_RIGHT_OBJECT);
+
+	}
+	else {
+		if (sprite->animation() != JUMP_RIGHT) sprite->changeAnimation(JUMP_RIGHT);
 	}
 	// Poisicio final
 	glm::vec2 targetPosPlayer = posPlayer;
@@ -333,6 +380,15 @@ void Player::playerNOKeys(int deltaTime) {
 		case CROUCH_RIGHT:
 			sprite->changeAnimation(STAND_RIGHT);
 			break;
+
+		case PICKING_LEFT:
+			sprite->changeAnimation(STAND_LEFT_OBJECT);
+			break;
+		
+		case MOVING_LEFT_OBJECT:
+			sprite->changeAnimation(STAND_LEFT_OBJECT);
+			break;
+
 
 		default:
 			break;
@@ -479,7 +535,10 @@ void Player::playerPickObject(int deltaTime) {
 
 void Player::playerDropObject(int deltaTime) {
 	playerState.PickingObject = !playerState.PickingObject;
-	objectPickedUp->dropObject();
+
+	if (sprite->animation() == JUMP_LEFT or sprite->animation() == MOVING_LEFT_OBJECT) objectPickedUp->dropObject(-playerVelocity.x);
+	else if (sprite->animation() == JUMP_RIGHT or sprite->animation() == MOVING_RIGHT_OBJECT) objectPickedUp->dropObject(playerVelocity.x);
+	else objectPickedUp->dropObject(0);
 	objectPickedUp = nullptr;
 	if (sprite->animation() == PICKING_LEFT) sprite->changeAnimation(STAND_LEFT);
 	else if (sprite->animation() == PICKING_RIGHT) sprite->changeAnimation(STAND_RIGHT);

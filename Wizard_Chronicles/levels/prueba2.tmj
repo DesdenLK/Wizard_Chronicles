@@ -178,13 +178,13 @@
                  "y":495
                 }, 
                 {
-                 "height":11.2121212121213,
+                 "height":15,
                  "id":15,
                  "name":"Barrel",
                  "rotation":0,
                  "type":"Barrel",
                  "visible":true,
-                 "width":23.6666666666666,
+                 "width":15,
                  "x":708.30303030303,
                  "y":500.030303030302
                 }],

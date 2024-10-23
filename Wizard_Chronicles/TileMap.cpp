@@ -105,7 +105,7 @@ void TileMap::initDynamicObjects(const nlohmann::json& j, ShaderProgram &program
 		cout << obj["type"] << endl;
 		if (obj["type"] == "Box") {
 			DynamicObjectBox *box = new DynamicObjectBox();
-			box -> init("images/DynamicObjects/Box.png", float(obj["x"]),  float(obj["y"]), float(obj["width"]), float(obj["height"]), glm::vec2(int(obj["width"]), int(obj["height"])), 1, 1, glm::vec2(0, 0), program, this);
+			box -> init("images/DynamicObjects/Box.png", float(obj["x"]),  float(obj["y"]), float(obj["width"]), float(obj["height"]), glm::vec2(int(obj["width"]), int(obj["height"])), 0.2, 1, glm::vec2(0, 0), program, this);
 
 			//cout << int(obj["width"]) << " " << int(obj["height"]) << endl;
 
@@ -114,7 +114,7 @@ void TileMap::initDynamicObjects(const nlohmann::json& j, ShaderProgram &program
 		}
 
 		else if (obj["type"] == "Barrel") {
-			dynamicObjects[i] = new DynamicObject();
+			dynamicObjects[i] = new DynamicObjectBox();
 			dynamicObjects[i] -> init("images/DynamicObjects/Barrel.png", float(obj["x"]), float(obj["y"]), float(obj["width"]), float(obj["height"]), glm::vec2(float(obj["width"]), float(obj["height"])), 1, 1, glm::vec2(0,0), program, this);
 
 		}
