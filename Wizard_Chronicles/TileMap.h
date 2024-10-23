@@ -41,6 +41,9 @@ public:
 	bool ladderCollision(const glm::vec2& pos, const glm::vec2& size);
 	bool isOnLadderTop(const glm::vec2& posPlayer, const glm::vec2& PlayerSize);
 	bool isOnLadderBottom(const glm::vec2& posPlayer, const glm::vec2& PlayerSize);
+	bool lateralCollisionWithEnemy(const glm::vec2& posPlayer, const glm::vec2& playerSize);
+	int verticalCollisionWithEnemy(const glm::vec2& posPlayer, const glm::vec2& playerSize);
+	void eraseEnemy(int enemyId);
 	void update(int deltaTime);
 	
 private:
@@ -49,12 +52,14 @@ private:
 	void addTileVertices(vector<float>& vertices, const glm::vec2& posTile, const glm::vec2 texCoordTile[2]);
 	void createVAO(GLuint& vao, GLuint& vbo, const std::vector<float>& vertices, ShaderProgram& program);
 	bool boundingBoxCollision(glm::vec2 coordsMin1, glm::vec2 widthHeight1, glm::vec2 coordsMin2, glm::vec2 widthHeight2);
+	bool lateralBoxCollision(glm::vec2 coordsMin1, glm::vec2 widthHeight1, glm::vec2 coordsMin2, glm::vec2 widthHeight2);
+	bool verticalBoxCollision(glm::vec2 coordsMin1, glm::vec2 widthHeight1, glm::vec2 coordsMin2, glm::vec2 widthHeight2);
 
 private:
 	GLuint vaoBackground, vaoMiddle, vaoForeground;
 	GLuint vboBackground, vboMiddle, vboForeground;
 	GLint posLocation, texCoordLocation;
-	//ShaderProgram* program;
+	ShaderProgram *program;
 
 	int nBackgroundTiles, nMiddleTiles, nForegroundTiles;
 
@@ -65,7 +70,9 @@ private:
 
 	int* map, * background, * middle, * foreground;
 	vector<std::map<string,string>>* objects;
-	vector<Enemy*> enemies;
+	std::map<int,Enemy*> enemies;		//(id_enemic,enemic)
+
+	int enemyToErase = -1, eraseAnimationTime;
 };
 
 

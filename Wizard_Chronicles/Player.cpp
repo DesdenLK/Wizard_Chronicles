@@ -12,11 +12,13 @@
 #define SPRITE_WIDTH 1/20.f
 #define SPRITE_HEIGHT 1/16.f
 
+#define HURT_TIME 1000 //in ms
+
 
 enum PlayerAnims
 {
 	HELLO_LEFT, HELLO_RIGHT, STAND_LEFT, STAND_RIGHT, MOVE_LEFT, MOVE_RIGHT, STOPPING_LEFT, STOPPING_RIGHT, 
-		JUMP_LEFT, JUMP_RIGHT, FALL_LEFT, FALL_RIGHT, CROUCH_LEFT, CROUCH_RIGHT, CLIMB, NUM_ANIMS
+		JUMP_LEFT, JUMP_RIGHT, FALL_LEFT, FALL_RIGHT, CROUCH_LEFT, CROUCH_RIGHT, CLIMB, /*HURT,*/ NUM_ANIMS
 };
 
 
@@ -40,6 +42,13 @@ void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 
 void Player::update(int deltaTime)
 {
+	if (isHurt) {
+		hurtTime -= deltaTime;
+		if (hurtTime <= 0) {
+			sprite->setAlpha(1.f);
+			isHurt = false;
+		}
+	}
 	sprite->update(deltaTime);
 	updatePlayerMovement(deltaTime);
 	
@@ -48,7 +57,9 @@ void Player::update(int deltaTime)
 
 void Player::render()
 {
+	if (isHurt) sprite->setAlpha(0.3f);
 	sprite->render();
+	sprite->setAlpha(1.f);
 }
 
 void Player::setTileMap(TileMap *tileMap)
@@ -161,6 +172,12 @@ void Player::setAnimations() {
 	sprite->addKeyframe(CLIMB, glm::vec2(4 * SPRITE_WIDTH, SPRITE_HEIGHT));
 	sprite->addKeyframe(CLIMB, glm::vec2(4 * SPRITE_WIDTH, 2*SPRITE_HEIGHT));
 
+	//HURT
+	/*sprite->setAnimationSpeed(HURT, 4);
+	sprite->addKeyframe(HURT, glm::vec2(4 * SPRITE_WIDTH, 0.0f));
+	sprite->addKeyframe(HURT, glm::vec2(4 * SPRITE_WIDTH, SPRITE_HEIGHT));
+	sprite->addKeyframe(HURT, glm::vec2(4 * SPRITE_WIDTH, 2 * SPRITE_HEIGHT));*/
+
 	sprite->changeAnimation(2);
 }
 
@@ -183,8 +200,6 @@ void Player::updatePlayerMovement(int deltaTime) {
 	if (Game::instance().getKey(GLFW_KEY_S)) PlayerKey_S(deltaTime);
 
 	if (!KeysPressed) PlayerNOKeys(deltaTime);
-	
-
 }
 
 void Player::PlayerKey_A(int deltaTime) {
@@ -193,6 +208,11 @@ void Player::PlayerKey_A(int deltaTime) {
 	//cout << "A: " << PlayerVelocity.x << endl;
 	glm::vec2 initialPosPlayer = posPlayer;
 	posPlayer.x -= PlayerVelocity.x;
+
+	if (map->lateralCollisionWithEnemy(posPlayer, glm::vec2(32, 32))) {
+		isHurt = true;
+		hurtTime = HURT_TIME;
+	}
 
 	if (!Jumping) {
 		if (sprite->animation() != MOVE_LEFT) sprite->changeAnimation(MOVE_LEFT);
@@ -220,6 +240,11 @@ void Player::PlayerKey_D(int deltaTime) {
 	glm::vec2 initialPosPlayer = posPlayer;
 	posPlayer.x += PlayerVelocity.x;
 
+	if (map->lateralCollisionWithEnemy(posPlayer, glm::vec2(32, 32))) {
+		isHurt = true;
+		hurtTime = HURT_TIME;
+	}
+
 	if (!Jumping) {
 		if (sprite->animation() != MOVE_RIGHT) sprite->changeAnimation(MOVE_RIGHT);
 	}
@@ -238,6 +263,10 @@ void Player::PlayerKey_D(int deltaTime) {
 }
 
 void Player::PlayerNOKeys(int deltaTime) {
+	if (map->lateralCollisionWithEnemy(posPlayer, glm::vec2(32, 32))) {
+		isHurt = true;
+		hurtTime = HURT_TIME;
+	}
 	switch (sprite->animation()) {
 
 		case STAND_LEFT:
@@ -306,6 +335,11 @@ void Player::PlayerFalling(int deltaTime)
 {
 	posPlayer.y += FALL_STEP;
 	PlayerVelocity.y = FALL_STEP;
+
+	/*if (map->lateralCollisionWithEnemy(posPlayer, glm::vec2(32, 32))) {
+		isHurt = true;
+		hurtTime = HURT_TIME;
+	}*/
 	if (map->collisionMoveDown(posPlayer, glm::ivec2(32, 32), &posPlayer.y))
 	{
 		if (sprite->animation() == FALL_LEFT || sprite->animation() == JUMP_LEFT) sprite->changeAnimation(STAND_LEFT);
@@ -425,6 +459,16 @@ void Player::PlayerKey_S(int deltaTime)
 
 	else if (sprite->animation() == JUMP_LEFT) sprite->changeAnimation(FALL_LEFT);
 	else if (sprite->animation() == JUMP_RIGHT) sprite->changeAnimation(FALL_RIGHT);
+
+	if (sprite->animation() == FALL_LEFT or sprite->animation() == FALL_RIGHT) {
+		int collidedEnemyId = map->verticalCollisionWithEnemy(posPlayer, glm::vec2(32, 32));
+		if (collidedEnemyId != -1) {
+			map->eraseEnemy(collidedEnemyId);
+			posPlayer.y -= PlayerVelocity.y;
+			sprite->changeAnimation(STAND_RIGHT);
+			// sumar punts al Player
+		}
+	}
 }
 
 

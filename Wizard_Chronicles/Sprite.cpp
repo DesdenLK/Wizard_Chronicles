@@ -7,6 +7,7 @@
 Sprite *Sprite::createSprite(const glm::vec2 &quadSize, const glm::vec2 &sizeInSpritesheet, Texture *spritesheet, ShaderProgram *program)
 {
 	Sprite *quad = new Sprite(quadSize, sizeInSpritesheet, spritesheet, program);
+	quad->setAlpha(1.f);
 
 	return quad;
 }
@@ -53,6 +54,7 @@ void Sprite::render() const
 	glm::mat4 modelview = glm::translate(glm::mat4(1.0f), glm::vec3(position.x, position.y, 0.f));
 	shaderProgram->setUniformMatrix4f("modelview", modelview);
 	shaderProgram->setUniform2f("texCoordDispl", texCoordDispl.x, texCoordDispl.y);
+	shaderProgram->setUniform2f("alpha", alpha, alpha);
 	glEnable(GL_TEXTURE_2D);
 	texture->use();
 	glBindVertexArray(vao);
@@ -66,6 +68,11 @@ void Sprite::free()
 {
 	glDeleteBuffers(1, &vbo);
 }
+
+void Sprite::setAlpha(float alpha) {
+	this->alpha = alpha;
+}
+
 
 void Sprite::setNumberAnimations(int nAnimations)
 {

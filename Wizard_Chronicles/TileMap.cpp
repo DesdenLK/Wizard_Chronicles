@@ -18,6 +18,7 @@ TileMap *TileMap::createTileMap(const string &levelFile, const glm::vec2 &minCoo
 
 TileMap::TileMap(const string &levelFile, const glm::vec2 &minCoords, ShaderProgram &program)
 {
+	this->program = &program;
 	loadLevel(levelFile, program);
 	prepareArrays(minCoords, program);
 }
@@ -37,8 +38,23 @@ TileMap::~TileMap()
 }
 
 
+void TileMap::update(int deltaTime) {
+	if (enemyToErase != -1) {
+		eraseAnimationTime -= deltaTime;
+		if (eraseAnimationTime <= 0) {
+			enemies.erase(enemyToErase);
+			enemyToErase = -1;
+		}
+	}
+	for (auto& enemy : enemies) {
+		enemy.second->update(deltaTime);
+	}
+}
+
+
 void TileMap::render() const
 {
+	program->setUniform2f("alpha",1.f,1.f);
 	glEnable(GL_TEXTURE_2D);
 	tilesheet.use();
 
@@ -63,7 +79,7 @@ void TileMap::render() const
 	glDisable(GL_TEXTURE_2D);
 
 	for (auto& enemy : enemies) {
-		enemy->render();
+		enemy.second->render();
 	}
 }
 
@@ -113,7 +129,7 @@ bool TileMap::loadLevel(const string& levelFile, ShaderProgram& program)
 	middle = new int[mapSize.x * mapSize.y];
 	foreground = new int[mapSize.x * mapSize.y];
 	objects = new vector<std::map<string, string>>();
-	enemies = vector<Enemy*>();
+	enemies = std::map<int,Enemy*>();
 
 	copy(background_json.begin(), background_json.end(), background);
 	copy(middle_json.begin(), middle_json.end(), middle);
@@ -133,11 +149,13 @@ bool TileMap::loadLevel(const string& levelFile, ShaderProgram& program)
 	for (const auto& objEnemy : enemies_json) {
 		glm::vec2 enemyStartPos = glm::vec2(0.f, 0.f);
 		glm::vec2 enemyBoundingBoxWH = glm::vec2(0.f, 0.f);
+		int enemyId = 0;
 		for (auto it = objEnemy.begin(); it != objEnemy.end(); ++it) {
 			if (it.key() == "x") enemyStartPos[0] = std::stof((string)it.value().dump());
 			else if (it.key() == "y") enemyStartPos[1] = std::stof((string)it.value().dump());
 			else if (it.key() == "width") enemyBoundingBoxWH[0] = std::stof((string)it.value().dump());
 			else if (it.key() == "height") enemyBoundingBoxWH[1] = std::stof((string)it.value().dump());
+			else if (it.key() == "id") enemyId = std::stoi((string)it.value().dump());
 		}
 
 		for (auto it = objEnemy.begin(); it != objEnemy.end(); ++it) {
@@ -145,11 +163,11 @@ bool TileMap::loadLevel(const string& levelFile, ShaderProgram& program)
 			if (it.key() == "type") {
 				if ((string)it.value().dump() == "\"Caterpillar\"") {
 					CaterpillarEnemy* caterpillar = new CaterpillarEnemy();
-					caterpillar->init(glm::ivec2(0,16), program, "images/enemics/caterpillar/spriteCaterpillarAmplifiedAlpha.png", glm::ivec2(25, 25), glm::vec2((1.f / 6.f), 1.f), enemyBoundingBoxWH);
+					caterpillar->init(enemyId,glm::ivec2(0,16), program, "images/enemics/caterpillar/spriteCaterpillarAmplifiedAlpha.png", glm::ivec2(25, 25), glm::vec2((1.f / 6.f), 1.f), enemyBoundingBoxWH, 1000);
 					caterpillar->setPosition(enemyStartPos);
 					caterpillar->setTileMap(this);
 					cout << "enemy start pos: " << '(' << enemyStartPos[0] << ',' << enemyStartPos[1] << ')' << endl;
-					enemies.push_back(caterpillar);
+					enemies.insert(std::make_pair(enemyId,caterpillar));
 				}
 				// afegir tipus enemics
 			}
@@ -357,6 +375,28 @@ bool TileMap::boundingBoxCollision(glm::vec2 coordsMin1, glm::vec2 widthHeight1,
 	return true;
 }
 
+bool TileMap::lateralCollisionWithEnemy(const glm::vec2& posPlayer, const glm::vec2& playerSize) {
+	for (auto& enemy : enemies) {
+		glm::vec2 enemyPos = enemy.second->getPosition();
+		glm::vec2 widthHeightEnemyBox = enemy.second->getBoundingBoxWH();
+		if (lateralBoxCollision(enemyPos,widthHeightEnemyBox,posPlayer,playerSize)) return true;
+	}
+	return false;
+}
+
+int TileMap::verticalCollisionWithEnemy(const glm::vec2& posPlayer, const glm::vec2& playerSize) {
+	for (auto& enemy : enemies) {
+		glm::vec2 enemyPos = enemy.second->getPosition();
+		glm::vec2 widthHeightEnemyBox = enemy.second->getBoundingBoxWH();
+		//cout << "possible collision with Player=(" << posPlayer.x << ',' << posPlayer.y << ",32,32) i Enemic (" << enemyPos.x << ',' << enemyPos.y << ',' << widthHeightEnemyBox[0] << ',' << widthHeightEnemyBox[1] << ')' << endl;
+		if (verticalBoxCollision(posPlayer, playerSize, enemyPos, widthHeightEnemyBox)) {
+			//cout << "vertical collision with enemy: " << endl;
+			return enemy.second->getId();
+		}
+	}
+	return -1;
+}
+
 bool TileMap::ladderCollision(const glm::vec2& pos, const glm::vec2& size)
 {
 	for (const auto& obj : *objects) {
@@ -388,14 +428,25 @@ bool TileMap::isOnLadderBottom(const glm::vec2& posPlayer, const glm::vec2& Play
 	return posPlayer.y + PlayerSize.y  >= std::stof(ladderObj.at("y")) + std::stof(ladderObj.at("height"));
 }
 
-void TileMap::update(int deltaTime) {
-	for (auto& enemy : enemies) {
-		enemy->update(deltaTime);
-	}
+bool TileMap::lateralBoxCollision(glm::vec2 coordsMin1, glm::vec2 widthHeight1, glm::vec2 coordsMin2, glm::vec2 widthHeight2) {
+	bool overlapX = (coordsMin1.x < coordsMin2.x + widthHeight2[0]) && (coordsMin1.x + widthHeight1[0] > coordsMin2.x);
+	bool overlapY = (coordsMin1.y < coordsMin2.y + widthHeight2[1]) && (coordsMin1.y + widthHeight1[1] > coordsMin2.y);
+	return overlapX && overlapY;
 }
 
+bool TileMap::verticalBoxCollision(glm::vec2 coordsMin1, glm::vec2 widthHeight1, glm::vec2 coordsMin2, glm::vec2 widthHeight2) {
+	bool overlapX = (coordsMin1.x < coordsMin2.x + widthHeight2[0]) && (coordsMin1.x + widthHeight2[0] > coordsMin2.x);
+	bool verticalCollisionFromAbove = (coordsMin1.y + widthHeight1[1] >= coordsMin2.y) && (coordsMin1.y < coordsMin2.y);
+	//cout << "overlap en x: " << overlapX << " overlap en y: " << verticalCollisionFromAbove << endl;
+	return overlapX && verticalCollisionFromAbove;
+}
 
-
+void TileMap::eraseEnemy(int enemyId) {
+	auto& enemy = enemies[enemyId];
+	enemy->changeToDeadAnimation();
+	enemyToErase = enemyId;
+	eraseAnimationTime = enemy->getEraseAnimationTime();
+}
 
 
 

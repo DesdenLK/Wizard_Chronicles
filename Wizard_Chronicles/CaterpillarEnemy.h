@@ -9,6 +9,8 @@ class CaterpillarEnemy :
 public:
     void updateEnemyMovement(int deltaTime) override;
     void setAnimations() override;
+    void changeToDeadAnimation() override;
+    int getEraseAnimationTime() override;
 };
 
 #endif

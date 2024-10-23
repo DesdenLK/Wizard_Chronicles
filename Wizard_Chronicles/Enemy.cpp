@@ -13,8 +13,10 @@
 #define INI_VELOCITY_Y 0
 
 
-void Enemy::init(const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram, string pathToSpritesheet, const glm::ivec2& spriteDimensions, const glm::vec2& spriteWidthHeight, const glm::vec2& hitboxWH)
+void Enemy::init(int id, const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram, string pathToSpritesheet, const glm::ivec2& spriteDimensions, const glm::vec2& spriteWidthHeight, const glm::vec2& hitboxWH, int eraseAnimTime)
 {
+	this->id = id;
+	eraseAnimationTime = eraseAnimTime;
 	boundingBoxWidthHeight = hitboxWH;
 	Jumping = false;
 	loopTimesInactive = 0;
@@ -49,6 +51,10 @@ void Enemy::render()
 void Enemy::setTileMap(TileMap* tileMap)
 {
 	map = tileMap;
+}
+
+int Enemy::getId() {
+	return id;
 }
 
 glm::vec2 Enemy::getPosition() {

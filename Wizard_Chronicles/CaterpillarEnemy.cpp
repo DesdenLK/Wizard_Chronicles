@@ -55,3 +55,11 @@ void CaterpillarEnemy::setAnimations() {
 	sprite->changeAnimation(WALK_RIGHT);
 
 }
+
+void CaterpillarEnemy::changeToDeadAnimation() {
+	sprite->changeAnimation(DIE_LEFT);
+}
+
+int CaterpillarEnemy::getEraseAnimationTime() {
+	return eraseAnimationTime;
+}
