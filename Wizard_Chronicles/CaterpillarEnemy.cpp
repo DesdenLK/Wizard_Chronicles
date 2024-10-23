@@ -57,7 +57,8 @@ void CaterpillarEnemy::setAnimations() {
 }
 
 void CaterpillarEnemy::changeToDeadAnimation() {
-	sprite->changeAnimation(DIE_LEFT);
+	if (EnemyVelocity.x < 0) sprite->changeAnimation(DIE_LEFT);
+	else sprite->changeAnimation(DIE_RIGHT);
 }
 
 int CaterpillarEnemy::getEraseAnimationTime() {
