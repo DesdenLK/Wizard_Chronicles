@@ -10,6 +10,9 @@
 #include "StaticObject.h"
 #include "CaterpillarEnemy.h"
 #include "DynamicObjectChest.h"
+#include "DynamicObjectBox.h"
+
+#include "PickableObject.h"
 #include <map>
 
 
@@ -55,10 +58,13 @@ public:
 	void eraseEnemy(int enemyId);
 
 	int pickingObject(const glm::vec2& posPlayer, const glm::vec2& playerSize);
+	void addPickableObject(string type, glm::vec2 pos, glm::vec2 measures);
 	DynamicObject* getDynamicObject(int index);
 	void destroyDynamicObject(int index);
 
 	void renderDynamicObjects();
+
+	//void addPickableObject(PickableObject* object);
 	
 private:
 	bool loadLevel(const string &levelFile, ShaderProgram& program);
@@ -91,6 +97,9 @@ private:
 
 	vector<DynamicObject*> dynamicObjects;
 	int nDynamicObjects;
+
+	vector<PickableObject*> pickableObjects;
+	int nPickableObjects;
 
 
 	//vector<std::map<string,string>>* objects; branca enemics

@@ -1,8 +1,8 @@
 #ifndef _OBJECT_INCLUDE
 #define _OBJECT_INCLUDE
-
-#include <glm/glm.hpp>
 #include <string>
+#include <glm/glm.hpp>
+
 
 class Object {
 
@@ -20,6 +20,9 @@ public:
 	glm::vec2 getMeasures() const;
 
 	bool objectCollision(glm::vec2 pos, glm::vec2 size);
+
+	virtual bool isPickable();
+	virtual void setPickableItem(std::string item);
 
 	bool leftCollision(glm::vec2 pos, glm::vec2 size);
 	bool rightCollision(glm::vec2 pos, glm::vec2 size);

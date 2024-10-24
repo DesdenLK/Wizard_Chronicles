@@ -39,6 +39,7 @@ public:
 	virtual void objectFalling();
 	virtual void objectJump();
 
+
 	//virtual void setAnimations();
 
 

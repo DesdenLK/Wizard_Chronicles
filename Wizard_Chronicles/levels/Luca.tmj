@@ -181,6 +181,12 @@
                  "height":16,
                  "id":21,
                  "name":"Chest",
+                 "properties":[
+                        {
+                         "name":"DropObject",
+                         "type":"string",
+                         "value":"Cake"
+                        }],
                  "rotation":0,
                  "type":"Chest",
                  "visible":true,

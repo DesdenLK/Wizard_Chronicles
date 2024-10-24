@@ -43,6 +43,16 @@ bool Object::objectCollision(glm::vec2 pos, glm::vec2 size)
 	return true;
 }
 
+bool Object::isPickable()
+{
+	return false;
+}
+
+void Object::setPickableItem(std::string item)
+{
+	return;
+}
+
 bool Object::bottomCollision(glm::vec2 characterPos, glm::vec2 characterSize)
 {
 	// Coordenadas clave del personaje

@@ -12,6 +12,7 @@ void DynamicObjectChest::init(int id, string pathToFile, float x, float y, float
 {
 	DynamicObject::init(id, pathToFile, x, y, w, h, quadSize, spriteWidth, spriteHeight, offSet, shaderProgram, map);
 	chestOpened = false;
+	pickableItem = "coin";
 	setAnimations();
 }
 
@@ -39,6 +40,7 @@ void DynamicObjectChest::setAnimations()
 	sprite->changeAnimation(true, 0);
 
 }
+
 
 void DynamicObjectChest::objectFalling()
 {
@@ -91,6 +93,7 @@ void DynamicObjectChest::destroyObject()
 	}
 	else if (sprite->isAnimationFinished() and objectState.destroyed) {
 		objectState.destroyed = true;
+		map->addPickableObject(pickableItem, posicio, measures);
 		map->destroyDynamicObject(id);	
 	}
 

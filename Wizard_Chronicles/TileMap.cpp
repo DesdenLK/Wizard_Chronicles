@@ -75,6 +75,10 @@ void TileMap::render() const
 	for (int i = 0; i < nDynamicObjects; ++i) {
 		if (dynamicObjects[i] != nullptr) dynamicObjects[i] ->render();
 	}
+
+	for (int i = 0; i < nPickableObjects; ++i) {
+		if (pickableObjects[i] != nullptr) pickableObjects[i]->render();
+	}
   
   for (auto& enemy : enemies) {
 		enemy.second->render();
@@ -85,7 +89,11 @@ void TileMap::update(int deltaTime)
 {
 	for (int i = 0; i < nDynamicObjects; ++i) {
 		if (dynamicObjects[i] != nullptr) dynamicObjects[i]->update(deltaTime);
-  }
+	}
+
+	for (int i = 0; i < nPickableObjects; ++i) {
+		if (pickableObjects[i] != nullptr) pickableObjects[i]->update(deltaTime);
+	}
     
   if (enemyToErase != -1) {
 	  eraseAnimationTime -= deltaTime;
@@ -126,6 +134,10 @@ void TileMap::initDynamicObjects(const nlohmann::json& j, ShaderProgram &program
 		else if (obj["type"] == "Chest") {
 			dynamicObjects[i] = new DynamicObjectChest();
 			dynamicObjects[i]->init(i, "images/DynamicObjects/Chest.png", float(obj["x"]), float(obj["y"]), float(obj["width"]), float(obj["height"]), glm::vec2(float(obj["width"]), float(obj["height"])), 0.125, 1, glm::vec2(0, 0), program, this);
+
+			if (obj["properties"].size() > 0) {
+				dynamicObjects[i]->setPickableItem(obj["properties"][0]["value"]);
+			}
 		}
 
 		else if (obj["type"] == "Barrel") {
@@ -552,6 +564,14 @@ int TileMap::pickingObject(const glm::vec2& pos, const glm::vec2& size)
 		}
 	}
 	return -1;
+}
+
+void TileMap::addPickableObject(string type, glm::vec2 pos, glm::vec2 measures)
+{
+	PickableObject* object = new PickableObject();
+	object->init(pickableObjects.size(), "images/DynamicObjects/Cake.png", pos.x, pos.y, measures.x, measures.y, glm::vec2(10, 10), 1, 1, *program, this);
+	pickableObjects.push_back(object);
+	nPickableObjects++;
 }
 
 DynamicObject* TileMap::getDynamicObject(int index)

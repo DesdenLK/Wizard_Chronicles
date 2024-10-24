@@ -1,4 +1,5 @@
-#pragma once  
+#ifndef _DYNAMIC_OBJECT_BOX_INCLUDE
+#define _DYNAMIC_OBJECT_BOX_INCLUDE
 #include "DynamicObject.h"  
 class DynamicObjectBox : public DynamicObject  
 {  
@@ -11,3 +12,4 @@ void objectJump() override;
 
 void destroyObject() override;  
 };
+#endif // _DYNAMIC_OBJECT_BOX_INCLUDE
