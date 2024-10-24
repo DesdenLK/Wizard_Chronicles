@@ -389,6 +389,14 @@ void Player::playerNOKeys(int deltaTime) {
 			sprite->changeAnimation(STAND_LEFT_OBJECT);
 			break;
 
+		case PICKING_RIGHT:
+			sprite->changeAnimation(STAND_RIGHT_OBJECT);
+			break;
+
+		case MOVING_RIGHT_OBJECT:
+			sprite->changeAnimation(STAND_RIGHT_OBJECT);
+			break;
+
 
 		default:
 			break;

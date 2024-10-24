@@ -3,7 +3,7 @@
 #include "TileMap.h"
 
 
-/*
+
 void DynamicObject::init(string pathToFile, float x, float y, float w, float h, glm::vec2 quadSize, float spriteWidth, float spriteHeight, glm::vec2 offSet, ShaderProgram& shaderProgram, TileMap *map)
 {
 	posicio = glm::vec2(x, y);
@@ -12,7 +12,7 @@ void DynamicObject::init(string pathToFile, float x, float y, float w, float h, 
 	this->map = map;
 
 
-	objectState = { false, false };
+	objectState = { false, false, false};
 
 	speed = glm::vec2(0, 0);
 
@@ -22,7 +22,7 @@ void DynamicObject::init(string pathToFile, float x, float y, float w, float h, 
 	sprite->setPosition(posicio);
 
 }
-*/
+
 
 void DynamicObject::update(int deltaTime)
 {
@@ -56,6 +56,7 @@ void DynamicObject::pickObject()
 void DynamicObject::dropObject(float XSpeed)
 {
 	objectState.pickedUp = false;
+	objectState.objectThrowed = true;
 	objectState.Jumping = true;
 	jumpAngle = 0;
 	startY = posicio.y;

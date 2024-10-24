@@ -14,7 +14,7 @@ class TileMap;
 class DynamicObject : public Object {
 protected:
 	struct ObjectState {
-		bool Jumping, pickedUp;
+		bool Jumping, pickedUp, objectThrowed;
 	}objectState;
 
 	int jumpAngle;
@@ -27,13 +27,13 @@ protected:
 	TileMap* map;
 
 public:
-	virtual void init(string pathToFile, float x, float y, float w, float h, glm::vec2 quadSize, float spriteWidth, float spriteHeight, glm::vec2 offSet, ShaderProgram& shaderProgram, TileMap *map) = 0;
+	virtual void init(string pathToFile, float x, float y, float w, float h, glm::vec2 quadSize, float spriteWidth, float spriteHeight, glm::vec2 offSet, ShaderProgram& shaderProgram, TileMap *map);
 
 	void render();
 	void update(int deltaTime);
 
-	void objectFalling();
-	void objectJump();
+	virtual void objectFalling();
+	virtual void objectJump();
 
 	//virtual void setAnimations();
 
