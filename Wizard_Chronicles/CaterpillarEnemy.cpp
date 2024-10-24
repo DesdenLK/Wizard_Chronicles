@@ -5,6 +5,7 @@
 #define JUMP_ANGLE_STEP 4
 #define JUMP_HEIGHT 96
 #define FALL_STEP 4
+#define FALL_VELOCITY_DEAD 3
 
 #define SPRITE_HEIGHT 1.f
 #define SPRITE_WIDTH (1.f/6.f)
@@ -60,7 +61,8 @@ void CaterpillarEnemy::setAnimations() {
 void CaterpillarEnemy::changeToDeadAnimation() {
 	if (EnemyVelocity.x < 0) sprite->changeAnimation(true,DIE_LEFT);
 	else sprite->changeAnimation(true,DIE_RIGHT);
-	EnemyVelocity = glm::vec2(0.f, (496 - posEnemy.y) / (eraseAnimationTime/60));
+	//EnemyVelocity = glm::vec2(0.f, (496 - posEnemy.y) / (eraseAnimationTime/60));
+	EnemyVelocity = glm::vec2(0.f, FALL_VELOCITY_DEAD);
 	//cout << "pos y: " << posEnemy.y << " velocity y: " << EnemyVelocity.y << endl;
 }
 
