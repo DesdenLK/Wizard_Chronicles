@@ -38,7 +38,7 @@ void DynamicObjectBox::objectFalling()
 	speed.y = FALL_STEP;
 
 	int enemyCollidedId = map->enemyCollision(posicio, measures);
-	if (enemyCollidedId != -1) {
+	if (enemyCollidedId != -1 and objectState.hitboxEnabled) {
 		map->eraseEnemy(enemyCollidedId);
 		destroyObject();
 	}
@@ -70,7 +70,7 @@ void DynamicObjectBox::objectJump()
 	jumpAngle += JUMP_ANGLE_STEP;
 
 	int enemyCollidedId = map->enemyCollision(posicio, measures);
-	if (enemyCollidedId != -1) {
+	if (enemyCollidedId != -1 and objectState.hitboxEnabled) {
 		map->eraseEnemy(enemyCollidedId);
 		destroyObject();
 	}
