@@ -570,9 +570,10 @@ void TileMap::destroyDynamicObject(int index)
 void TileMap::eraseDynamicObjects()
 {
 	for (int i = 0; i < nDynamicObjects; ++i) {
-		if (dynamicObjects[i] != nullptr) {
+		if (objectsToErase[i] != nullptr) {
 			dynamicObjects[i] = nullptr;
-			delete dynamicObjects[i];
+			objectsToErase[i] = nullptr;
+			delete objectsToErase[i];
 		}
 	}
 }
