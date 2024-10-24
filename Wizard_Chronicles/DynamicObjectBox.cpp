@@ -83,7 +83,7 @@ void DynamicObjectBox::destroyObject()
 		objectState.hitboxEnabled = false;
 		sprite->changeAnimation(DESTROY_BOX);
 
-		//map->destroyDynamicObject(id);
+		map->destroyDynamicObject(id);
 	}
 	else objectState.objectThrowed = false;
 

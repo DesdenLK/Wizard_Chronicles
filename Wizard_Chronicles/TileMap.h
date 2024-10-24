@@ -48,13 +48,15 @@ public:
 	bool isOnLadderTop(const glm::vec2& posPlayer, const glm::vec2& playerSize);
 	bool isOnLadderBottom(const glm::vec2& posPlayer, const glm::vec2& playerSize);
   
-  bool lateralCollisionWithEnemy(const glm::vec2& posPlayer, const glm::vec2& playerSize);
+	bool lateralCollisionWithEnemy(const glm::vec2& posPlayer, const glm::vec2& playerSize);
 	int verticalCollisionWithEnemy(const glm::vec2& posPlayer, const glm::vec2& playerSize);
-  void eraseEnemy(int enemyId);
+	void eraseEnemy(int enemyId);
 
 	int pickingObject(const glm::vec2& posPlayer, const glm::vec2& playerSize);
 	DynamicObject* getDynamicObject(int index);
 	void destroyDynamicObject(int index);
+
+	void eraseDynamicObjects();
 
 	void renderDynamicObjects();
 	
@@ -65,7 +67,7 @@ private:
 	void createVAO(GLuint& vao, GLuint& vbo, const std::vector<float>& vertices, ShaderProgram& program);
 
 	void initDynamicObjects(const nlohmann::json& j, ShaderProgram& program);
-	bool boundingBoxCollision(glm::vec2 coordsMin1, glm::vec2 widthHeight1, glm::vec2 coordsMin2, glm::vec2 widthHeight2);
+	//bool boundingBoxCollision(glm::vec2 coordsMin1, glm::vec2 widthHeight1, glm::vec2 coordsMin2, glm::vec2 widthHeight2);
 	bool lateralBoxCollision(glm::vec2 coordsMin1, glm::vec2 widthHeight1, glm::vec2 coordsMin2, glm::vec2 widthHeight2);
 	bool verticalBoxCollision(glm::vec2 coordsMin1, glm::vec2 widthHeight1, glm::vec2 coordsMin2, glm::vec2 widthHeight2);
 
@@ -89,6 +91,10 @@ private:
 
 	vector<DynamicObject*> dynamicObjects;
 	int nDynamicObjects;
+
+	vector<DynamicObject*> objectsToErase;
+	int nObjectsToErase;
+	int loopTimesToErase;
 
 	//vector<std::map<string,string>>* objects; branca enemics
 	std::map<int,Enemy*> enemies;		//(id_enemic,enemic)

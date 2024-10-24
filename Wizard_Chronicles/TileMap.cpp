@@ -86,6 +86,8 @@ void TileMap::update(int deltaTime)
 	for (int i = 0; i < nDynamicObjects; ++i) {
 		if (dynamicObjects[i] != nullptr) dynamicObjects[i]->update(deltaTime);
   }
+	if (loopTimesToErase > 100) { eraseDynamicObjects(); loopTimesToErase = 0; }
+	else ++loopTimesToErase;
     
   if (enemyToErase != -1) {
 	  eraseAnimationTime -= deltaTime;
@@ -209,28 +211,32 @@ bool TileMap::loadLevel(const string& levelFile, ShaderProgram& program)
 			else if (it.key() == "height") enemyBoundingBoxWH[1] = std::stof((string)it.value().dump());
 			else if (it.key() == "id") enemyId = std::stoi((string)it.value().dump());
 		}
-  }
-  
-  	for (auto it = objEnemy.begin(); it != objEnemy.end(); ++it) {
+
+		for (auto it = objEnemy.begin(); it != objEnemy.end(); ++it) {
 			//cout << "key: " << it.key() << ':' << "value: " << (string)it.value().dump() << endl;
 			if (it.key() == "type") {
 				if ((string)it.value().dump() == "\"Caterpillar\"") {
 					CaterpillarEnemy* caterpillar = new CaterpillarEnemy();
-					caterpillar->init(enemyId,glm::ivec2(0,16), program, "images/enemics/caterpillar/spriteCaterpillarAmplifiedAlpha.png", glm::ivec2(25, 25), glm::vec2((1.f / 6.f), 1.f), enemyBoundingBoxWH, 1000);
+					caterpillar->init(enemyId, glm::ivec2(0, 0), program, "images/enemics/caterpillar/spriteCaterpillarAmplifiedAlpha.png", glm::ivec2(25, 25), glm::vec2((1.f / 6.f), 1.f), enemyBoundingBoxWH, 1000);
 					caterpillar->setPosition(enemyStartPos);
 					caterpillar->setTileMap(this);
 					cout << "enemy start pos: " << '(' << enemyStartPos[0] << ',' << enemyStartPos[1] << ')' << endl;
-					enemies.insert(std::make_pair(enemyId,caterpillar));
+					enemies.insert(std::make_pair(enemyId, caterpillar));
 				}
 				// afegir tipus enemics
 			}
 		}
+	}
 		//cout << "nombre d'enemics enregistrats: " << enemies.size() << endl;
 
 	nDynamicObjects = dynamic_objectsJSON.size();
 	dynamicObjects = vector<DynamicObject*>(nDynamicObjects);
 
 	initDynamicObjects(dynamic_objectsJSON, program);
+
+	objectsToErase = vector<DynamicObject*>(nDynamicObjects);
+	nObjectsToErase = 0;
+	loopTimesToErase = 0;
 
 
 	for (int i = 0; i < mapSize.x * mapSize.y; i++)
@@ -532,22 +538,9 @@ bool TileMap::ladderCollision(const glm::vec2& pos, const glm::vec2& size)
 {
 	for (int i = 0; i < nStaticObjects; ++i) {
 		if (staticObjects[i].getType() == "Stair") {
-			if (staticObjects[i].objectCollision(pos, size)) {
-=======
-	/*for (const auto& obj : *objects) {
-		glm::vec2 objectPos = glm::vec2(std::stof(obj.at("x")), std::stof(obj.at("y")));
-		glm::vec2 objectSize = glm::vec2(std::stof(obj.at("width")), std::stof(obj.at("height")));
-		/*cout << "Player position checking collision: " << '(' << pos.x << ',' << pos.y << ')' << endl;
-		cout << "object position checking collision: " << '(' << objectPos.x << ',' << objectPos.y << ')' << endl;*/
-		if (boundingBoxCollision(pos,size,objectPos,objectSize)) {
-			//std::cout << "boundingBoxCollision" << endl;
-			//std::cout << "object type: " << obj.at("type") << endl;
-			if (obj.at("type") == "\"Stair\"") {
-				//std::cout << "collided with stair" << endl;
-				return true;
-			}
+			if (staticObjects[i].objectCollision(pos, size)) return true;
 		}
-	}*/ //branca enemics
+	}
 	return false;
 }
 
@@ -571,7 +564,17 @@ DynamicObject* TileMap::getDynamicObject(int index)
 void TileMap::destroyDynamicObject(int index)
 {
 	//delete dynamicObjects[index];
-	dynamicObjects[index] = nullptr;
+	objectsToErase[index] = dynamicObjects[index];
+}
+
+void TileMap::eraseDynamicObjects()
+{
+	for (int i = 0; i < nDynamicObjects; ++i) {
+		if (dynamicObjects[i] != nullptr) {
+			dynamicObjects[i] = nullptr;
+			delete dynamicObjects[i];
+		}
+	}
 }
 
 
@@ -624,32 +627,4 @@ void TileMap::eraseEnemy(int enemyId) {
 	enemyToErase = enemyId;
 	eraseAnimationTime = enemy->getEraseAnimationTime();
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
