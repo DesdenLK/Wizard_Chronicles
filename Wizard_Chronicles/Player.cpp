@@ -7,13 +7,14 @@
 
 
 #define JUMP_ANGLE_STEP 4
-#define JUMP_HEIGHT 35
+#define JUMP_HEIGHT 50
 #define FALL_STEP 4
 
 #define SPRITE_WIDTH 1/20.f
 #define SPRITE_HEIGHT 1/16.f
 
 #define HURT_TIME 1000 //in ms
+#define HURT_FRAME_TIME 50
 #define VERTICAL_COL_TIMEOUT 500 //in ms
 
 
@@ -50,9 +51,15 @@ void Player::update(int deltaTime)
 {
 	if (isHurt) {
 		hurtTime -= deltaTime;
+		hurtFrameTime -= deltaTime;
 		if (hurtTime <= 0) {
 			sprite->setAlpha(1.f);
 			isHurt = false;
+		}
+		else if (hurtFrameTime <= 0) {
+			if (sprite->getAlpha() == 0.3) sprite->setAlpha(0.6);
+			else sprite->setAlpha(0.3);
+			hurtFrameTime = HURT_FRAME_TIME;
 		}
 	}
 	sprite->update(deltaTime);
@@ -72,9 +79,8 @@ void Player::update(int deltaTime)
 void Player::render()
 {
 	if (objectPickedUp != nullptr) objectPickedUp->render();
-	if (isHurt) sprite->setAlpha(0.3f);
+	if (isHurt) sprite->setAlpha(0.3);
 	sprite->render();
-	sprite->setAlpha(1.f);
 }
 
 void Player::setTileMap(TileMap *tileMap)
@@ -274,9 +280,10 @@ void Player::playerKey_A(int deltaTime) {
 	glm::vec2 initialPosPlayer = posPlayer;
 	posPlayer.x -= playerVelocity.x;
 
-	if (map->lateralCollisionWithEnemy(posPlayer, glm::vec2(32, 32))) {
+	if (map->lateralCollisionWithEnemy(posPlayer, glm::vec2(32, 32)) != -1) {
 		isHurt = true;
 		hurtTime = HURT_TIME;
+		hurtFrameTime = HURT_FRAME_TIME;
 	}
 
 	if (!playerState.Jumping) {
@@ -311,9 +318,10 @@ void Player::playerKey_D(int deltaTime) {
 	glm::vec2 initialPosPlayer = posPlayer;
 	posPlayer.x += playerVelocity.x;
 
-	if (map->lateralCollisionWithEnemy(posPlayer, glm::vec2(32, 32))) {
+	if (map->lateralCollisionWithEnemy(posPlayer, glm::vec2(32, 32)) != -1) {
 		isHurt = true;
 		hurtTime = HURT_TIME;
+		hurtFrameTime = HURT_FRAME_TIME;
 	}
 
 	if (!playerState.Jumping) {
@@ -340,9 +348,10 @@ void Player::playerKey_D(int deltaTime) {
 }
 
 void Player::playerNOKeys(int deltaTime) {
-	if (map->lateralCollisionWithEnemy(posPlayer, glm::vec2(32, 32))) {
+	if (map->lateralCollisionWithEnemy(posPlayer, glm::vec2(32, 32)) != -1) {
 		isHurt = true;
 		hurtTime = HURT_TIME;
+		hurtFrameTime = HURT_FRAME_TIME;
 	}
 	switch (sprite->animation()) {
 
@@ -430,7 +439,7 @@ void Player::playerFalling(int deltaTime)
 	posPlayer.y += FALL_STEP;
 	playerVelocity.y = FALL_STEP;
 
-	/*if (map->lateralCollisionWithEnemy(posPlayer, glm::vec2(32, 32))) {
+	/*if (map->lateralCollisionWithEnemy(posPlayer, glm::vec2(32, 32)) != -1) {
 		isHurt = true;
 		hurtTime = HURT_TIME;
 	}*/

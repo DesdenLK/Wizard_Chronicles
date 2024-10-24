@@ -47,7 +47,7 @@ private:
 	} playerState;
 
 	bool isHurt;
-	int loopTimesInactive, hurtTime, verticalCollisionTimeout;
+	int loopTimesInactive, hurtTime, hurtFrameTime, verticalCollisionTimeout;
 	glm::ivec2 tileMapDispl;
 	glm::vec2 posPlayer, playerVelocity, playerAcceleration;
 	int jumpAngle, startY;

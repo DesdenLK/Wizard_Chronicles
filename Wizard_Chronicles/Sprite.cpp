@@ -69,6 +69,10 @@ void Sprite::free()
 	glDeleteBuffers(1, &vbo);
 }
 
+float Sprite::getAlpha() {
+	return alpha;
+}
+
 void Sprite::setAlpha(float alpha) {
 	this->alpha = alpha;
 }

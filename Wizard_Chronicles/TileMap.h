@@ -48,7 +48,8 @@ public:
 	bool isOnLadderTop(const glm::vec2& posPlayer, const glm::vec2& playerSize);
 	bool isOnLadderBottom(const glm::vec2& posPlayer, const glm::vec2& playerSize);
   
-	bool lateralCollisionWithEnemy(const glm::vec2& posPlayer, const glm::vec2& playerSize);
+	int enemyCollision(const glm::vec2& pos, const glm::vec2& size);
+	int lateralCollisionWithEnemy(const glm::vec2& posPlayer, const glm::vec2& playerSize);
 	int verticalCollisionWithEnemy(const glm::vec2& posPlayer, const glm::vec2& playerSize);
 	void eraseEnemy(int enemyId);
 

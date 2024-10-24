@@ -78,6 +78,8 @@ void DynamicObject::objectFalling()
 	posicio.y += FALL_STEP;
 	speed.y = FALL_STEP;
 
+	int enemyCollidedId = map->enemyCollision(posicio, measures);
+	if (enemyCollidedId != -1) map->eraseEnemy(enemyCollidedId);
 	if (speed.x > 0 and map->collisionMoveRight(posicio, measures)) speed.x = 0;
 	else if (speed.x < 0 and map->collisionMoveLeft(posicio, measures)) speed.x = 0;
 
@@ -94,6 +96,9 @@ void DynamicObject::objectJump()
 {
 	speed.y = JUMP_HEIGHT * sin(3.14159f * jumpAngle / 180.f);
 	jumpAngle += JUMP_ANGLE_STEP;
+
+	int enemyCollidedId = map->enemyCollision(posicio, measures);
+	if (enemyCollidedId != -1) map->eraseEnemy(enemyCollidedId);
 
 	if (speed.x > 0 and map->collisionMoveRight(posicio, measures)) speed.x = 0;
 	else if (speed.x < 0 and map->collisionMoveLeft(posicio, measures)) speed.x = 0;

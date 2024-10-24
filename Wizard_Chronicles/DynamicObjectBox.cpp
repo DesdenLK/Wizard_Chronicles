@@ -37,17 +37,31 @@ void DynamicObjectBox::objectFalling()
 	posicio.y += FALL_STEP;
 	speed.y = FALL_STEP;
 
-	if (speed.x > 0 and map->collisionMoveRight(posicio, measures)) { speed.x = 0; destroyObject(); }
-	else if (speed.x < 0 and map->collisionMoveLeft(posicio, measures)) { speed.x = 0; destroyObject(); }
-
-	posicio.x += speed.x;
-	if (map->collisionMoveDown(posicio, measures, &posicio.y))
-	{
-		//cout << "collision detected" << endl;
-		speed.x = 0;
-		speed.y = 0;
+	int enemyCollidedId = map->enemyCollision(posicio, measures);
+	if (enemyCollidedId != -1) {
+		map->eraseEnemy(enemyCollidedId);
 		destroyObject();
 	}
+	else {
+		if (speed.x > 0 and map->collisionMoveRight(posicio, measures)) {
+			speed.x = 0;
+			destroyObject();
+		}
+		else if (speed.x < 0 and map->collisionMoveLeft(posicio, measures)) {
+			speed.x = 0;
+			destroyObject();
+		}
+
+		posicio.x += speed.x;
+		if (map->collisionMoveDown(posicio, measures, &posicio.y))
+		{
+			//cout << "collision detected" << endl;
+			speed.x = 0;
+			speed.y = 0;
+			destroyObject();
+		}
+	}
+	
 }
 
 void DynamicObjectBox::objectJump()
@@ -55,22 +69,29 @@ void DynamicObjectBox::objectJump()
 	speed.y = JUMP_HEIGHT * sin(3.14159f * jumpAngle / 180.f);
 	jumpAngle += JUMP_ANGLE_STEP;
 
-	if (speed.x > 0 and map->collisionMoveRight(posicio, measures)) { speed.x = 0; destroyObject(); }
-	else if (speed.x < 0 and map->collisionMoveLeft(posicio, measures)) { speed.x = 0; destroyObject(); }
-	posicio.x += speed.x;
-
-	if (jumpAngle == 180)
-	{
-		objectState.Jumping = false;
-		posicio.y = startY;
+	int enemyCollidedId = map->enemyCollision(posicio, measures);
+	if (enemyCollidedId != -1) {
+		map->eraseEnemy(enemyCollidedId);
+		destroyObject();
 	}
-	else
-	{
-		posicio.y = startY - speed.y;
-		if (jumpAngle > 90)
-			objectState.Jumping = (!map->collisionMoveDown(posicio, measures, &posicio.y));
-		if (jumpAngle <= 90) {	// player going up
-			objectState.Jumping = !map->collisionMoveUp(posicio, measures, &posicio.y);
+	else {
+		if (speed.x > 0 and map->collisionMoveRight(posicio, measures)) { speed.x = 0; destroyObject(); }
+		else if (speed.x < 0 and map->collisionMoveLeft(posicio, measures)) { speed.x = 0; destroyObject(); }
+		posicio.x += speed.x;
+
+		if (jumpAngle == 180)
+		{
+			objectState.Jumping = false;
+			posicio.y = startY;
+		}
+		else
+		{
+			posicio.y = startY - speed.y;
+			if (jumpAngle > 90)
+				objectState.Jumping = (!map->collisionMoveDown(posicio, measures, &posicio.y));
+			if (jumpAngle <= 90) {	// player going up
+				objectState.Jumping = !map->collisionMoveUp(posicio, measures, &posicio.y);
+			}
 		}
 	}
 }

@@ -27,6 +27,7 @@ public:
 	void render() const;
 	void free();
 
+	float getAlpha();
 	void setAlpha(float alpha);
 
 	void setNumberAnimations(int nAnimations);

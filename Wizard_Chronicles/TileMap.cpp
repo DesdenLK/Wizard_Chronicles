@@ -168,8 +168,7 @@ bool TileMap::loadLevel(const string& levelFile, ShaderProgram& program)
 
 	auto static_objectsJSON = mapFile["layers"][3]["objects"];
 	auto dynamic_objectsJSON = mapFile["layers"][4]["objects"];
-	auto objects_json = mapFile["layers"][3]["objects"];
-	auto enemies_json = mapFile["layers"][5]["objects"];    //canviar al tiled per 5 en comptes de 4
+	auto enemies_json = mapFile["layers"][5]["objects"];
 	
 	map = new int[mapSize.x * mapSize.y];
 	background = new int[mapSize.x * mapSize.y];
@@ -178,7 +177,6 @@ bool TileMap::loadLevel(const string& levelFile, ShaderProgram& program)
 	
 	nStaticObjects = static_objectsJSON.size();
 	staticObjects = new StaticObject[nStaticObjects];
-	//objects = new vector<std::map<string, string>>();  Branca enemics
 	enemies = std::map<int,Enemy*>();
 
 	copy(background_json.begin(), background_json.end(), background);
@@ -190,15 +188,7 @@ bool TileMap::loadLevel(const string& levelFile, ShaderProgram& program)
 		auto obj = static_objectsJSON[i];
 		staticObjects[i] = StaticObject(i, obj["type"], float(obj["x"]), float(obj["y"]), float(obj["width"]), float(obj["height"]));
   }
-	/*for (const auto& obj : objects_json) {
-		std::map<string, string> objectMap;
-		for (auto it = obj.begin(); it != obj.end(); ++it) {
-			objectMap[it.key()] = (string) it.value().dump();
-			cout << objectMap[it.key()];
-			cout << endl;
-		}
-		objects->push_back(objectMap);
-	}*/ // Branca enemics
+	
 	// carregar els enemics a this.enemies
 	for (const auto& objEnemy : enemies_json) {
 		glm::vec2 enemyStartPos = glm::vec2(0.f, 0.f);
@@ -227,7 +217,7 @@ bool TileMap::loadLevel(const string& levelFile, ShaderProgram& program)
 			}
 		}
 	}
-		//cout << "nombre d'enemics enregistrats: " << enemies.size() << endl;
+		cout << "nombre d'enemics enregistrats: " << enemies.size() << " amb id: " << enemies.begin()->first << endl;
 
 	nDynamicObjects = dynamic_objectsJSON.size();
 	dynamicObjects = vector<DynamicObject*>(nDynamicObjects);
@@ -510,29 +500,38 @@ bool TileMap::collisionMoveUp(const glm::vec2& pos, const glm::ivec2& size, floa
 }
 
 
-
-
-bool TileMap::lateralCollisionWithEnemy(const glm::vec2& posPlayer, const glm::vec2& playerSize) {
-	for (auto& enemy : enemies) {
+int TileMap::lateralCollisionWithEnemy(const glm::vec2& posPlayer, const glm::vec2& playerSize) {
+	for (auto enemy : enemies) {
 		glm::vec2 enemyPos = enemy.second->getPosition();
 		glm::vec2 widthHeightEnemyBox = enemy.second->getBoundingBoxWH();
-		if (lateralBoxCollision(enemyPos,widthHeightEnemyBox,posPlayer,playerSize) and enemy.second->getId() != enemyToErase) return true;
-	}
-	return false;
-}
-
-int TileMap::verticalCollisionWithEnemy(const glm::vec2& posPlayer, const glm::vec2& playerSize) {
-	for (auto& enemy : enemies) {
-		glm::vec2 enemyPos = enemy.second->getPosition();
-		glm::vec2 widthHeightEnemyBox = enemy.second->getBoundingBoxWH();
-		//cout << "possible collision with Player=(" << posPlayer.x << ',' << posPlayer.y << ",32,32) i Enemic (" << enemyPos.x << ',' << enemyPos.y << ',' << widthHeightEnemyBox[0] << ',' << widthHeightEnemyBox[1] << ')' << endl;
-		if (verticalBoxCollision(posPlayer, playerSize, enemyPos, widthHeightEnemyBox)) {
-			//cout << "vertical collision with enemy: " << endl;
-			return enemy.second->getId();
+		if (lateralBoxCollision(enemyPos, widthHeightEnemyBox, posPlayer, playerSize) and enemy.first != enemyToErase) {
+			cout << "collision with enemy with id: " << enemy.first << endl;
+			return enemy.first;
 		}
 	}
 	return -1;
 }
+
+int TileMap::verticalCollisionWithEnemy(const glm::vec2& posPlayer, const glm::vec2& playerSize) {
+	for (auto enemy : enemies) {
+		glm::vec2 enemyPos = enemy.second->getPosition();
+		glm::vec2 widthHeightEnemyBox = enemy.second->getBoundingBoxWH();
+		//cout << "possible collision with Player=(" << posPlayer.x << ',' << posPlayer.y << ",32,32) i Enemic (" << enemyPos.x << ',' << enemyPos.y << ',' << widthHeightEnemyBox[0] << ',' << widthHeightEnemyBox[1] << ')' << endl;
+		if (verticalBoxCollision(posPlayer, playerSize, enemyPos, widthHeightEnemyBox)) {
+			cout << "collision with enemy with id: " << enemy.first << endl;
+			return enemy.first;
+		}
+	}
+	return -1;
+}
+
+int TileMap::enemyCollision(const glm::vec2& pos, const glm::vec2& size) {
+	int enemyColX = lateralCollisionWithEnemy(pos,size);
+	int enemyColY = verticalCollisionWithEnemy(pos, size);
+	if (enemyColX != -1) return enemyColX;
+	return enemyColY;
+}
+
 
 bool TileMap::ladderCollision(const glm::vec2& pos, const glm::vec2& size)
 {
@@ -623,7 +622,8 @@ bool TileMap::verticalBoxCollision(glm::vec2 coordsMin1, glm::vec2 widthHeight1,
 }
 
 void TileMap::eraseEnemy(int enemyId) {
-	auto& enemy = enemies[enemyId];
+	cout << "about to erase enemy with id: " << enemyId << " from enemies " << enemies.begin()->first << endl;
+	auto enemy = enemies[enemyId];
 	enemy->changeToDeadAnimation();
 	enemyToErase = enemyId;
 	eraseAnimationTime = enemy->getEraseAnimationTime();
