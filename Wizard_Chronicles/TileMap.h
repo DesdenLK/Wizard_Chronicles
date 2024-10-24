@@ -9,6 +9,7 @@
 
 #include "StaticObject.h"
 #include "CaterpillarEnemy.h"
+#include "DynamicObjectChest.h"
 #include <map>
 
 

@@ -125,6 +125,10 @@ void TileMap::initDynamicObjects(const nlohmann::json& j, ShaderProgram &program
 			dynamicObjects[i] = box;
 			//cout << "BoxIF" << endl;
 		}
+		else if (obj["type"] == "Chest") {
+			dynamicObjects[i] = new DynamicObjectChest();
+			dynamicObjects[i]->init(i, "images/DynamicObjects/Chest.png", float(obj["x"]), float(obj["y"]), float(obj["width"]), float(obj["height"]), glm::vec2(float(obj["width"]), float(obj["height"])), 0.125, 1, glm::vec2(0, 0), program, this);
+		}
 
 		else if (obj["type"] == "Barrel") {
 			dynamicObjects[i] = new DynamicObject();

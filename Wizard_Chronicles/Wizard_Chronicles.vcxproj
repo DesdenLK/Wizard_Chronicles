@@ -138,6 +138,7 @@
     <ClInclude Include="CaterpillarEnemy.h" />
     <ClInclude Include="DynamicObject.h" />
     <ClInclude Include="DynamicObjectBox.h" />
+    <ClInclude Include="DynamicObjectChest.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Object.h" />
@@ -155,6 +156,7 @@
     <ClCompile Include="CaterpillarEnemy.cpp" />
     <ClCompile Include="DynamicObject.cpp" />
     <ClCompile Include="DynamicObjectBox.cpp" />
+    <ClCompile Include="DynamicObjectChest.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="main.cpp" />

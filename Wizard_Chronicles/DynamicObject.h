@@ -5,7 +5,7 @@
 #include "Texture.h"
 
 #define JUMP_ANGLE_STEP 4
-#define JUMP_HEIGHT 10
+#define JUMP_HEIGHT 20
 #define FALL_STEP 1
 
 
