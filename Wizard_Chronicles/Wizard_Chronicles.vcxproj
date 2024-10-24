@@ -136,6 +136,8 @@
     <ClInclude Include="AnimKeyframes.h" />
     <ClInclude Include="DynamicObjectBox.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="CaterpillarEnemy.h" />
+    <ClInclude Include="Enemy.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="Player.h" />
@@ -151,6 +153,8 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="DynamicObject.cpp" />
     <ClCompile Include="DynamicObject.h" />
+    <ClCompile Include="CaterpillarEnemy.cpp" />
+    <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Object.cpp" />

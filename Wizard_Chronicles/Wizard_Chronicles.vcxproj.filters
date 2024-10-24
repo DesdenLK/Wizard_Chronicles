@@ -49,6 +49,10 @@
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
     <ClInclude Include="DynamicObjectBox.h">
+    <ClInclude Include="Enemy.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="CaterpillarEnemy.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
   </ItemGroup>
@@ -99,6 +103,10 @@
       <Filter>Archivos de origen</Filter>
     </ClCompile>
     <ClCompile Include="DynamicObjectBox.cpp">
+    <ClCompile Include="Enemy.cpp">
+      <Filter>Archivos de origen</Filter>
+    </ClCompile>
+    <ClCompile Include="CaterpillarEnemy.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
   </ItemGroup>

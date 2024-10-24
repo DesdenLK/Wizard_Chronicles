@@ -8,8 +8,8 @@
 #include <json.hpp>
 
 #include "StaticObject.h"
-
-
+#include "CaterpillarEnemy.h"
+#include <map>
 
 
 
@@ -19,6 +19,7 @@
 // method draws the whole map independently of what is visible.
 
 class DynamicObject;
+class Enemy;
 
 class TileMap
 {
@@ -46,14 +47,16 @@ public:
 	bool ladderCollision(const glm::vec2& pos, const glm::vec2& size);
 	bool isOnLadderTop(const glm::vec2& posPlayer, const glm::vec2& playerSize);
 	bool isOnLadderBottom(const glm::vec2& posPlayer, const glm::vec2& playerSize);
+  
+  bool lateralCollisionWithEnemy(const glm::vec2& posPlayer, const glm::vec2& playerSize);
+	int verticalCollisionWithEnemy(const glm::vec2& posPlayer, const glm::vec2& playerSize);
+  void eraseEnemy(int enemyId);
 
 	int pickingObject(const glm::vec2& posPlayer, const glm::vec2& playerSize);
 	DynamicObject* getDynamicObject(int index);
 	void destroyDynamicObject(int index);
 
 	void renderDynamicObjects();
-
-
 	
 private:
 	bool loadLevel(const string &levelFile, ShaderProgram& program);
@@ -62,11 +65,16 @@ private:
 	void createVAO(GLuint& vao, GLuint& vbo, const std::vector<float>& vertices, ShaderProgram& program);
 
 	void initDynamicObjects(const nlohmann::json& j, ShaderProgram& program);
+	bool boundingBoxCollision(glm::vec2 coordsMin1, glm::vec2 widthHeight1, glm::vec2 coordsMin2, glm::vec2 widthHeight2);
+	bool lateralBoxCollision(glm::vec2 coordsMin1, glm::vec2 widthHeight1, glm::vec2 coordsMin2, glm::vec2 widthHeight2);
+	bool verticalBoxCollision(glm::vec2 coordsMin1, glm::vec2 widthHeight1, glm::vec2 coordsMin2, glm::vec2 widthHeight2);
 
 private:
 	GLuint vaoBackground, vaoMiddle, vaoForeground;
 	GLuint vboBackground, vboMiddle, vboForeground;
 	GLint posLocation, texCoordLocation;
+	ShaderProgram *program;
+
 	int nBackgroundTiles, nMiddleTiles, nForegroundTiles;
 
 	glm::ivec2 position, mapSize, tilesheetSize;
@@ -76,14 +84,15 @@ private:
 
 	int* map, * background, * middle, * foreground;
 	
-
 	StaticObject* staticObjects;
 	int nStaticObjects;
 
 	vector<DynamicObject*> dynamicObjects;
 	int nDynamicObjects;
 
-
+	//vector<std::map<string,string>>* objects; branca enemics
+	std::map<int,Enemy*> enemies;		//(id_enemic,enemic)
+	int enemyToErase = -1, eraseAnimationTime;
 };
 
 

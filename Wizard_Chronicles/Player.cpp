@@ -12,6 +12,9 @@
 #define SPRITE_WIDTH 1/20.f
 #define SPRITE_HEIGHT 1/16.f
 
+#define HURT_TIME 1000 //in ms
+#define VERTICAL_COL_TIMEOUT 500 //in ms
+
 
 enum PlayerAnims
 {
@@ -26,8 +29,9 @@ void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 {
 	playerState = { false, false, false, false};
 	loopTimesInactive = 0;
-	playerVelocity = glm::vec2(0, 0);
-	playerAcceleration = glm::vec2(0, 0);
+	verticalCollisionTimeout = 0;
+	PlayerVelocity = glm::vec2(0, 0);
+	PlayerAcceleration = glm::vec2(0, 0);
 
 	objectPickedUp = nullptr;
 
@@ -43,6 +47,13 @@ void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 
 void Player::update(int deltaTime)
 {
+	if (isHurt) {
+		hurtTime -= deltaTime;
+		if (hurtTime <= 0) {
+			sprite->setAlpha(1.f);
+			isHurt = false;
+		}
+	}
 	sprite->update(deltaTime);
 	updatePlayerMovement(deltaTime);
 
@@ -60,8 +71,9 @@ void Player::update(int deltaTime)
 void Player::render()
 {
 	if (objectPickedUp != nullptr) objectPickedUp->render();
+	if (isHurt) sprite->setAlpha(0.3f);
 	sprite->render();
-	
+	sprite->setAlpha(1.f);
 }
 
 void Player::setTileMap(TileMap *tileMap)
@@ -80,7 +92,7 @@ void Player::setPosition(const glm::vec2 &pos)
 }
 
 glm::vec2 Player::getVelocity() {
-	return playerVelocity;
+	return PlayerVelocity;
 }
 
 void Player::setAnimations() {
@@ -220,9 +232,6 @@ void Player::setAnimations() {
 	sprite->addKeyframe(MOVING_RIGHT_OBJECT, glm::vec2(13 * SPRITE_WIDTH, 5 * SPRITE_HEIGHT));
 	sprite->addKeyframe(MOVING_RIGHT_OBJECT, glm::vec2(13 * SPRITE_WIDTH, 6 * SPRITE_HEIGHT));
 	sprite->addKeyframe(MOVING_RIGHT_OBJECT, glm::vec2(13 * SPRITE_WIDTH, 7 * SPRITE_HEIGHT));
-	
-
-
 
 	sprite->changeAnimation(2);
 }
@@ -235,7 +244,6 @@ void Player::updatePlayerMovement(int deltaTime) {
 		playerState.Climbing = false;
 		playerState.isOnLadderTop = false;
 	}
-
 	if (Game::instance().getKey(GLFW_KEY_W) && ladderCollision || playerState.Jumping) playerKey_W(deltaTime);
 	else if (!ladderCollision) playerFalling(deltaTime);
 
@@ -256,16 +264,19 @@ void Player::updatePlayerMovement(int deltaTime) {
 	}
 
 	if (!KeysPressed) playerNOKeys(deltaTime);
-	
-
 }
 
-void Player::playerKey_A(int deltaTime) {
-	playerAcceleration.x = 0.01f;
-	playerVelocity.x = min(2.f, playerVelocity.x + playerAcceleration.x * deltaTime);
-	//cout << "A: " << playerVelocity.x << endl;
+void Player::PlayerKey_A(int deltaTime) {
+	PlayerAcceleration.x = 0.01f;
+	PlayerVelocity.x = min(2.f, PlayerVelocity.x + PlayerAcceleration.x * deltaTime);
+	//cout << "A: " << PlayerVelocity.x << endl;
 	glm::vec2 initialPosPlayer = posPlayer;
-	posPlayer.x -= playerVelocity.x;
+	posPlayer.x -= PlayerVelocity.x;
+
+	if (map->lateralCollisionWithEnemy(posPlayer, glm::vec2(32, 32))) {
+		isHurt = true;
+		hurtTime = HURT_TIME;
+	}
 
 	if (!playerState.Jumping) {
 		if (sprite->animation() != MOVE_LEFT and objectPickedUp == nullptr) sprite->changeAnimation(MOVE_LEFT);
@@ -279,7 +290,7 @@ void Player::playerKey_A(int deltaTime) {
 	glm::vec2 targetPosPlayer = posPlayer;
 
 	// Mirar colisions en el path del jugador
-	for (float t = 0.0f; t <= 1.0f; t += 1.0f / playerVelocity.x) {
+	for (float t = 0.0f; t <= 1.0f; t += 1.0f / PlayerVelocity.x) {
 		glm::vec2 interpolatedPos = initialPosPlayer + t * (targetPosPlayer - initialPosPlayer);
 
 
@@ -292,12 +303,17 @@ void Player::playerKey_A(int deltaTime) {
 }
 
 
-void Player::playerKey_D(int deltaTime) {
-	playerAcceleration.x = 0.01f;
-	playerVelocity.x = min(2.f, playerVelocity.x + playerAcceleration.x * deltaTime);
-	//cout << "D: " << playerVelocity.x << endl;
+void Player::PlayerKey_D(int deltaTime) {
+	PlayerAcceleration.x = 0.01f;
+	PlayerVelocity.x = min(2.f, PlayerVelocity.x + PlayerAcceleration.x * deltaTime);
+	//cout << "D: " << PlayerVelocity.x << endl;
 	glm::vec2 initialPosPlayer = posPlayer;
-	posPlayer.x += playerVelocity.x;
+	posPlayer.x += PlayerVelocity.x;
+
+	if (map->lateralCollisionWithEnemy(posPlayer, glm::vec2(32, 32))) {
+		isHurt = true;
+		hurtTime = HURT_TIME;
+	}
 
 	if (!playerState.Jumping) {
 		if (sprite->animation() != MOVE_RIGHT and objectPickedUp == nullptr) sprite->changeAnimation(MOVE_RIGHT);
@@ -311,7 +327,7 @@ void Player::playerKey_D(int deltaTime) {
 	glm::vec2 targetPosPlayer = posPlayer;
 
 	// Mirar colisions en el path del jugador
-	for (float t = 0.0f; t <= 1.0f; t += 1.0f / playerVelocity.x) {
+	for (float t = 0.0f; t <= 1.0f; t += 1.0f / PlayerVelocity.x) {
 		glm::vec2 interpolatedPos = initialPosPlayer + t * (targetPosPlayer - initialPosPlayer);
 
 		if (map->collisionMoveRight(interpolatedPos, glm::ivec2(32, 32))) {
@@ -322,7 +338,11 @@ void Player::playerKey_D(int deltaTime) {
 	}
 }
 
-void Player::playerNOKeys(int deltaTime) {
+void Player::PlayerNOKeys(int deltaTime) {
+	if (map->lateralCollisionWithEnemy(posPlayer, glm::vec2(32, 32))) {
+		isHurt = true;
+		hurtTime = HURT_TIME;
+	}
 	switch (sprite->animation()) {
 
 		case STAND_LEFT:
@@ -351,12 +371,12 @@ void Player::playerNOKeys(int deltaTime) {
 
 			if (map->collisionMoveLeft(posPlayer, glm::ivec2(32, 32)))
 			{
-				posPlayer.x += playerVelocity.x;
+				posPlayer.x += PlayerVelocity.x;
 				sprite->changeAnimation(STAND_LEFT);
-				playerVelocity.x = 0;
+				PlayerVelocity.x = 0;
 			}
 
-			else posPlayer.x -= playerVelocity.x;
+			else posPlayer.x -= PlayerVelocity.x;
 			break;
 
 		case STOPPING_RIGHT:
@@ -366,12 +386,12 @@ void Player::playerNOKeys(int deltaTime) {
 
 			if (map->collisionMoveRight(posPlayer, glm::ivec2(32, 32)))
 			{
-				posPlayer.x -= playerVelocity.x;
+				posPlayer.x -= PlayerVelocity.x;
 				sprite->changeAnimation(STAND_RIGHT);
-				playerVelocity.x = 0;
+				PlayerVelocity.x = 0;
 			}
 
-			else posPlayer.x += playerVelocity.x;
+			else posPlayer.x += PlayerVelocity.x;
 			break;
 
 		case CROUCH_LEFT:
@@ -404,16 +424,21 @@ void Player::playerNOKeys(int deltaTime) {
 	}
 }
 
-void Player::playerFalling(int deltaTime)
+void Player::PlayerFalling(int deltaTime)
 {
 	posPlayer.y += FALL_STEP;
-	playerVelocity.y = FALL_STEP;
+	PlayerVelocity.y = FALL_STEP;
+
+	/*if (map->lateralCollisionWithEnemy(posPlayer, glm::vec2(32, 32))) {
+		isHurt = true;
+		hurtTime = HURT_TIME;
+	}*/
 	if (map->collisionMoveDown(posPlayer, glm::ivec2(32, 32), &posPlayer.y))
 	{
 		if (sprite->animation() == FALL_LEFT || sprite->animation() == JUMP_LEFT) sprite->changeAnimation(STAND_LEFT);
 		else if (sprite->animation() == FALL_RIGHT || sprite->animation() == JUMP_RIGHT) sprite->changeAnimation(STAND_RIGHT);
 
-		playerVelocity.y = 0;
+		PlayerVelocity.y = 0;
 		if (Game::instance().getKey(GLFW_KEY_W))
 		{
 			playerState.Jumping = true;
@@ -423,7 +448,7 @@ void Player::playerFalling(int deltaTime)
 	}
 }
 
-void Player::playerKey_W(int deltaTime) {
+void Player::PlayerKey_W(int deltaTime) {
 	// fet per l'escala, adaptar metodes per quan tinguem objectes que no es poden traspassar
 	if (map->ladderCollision(posPlayer, glm::vec2(32, 32))) {
 		playerState.Climbing = true;
@@ -498,7 +523,7 @@ void Player::playerKey_W(int deltaTime) {
 	}
 }
 
-void Player::playerKey_S(int deltaTime)
+void Player::PlayerKey_S(int deltaTime)
 {
 	if (map->ladderCollision(posPlayer, glm::vec2(32,32))) {
 		playerState.Climbing = true;
@@ -527,6 +552,22 @@ void Player::playerKey_S(int deltaTime)
 
 	else if (sprite->animation() == JUMP_LEFT) sprite->changeAnimation(FALL_LEFT);
 	else if (sprite->animation() == JUMP_RIGHT) sprite->changeAnimation(FALL_RIGHT);
+
+	if (sprite->animation() == FALL_LEFT or sprite->animation() == FALL_RIGHT) {
+		int collidedEnemyId = map->verticalCollisionWithEnemy(posPlayer, glm::vec2(32, 32));
+		if (collidedEnemyId != -1 and verticalCollisionTimeout <= 0) {
+			map->eraseEnemy(collidedEnemyId);
+			cout << "player velocity before collision: " << PlayerVelocity.y << endl;
+			cout << "pos player before collision: " << posPlayer.y << endl;
+			posPlayer.y -= PlayerVelocity.y;
+			sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
+			cout << "pos player after collision: " << posPlayer.y << endl;
+			sprite->changeAnimation(STAND_RIGHT);
+			verticalCollisionTimeout = VERTICAL_COL_TIMEOUT;
+			// sumar punts al Player
+		}
+		else if (collidedEnemyId != -1) verticalCollisionTimeout -= deltaTime;
+	}
 }
 
 void Player::playerPickObject(int deltaTime) {
