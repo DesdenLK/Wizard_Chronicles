@@ -1,8 +1,9 @@
 #include "Object.h"
 #include <iostream>
 
-Object::Object(float x, float y, float w, float h)
+Object::Object(int id, float x, float y, float w, float h)
 {
+	this->id = id;
 	posicio = glm::vec2(x, y);
 	measures = glm::vec2(w, h);
 }

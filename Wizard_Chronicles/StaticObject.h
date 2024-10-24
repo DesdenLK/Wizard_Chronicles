@@ -4,7 +4,7 @@
 
 class StaticObject : public Object {
 public:
-	StaticObject(std::string type, float x, float y, float w, float h);
+	StaticObject(int id, std::string type, float x, float y, float w, float h);
 	StaticObject();
 	~StaticObject();
 

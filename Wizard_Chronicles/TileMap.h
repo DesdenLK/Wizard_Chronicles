@@ -49,6 +49,7 @@ public:
 
 	int pickingObject(const glm::vec2& posPlayer, const glm::vec2& playerSize);
 	DynamicObject* getDynamicObject(int index);
+	void destroyDynamicObject(int index);
 
 	void renderDynamicObjects();
 

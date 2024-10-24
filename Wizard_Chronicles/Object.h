@@ -7,12 +7,12 @@
 class Object {
 
 protected:
+	int id;
 	glm::vec2 posicio;
 	glm::vec2 measures;
 
-
 public:
-	Object(float x, float y, float w, float h);
+	Object(int id, float x, float y, float w, float h);
 	Object();
 	~Object();
 
@@ -28,7 +28,6 @@ public:
 
 	void setPosicio(glm::vec2 pos);
 	void setMeasures(glm::vec2 size);
-
 };
 
 #endif // _OBJECT_INCLUDE

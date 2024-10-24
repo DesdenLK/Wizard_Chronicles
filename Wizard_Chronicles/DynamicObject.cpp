@@ -4,15 +4,17 @@
 
 
 
-void DynamicObject::init(string pathToFile, float x, float y, float w, float h, glm::vec2 quadSize, float spriteWidth, float spriteHeight, glm::vec2 offSet, ShaderProgram& shaderProgram, TileMap *map)
+void DynamicObject::init(int id, string pathToFile, float x, float y, float w, float h, glm::vec2 quadSize, float spriteWidth, float spriteHeight, glm::vec2 offSet, ShaderProgram& shaderProgram, TileMap *map)
 {
+	this->id = id;
 	posicio = glm::vec2(x, y);
 	measures = glm::vec2(w, h);
 	this -> spriteOffset = offSet;
 	this->map = map;
 
 
-	objectState = { false, false, false};
+	objectState = { false, false, false, false, true };
+	loopTimesDestroy = 0;
 
 	speed = glm::vec2(0, 0);
 
@@ -32,10 +34,16 @@ void DynamicObject::update(int deltaTime)
 	else objectFalling();
 
 
+
 	
 	sprite->update(deltaTime);
 	sprite->setPosition(posicio);
 	//cout << "X: " << posicio.x << " Y: " << posicio.y << endl;
+}
+
+void DynamicObject::destroyObject()
+{
+	return;
 }
 
 void DynamicObject::render()
@@ -51,11 +59,13 @@ glm::vec2 DynamicObject::getSpeed() const
 void DynamicObject::pickObject()
 {
 	objectState.pickedUp = true;
+	objectState.hitboxEnabled = false;
 }
 
 void DynamicObject::dropObject(float XSpeed)
 {
 	objectState.pickedUp = false;
+	objectState.hitboxEnabled = true;
 	objectState.objectThrowed = true;
 	objectState.Jumping = true;
 	jumpAngle = 0;
@@ -108,6 +118,16 @@ void DynamicObject::objectJump()
 bool DynamicObject::IsPickedUp() const
 {
 	return objectState.pickedUp;
+}
+
+bool DynamicObject::IsDestroyed() const
+{
+	return objectState.destroyed;
+}
+
+bool DynamicObject::IsHitboxEnabled() const
+{
+	return objectState.hitboxEnabled;
 }
 
 void DynamicObject::setSpeed(glm::vec2 speed)

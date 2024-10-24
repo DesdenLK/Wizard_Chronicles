@@ -1,10 +1,11 @@
 #include "StaticObject.h"
 
-StaticObject::StaticObject(std::string type, float x, float y, float w, float h)
+StaticObject::StaticObject(int id, std::string type, float x, float y, float w, float h)
 {
 	posicio = glm::vec2(x, y);
 	measures = glm::vec2(w, h);
 	this->type = type;
+	this->id = id;
 }
 
 StaticObject::StaticObject()

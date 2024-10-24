@@ -14,11 +14,13 @@ class TileMap;
 class DynamicObject : public Object {
 protected:
 	struct ObjectState {
-		bool Jumping, pickedUp, objectThrowed;
+		bool Jumping, pickedUp, objectThrowed, destroyed, hitboxEnabled;
 	}objectState;
 
 	int jumpAngle;
 	float startY;
+
+	int loopTimesDestroy;
 
 	glm::vec2 speed;
 	glm::vec2 spriteOffset;
@@ -27,10 +29,12 @@ protected:
 	TileMap* map;
 
 public:
-	virtual void init(string pathToFile, float x, float y, float w, float h, glm::vec2 quadSize, float spriteWidth, float spriteHeight, glm::vec2 offSet, ShaderProgram& shaderProgram, TileMap *map);
+	virtual void init(int id, string pathToFile, float x, float y, float w, float h, glm::vec2 quadSize, float spriteWidth, float spriteHeight, glm::vec2 offSet, ShaderProgram& shaderProgram, TileMap *map);
 
 	void render();
 	void update(int deltaTime);
+
+	virtual void destroyObject();
 
 	virtual void objectFalling();
 	virtual void objectJump();
@@ -47,6 +51,9 @@ public:
 
 
 	bool IsPickedUp() const;
+	bool IsDestroyed() const;
+	bool IsHitboxEnabled() const;
+
 	void setSpeed(glm::vec2 speed);
 };
 

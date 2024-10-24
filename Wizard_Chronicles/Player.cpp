@@ -49,7 +49,7 @@ void Player::update(int deltaTime)
 
 	if (objectPickedUp != nullptr) {
 		objectPickedUp->update(deltaTime);
-		objectPickedUp->setPosicio(glm::vec2(posPlayer.x + 5, posPlayer.y - objectPickedUp->getMeasures().y));
+		objectPickedUp->setPosicio(glm::vec2(posPlayer.x + 8, posPlayer.y - objectPickedUp->getMeasures().y + 10));
 		//cout << "Object position: " << objectPickedUp->getPosicio().x << " " << objectPickedUp->getPosicio().y << endl;
 	}
 	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
@@ -59,8 +59,9 @@ void Player::update(int deltaTime)
 
 void Player::render()
 {
-	sprite->render();
 	if (objectPickedUp != nullptr) objectPickedUp->render();
+	sprite->render();
+	
 }
 
 void Player::setTileMap(TileMap *tileMap)
@@ -544,10 +545,13 @@ void Player::playerPickObject(int deltaTime) {
 void Player::playerDropObject(int deltaTime) {
 	playerState.PickingObject = !playerState.PickingObject;
 
-	if (sprite->animation() == JUMP_LEFT or sprite->animation() == MOVING_LEFT_OBJECT) objectPickedUp->dropObject(-playerVelocity.x);
-	else if (sprite->animation() == JUMP_RIGHT or sprite->animation() == MOVING_RIGHT_OBJECT) objectPickedUp->dropObject(playerVelocity.x);
-	else objectPickedUp->dropObject(0);
+	DynamicObject* object = objectPickedUp;
 	objectPickedUp = nullptr;
+
+	if (sprite->animation() == JUMP_LEFT or sprite->animation() == MOVING_LEFT_OBJECT) object->dropObject(-playerVelocity.x);
+	else if (sprite->animation() == JUMP_RIGHT or sprite->animation() == MOVING_RIGHT_OBJECT) object->dropObject(playerVelocity.x);
+	else object->dropObject(0);
+
 	if (sprite->animation() == PICKING_LEFT) sprite->changeAnimation(STAND_LEFT);
 	else if (sprite->animation() == PICKING_RIGHT) sprite->changeAnimation(STAND_RIGHT);
 }
