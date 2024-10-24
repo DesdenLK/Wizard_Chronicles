@@ -24,7 +24,7 @@ void DynamicObjectChest::setAnimations()
 
 	sprite->setAnimationSpeed(DESTROY_CHEST, 8);
 
-	sprite->addKeyframe(DESTROY_CHEST, glm::vec2(4*0.125, 0));
+	sprite->addKeyframe(DESTROY_CHEST, glm::vec2(4 * 0.125, 0));
 	sprite->addKeyframe(DESTROY_CHEST, glm::vec2(5 * 0.125, 0));
 	sprite->addKeyframe(DESTROY_CHEST, glm::vec2(6 * 0.125, 0));
 	sprite->addKeyframe(DESTROY_CHEST, glm::vec2(7 * 0.125, 0));
@@ -35,7 +35,7 @@ void DynamicObjectChest::setAnimations()
 	sprite->addKeyframe(OPEN_CHEST, glm::vec2(3 * 0.125, 0));
 
 
-	sprite->changeAnimation(0);
+	sprite->changeAnimation(true, 0);
 
 }
 
@@ -84,31 +84,23 @@ void DynamicObjectChest::objectJump()
 
 void DynamicObjectChest::destroyObject()
 {
-	if (objectState.objectThrowed and !objectState.destroyed)
-	{
-		objectState.destroyed = true;
-		objectState.hitboxEnabled = false;
-		sprite->changeAnimation(DESTROY_CHEST);
 
-		map->destroyDynamicObject(id);
-	}
-	else objectState.objectThrowed = false;
+	objectState.destroyed = true;
+	objectState.hitboxEnabled = false;
+	sprite->changeAnimation(false, DESTROY_CHEST);
+	sprite->renderNumAnims(3, 125);
+	map->destroyDynamicObject(id);
 
 }
 
 void DynamicObjectChest::openChest()
 {
 	if (objectState.objectThrowed and not objectState.destroyed) {
-		sprite->changeAnimation(OPEN_CHEST);
-		sprite->update(1000);
-		sprite->render();
-		sprite->update(1000);
-		sprite->render();
-		sprite->update(1000);
-		sprite->render();
-	}
+		objectState.destroyed = true;
+		sprite->changeAnimation(false, OPEN_CHEST);
 
-	//destroyObject();
+		//destroyObject();
+	}
 }
 
 

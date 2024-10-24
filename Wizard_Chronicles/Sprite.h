@@ -32,13 +32,15 @@ public:
 	void setNumberAnimations(int nAnimations);
 	void setAnimationSpeed(int animId, int keyframesPerSec);
 	void addKeyframe(int animId, const glm::vec2 &frame);
-	void changeAnimation(int animId);
+	void changeAnimation(bool loopAnimation, int animId);
 	int animation() const;
 
-	void renderNumAnims(int numberOfFrames);
+	void renderNumAnims(int numberOfFrames, int deltaTime);
 	
 	glm::vec2 getPosition();
 	void setPosition(const glm::vec2 &pos);
+
+	bool isAnimationFinished();
 
 private:
 	Texture *texture;
@@ -53,6 +55,8 @@ private:
 	vector<AnimKeyframes> animations;
 
 	float alpha;
+
+	bool loopAnimation, animationFinished;
 
 };
 
