@@ -38,7 +38,7 @@ public:
 	
 private:
 	bool Jumping, Climbing, isOnLadderTop, isHurt;
-	int loopTimesInactive, hurtTime;
+	int loopTimesInactive, hurtTime, verticalCollisionTimeout;
 	glm::ivec2 tileMapDispl;
 	glm::vec2 posPlayer, PlayerVelocity, PlayerAcceleration;
 	int jumpAngle, startY;

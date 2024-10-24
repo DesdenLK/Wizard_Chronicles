@@ -379,7 +379,7 @@ bool TileMap::lateralCollisionWithEnemy(const glm::vec2& posPlayer, const glm::v
 	for (auto& enemy : enemies) {
 		glm::vec2 enemyPos = enemy.second->getPosition();
 		glm::vec2 widthHeightEnemyBox = enemy.second->getBoundingBoxWH();
-		if (lateralBoxCollision(enemyPos,widthHeightEnemyBox,posPlayer,playerSize)) return true;
+		if (lateralBoxCollision(enemyPos,widthHeightEnemyBox,posPlayer,playerSize) and enemy.second->getId() != enemyToErase) return true;
 	}
 	return false;
 }

@@ -1,5 +1,6 @@
 #include "CaterpillarEnemy.h"
 #include "TileMap.h"
+#include "iostream"
 
 #define JUMP_ANGLE_STEP 4
 #define JUMP_HEIGHT 96
@@ -59,6 +60,8 @@ void CaterpillarEnemy::setAnimations() {
 void CaterpillarEnemy::changeToDeadAnimation() {
 	if (EnemyVelocity.x < 0) sprite->changeAnimation(DIE_LEFT);
 	else sprite->changeAnimation(DIE_RIGHT);
+	EnemyVelocity = glm::vec2(0.f, (496 - posEnemy.y) / (eraseAnimationTime/60));
+	//cout << "pos y: " << posEnemy.y << " velocity y: " << EnemyVelocity.y << endl;
 }
 
 int CaterpillarEnemy::getEraseAnimationTime() {

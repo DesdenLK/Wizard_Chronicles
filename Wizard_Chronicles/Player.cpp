@@ -13,6 +13,7 @@
 #define SPRITE_HEIGHT 1/16.f
 
 #define HURT_TIME 1000 //in ms
+#define VERTICAL_COL_TIMEOUT 500 //in ms
 
 
 enum PlayerAnims
@@ -26,6 +27,7 @@ void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 {
 	Jumping = false;
 	loopTimesInactive = 0;
+	verticalCollisionTimeout = 0;
 	PlayerVelocity = glm::vec2(0, 0);
 	PlayerAcceleration = glm::vec2(0, 0);
 
@@ -272,7 +274,7 @@ void Player::PlayerNOKeys(int deltaTime) {
 		case STAND_LEFT:
 			if (loopTimesInactive >= 500) { sprite->changeAnimation(HELLO_LEFT); loopTimesInactive = 0; }
 			else ++loopTimesInactive;
-			cout << "Loop: " << loopTimesInactive << endl;
+			//cout << "Loop: " << loopTimesInactive << endl;
 			break;
 		
 		case STAND_RIGHT:
@@ -291,7 +293,7 @@ void Player::PlayerNOKeys(int deltaTime) {
 		case STOPPING_LEFT:
 			if (PlayerVelocity.x == 0) sprite->changeAnimation(STAND_LEFT);
 			else PlayerVelocity.x = max(0.f, PlayerVelocity.x - PlayerAcceleration.x * deltaTime);
-			cout << "Vel: " << PlayerVelocity.x << endl;
+			//cout << "Vel: " << PlayerVelocity.x << endl;
 
 			if (map->collisionMoveLeft(posPlayer, glm::ivec2(32, 32)))
 			{
@@ -462,12 +464,18 @@ void Player::PlayerKey_S(int deltaTime)
 
 	if (sprite->animation() == FALL_LEFT or sprite->animation() == FALL_RIGHT) {
 		int collidedEnemyId = map->verticalCollisionWithEnemy(posPlayer, glm::vec2(32, 32));
-		if (collidedEnemyId != -1) {
+		if (collidedEnemyId != -1 and verticalCollisionTimeout <= 0) {
 			map->eraseEnemy(collidedEnemyId);
+			cout << "player velocity before collision: " << PlayerVelocity.y << endl;
+			cout << "pos player before collision: " << posPlayer.y << endl;
 			posPlayer.y -= PlayerVelocity.y;
+			sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
+			cout << "pos player after collision: " << posPlayer.y << endl;
 			sprite->changeAnimation(STAND_RIGHT);
+			verticalCollisionTimeout = VERTICAL_COL_TIMEOUT;
 			// sumar punts al Player
 		}
+		else if (collidedEnemyId != -1) verticalCollisionTimeout -= deltaTime;
 	}
 }
 
