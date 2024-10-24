@@ -3,12 +3,13 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "Scene.h"
 #include "Game.h"
+#include "CaterpillarEnemy.h"
 
 
 #define SCREEN_X 0
-#define SCREEN_Y 16
+#define SCREEN_Y 0
 
-#define INIT_PLAYER_X_TILES 16
+#define INIT_PLAYER_X_TILES 21  //branca enemics 20
 #define INIT_PLAYER_Y_TILES 14
 
 
@@ -34,14 +35,14 @@ Scene::~Scene()
 void Scene::init()
 {
 	initShaders();
-	cameraPos = glm::vec2(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
-	map = TileMap::createTileMap("levels/prueba.tmj", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
+	map = TileMap::createTileMap("levels/prueba2.tmj", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
 	player = new Player();
 	camera = new Camera();
+	
 	player->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
-	player->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize(), INIT_PLAYER_Y_TILES * map->getTileSize()));
+	player->setPosition(glm::vec2(INIT_Player_X_TILES * map->getTileSize(), INIT_Player_Y_TILES * map->getTileSize()));
 	player->setTileMap(map);
-	projection = camera->init(glm::vec2(0,0), 640, 480);
+	projection = camera->init(glm::vec2(0,0), SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
 	currentTime = 0.0f;
 }
 
@@ -49,6 +50,7 @@ void Scene::update(int deltaTime)
 {
 	currentTime += deltaTime;
 	player->update(deltaTime);
+	map->update(deltaTime);
 }
 
 void Scene::render()
@@ -64,8 +66,10 @@ void Scene::render()
 	modelview = glm::mat4(1.0f);
 	texProgram.setUniformMatrix4f("modelview", modelview);
 	texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);
+	//map->renderDynamicObjects();
 	map->render();
 	player->render();
+
 }
 
 
