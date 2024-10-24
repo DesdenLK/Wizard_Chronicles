@@ -37,13 +37,16 @@ Sprite::Sprite(const glm::vec2 &quadSize, const glm::vec2 &sizeInSpritesheet, Te
 
 void Sprite::update(int deltaTime)
 {
-	if(currentAnimation >= 0)
+	if(currentAnimation >= 0 and not animationFinished)
 	{
 		timeAnimation += deltaTime;
-		while(timeAnimation > animations[currentAnimation].millisecsPerKeyframe)
+		while (timeAnimation > animations[currentAnimation].millisecsPerKeyframe)
 		{
 			timeAnimation -= animations[currentAnimation].millisecsPerKeyframe;
 			currentKeyframe = (currentKeyframe + 1) % animations[currentAnimation].keyframeDispl.size();
+			if (not loopAnimation and currentKeyframe == animations[currentAnimation].keyframeDispl.size()-1) {
+				animationFinished = true;
+			}
 		}
 		texCoordDispl = animations[currentAnimation].keyframeDispl[currentKeyframe];
 	}
@@ -86,8 +89,10 @@ void Sprite::setNumberAnimations(int nAnimations)
 
 void Sprite::setAnimationSpeed(int animId, int keyframesPerSec)
 {
-	if(animId < int(animations.size()))
+	if (animId < int(animations.size())) {
+		loopAnimation = loopAnimation;
 		animations[animId].millisecsPerKeyframe = 1000.f / keyframesPerSec;
+	}
 }
 
 void Sprite::addKeyframe(int animId, const glm::vec2 &displacement)
@@ -96,10 +101,12 @@ void Sprite::addKeyframe(int animId, const glm::vec2 &displacement)
 		animations[animId].keyframeDispl.push_back(displacement);
 }
 
-void Sprite::changeAnimation(int animId)
+void Sprite::changeAnimation(bool loopAnimation, int animId)
 {
 	if(animId < int(animations.size()))
 	{
+		this -> loopAnimation = loopAnimation;
+		animationFinished = false;
 		currentAnimation = animId;
 		currentKeyframe = 0;
 		timeAnimation = 0.f;
@@ -112,6 +119,15 @@ int Sprite::animation() const
 	return currentAnimation;
 }
 
+void Sprite::renderNumAnims(int numberOfFrames, int deltaTime)
+{
+	for (int i = 0; i < numberOfFrames; i++)
+	{
+		update(deltaTime);
+		render();
+	}
+}
+
 void Sprite::setPosition(const glm::vec2 &pos)
 {
 	position = pos;
@@ -121,3 +137,6 @@ glm::vec2 Sprite::getPosition() {
 	return position;
 }
 
+bool Sprite::isAnimationFinished() {
+	return animationFinished;
+}

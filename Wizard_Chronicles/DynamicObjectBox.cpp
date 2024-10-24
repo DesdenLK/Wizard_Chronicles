@@ -28,7 +28,7 @@ void DynamicObjectBox::setAnimations()
 	sprite->addKeyframe(DESTROY_BOX, glm::vec2(0.6, 0));
 	sprite->addKeyframe(DESTROY_BOX, glm::vec2(0.8, 0));
 
-	sprite->changeAnimation(0);
+	sprite->changeAnimation(true, 0);
 
 }
 
@@ -102,7 +102,7 @@ void DynamicObjectBox::destroyObject()
 	{
 		objectState.destroyed = true;
 		objectState.hitboxEnabled = false;
-		sprite->changeAnimation(DESTROY_BOX);
+		sprite->changeAnimation(false, DESTROY_BOX);
 
 		map->destroyDynamicObject(id);
 	}

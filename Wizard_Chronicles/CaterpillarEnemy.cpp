@@ -21,10 +21,10 @@ void CaterpillarEnemy::updateEnemyMovement(int deltaTime) {
 		EnemyVelocity = -EnemyVelocity;
 		switch (sprite->animation()) {
 			case WALK_LEFT:
-				sprite->changeAnimation(WALK_RIGHT);
+				sprite->changeAnimation(true, WALK_RIGHT);
 				break;
 			case WALK_RIGHT:
-				sprite->changeAnimation(WALK_LEFT);
+				sprite->changeAnimation(true, WALK_LEFT);
 				break;
 			default:
 				break;
@@ -53,13 +53,13 @@ void CaterpillarEnemy::setAnimations() {
 	sprite->setAnimationSpeed(DIE_RIGHT, 4);
 	sprite->addKeyframe(DIE_RIGHT, glm::vec2(SPRITE_WIDTH, 0.0f));
 	
-	sprite->changeAnimation(WALK_RIGHT);
+	sprite->changeAnimation(true, WALK_RIGHT);
 
 }
 
 void CaterpillarEnemy::changeToDeadAnimation() {
-	if (EnemyVelocity.x < 0) sprite->changeAnimation(DIE_LEFT);
-	else sprite->changeAnimation(DIE_RIGHT);
+	if (EnemyVelocity.x < 0) sprite->changeAnimation(true,DIE_LEFT);
+	else sprite->changeAnimation(true,DIE_RIGHT);
 	EnemyVelocity = glm::vec2(0.f, (496 - posEnemy.y) / (eraseAnimationTime/60));
 	//cout << "pos y: " << posEnemy.y << " velocity y: " << EnemyVelocity.y << endl;
 }
