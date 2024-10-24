@@ -53,7 +53,7 @@ void DynamicObjectChest::objectFalling()
 		//cout << "collision detected" << endl;
 		speed.x = 0;
 		speed.y = 0;
-		destroyObject();
+		openChest();
 	}
 }
 
@@ -98,13 +98,15 @@ void DynamicObjectChest::destroyObject()
 
 void DynamicObjectChest::openChest()
 {
-	sprite->changeAnimation(OPEN_CHEST);
-	sprite->update(1000);
-	sprite->render();
-	sprite->update(1000);
-	sprite->render();
-	sprite->update(1000);
-	sprite->render();
+	if (objectState.objectThrowed and not objectState.destroyed) {
+		sprite->changeAnimation(OPEN_CHEST);
+		sprite->update(1000);
+		sprite->render();
+		sprite->update(1000);
+		sprite->render();
+		sprite->update(1000);
+		sprite->render();
+	}
 
 	//destroyObject();
 }

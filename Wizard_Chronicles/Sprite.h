@@ -34,6 +34,8 @@ public:
 	void addKeyframe(int animId, const glm::vec2 &frame);
 	void changeAnimation(int animId);
 	int animation() const;
+
+	void renderNumAnims(int numberOfFrames);
 	
 	glm::vec2 getPosition();
 	void setPosition(const glm::vec2 &pos);

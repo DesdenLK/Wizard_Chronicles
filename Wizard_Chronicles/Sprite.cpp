@@ -108,6 +108,15 @@ int Sprite::animation() const
 	return currentAnimation;
 }
 
+void Sprite::renderNumAnims(int numberOfFrames)
+{
+	for (int i = 0; i < numberOfFrames; i++)
+	{
+		update(10000);
+		render();
+	}
+}
+
 void Sprite::setPosition(const glm::vec2 &pos)
 {
 	position = pos;
