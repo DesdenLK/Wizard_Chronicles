@@ -11,6 +11,7 @@ enum BoxAnims { CHEST, DESTROY_CHEST, OPEN_CHEST, NUM_ANIMS };
 void DynamicObjectChest::init(int id, string pathToFile, float x, float y, float w, float h, glm::vec2 quadSize, float spriteWidth, float spriteHeight, glm::vec2 offSet, ShaderProgram& shaderProgram, TileMap* map)
 {
 	DynamicObject::init(id, pathToFile, x, y, w, h, quadSize, spriteWidth, spriteHeight, offSet, shaderProgram, map);
+	chestOpened = false;
 	setAnimations();
 }
 
@@ -84,22 +85,28 @@ void DynamicObjectChest::objectJump()
 
 void DynamicObjectChest::destroyObject()
 {
-
-	objectState.destroyed = true;
-	objectState.hitboxEnabled = false;
-	sprite->changeAnimation(false, DESTROY_CHEST);
-	sprite->renderNumAnims(3, 125);
-	map->destroyDynamicObject(id);
+	if (chestOpened and not objectState.destroyed) {
+		objectState.destroyed = true;
+		sprite->changeAnimation(false, DESTROY_CHEST);
+	}
+	else if (sprite->isAnimationFinished() and objectState.destroyed) {
+		objectState.destroyed = true;
+		map->destroyDynamicObject(id);	
+	}
 
 }
 
 void DynamicObjectChest::openChest()
 {
-	if (objectState.objectThrowed and not objectState.destroyed) {
-		objectState.destroyed = true;
+
+	if (objectState.objectThrowed and not chestOpened) {
+		objectState.hitboxEnabled = false;
+		chestOpened = true;
 		sprite->changeAnimation(false, OPEN_CHEST);
 
-		//destroyObject();
+	}
+	else if (chestOpened and sprite->isAnimationFinished()) {
+		destroyObject();
 	}
 }
 

@@ -58,8 +58,6 @@ public:
 	DynamicObject* getDynamicObject(int index);
 	void destroyDynamicObject(int index);
 
-	void eraseDynamicObjects();
-
 	void renderDynamicObjects();
 	
 private:
@@ -94,9 +92,6 @@ private:
 	vector<DynamicObject*> dynamicObjects;
 	int nDynamicObjects;
 
-	vector<DynamicObject*> objectsToErase;
-	int nObjectsToErase;
-	int loopTimesToErase;
 
 	//vector<std::map<string,string>>* objects; branca enemics
 	std::map<int,Enemy*> enemies;		//(id_enemic,enemic)

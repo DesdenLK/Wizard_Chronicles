@@ -86,8 +86,6 @@ void TileMap::update(int deltaTime)
 	for (int i = 0; i < nDynamicObjects; ++i) {
 		if (dynamicObjects[i] != nullptr) dynamicObjects[i]->update(deltaTime);
   }
-	if (loopTimesToErase > 100) { eraseDynamicObjects(); loopTimesToErase = 0; }
-	else ++loopTimesToErase;
     
   if (enemyToErase != -1) {
 	  eraseAnimationTime -= deltaTime;
@@ -228,9 +226,6 @@ bool TileMap::loadLevel(const string& levelFile, ShaderProgram& program)
 
 	initDynamicObjects(dynamic_objectsJSON, program);
 
-	objectsToErase = vector<DynamicObject*>(nDynamicObjects);
-	nObjectsToErase = 0;
-	loopTimesToErase = 0;
 
 
 	for (int i = 0; i < mapSize.x * mapSize.y; i++)
@@ -566,19 +561,7 @@ DynamicObject* TileMap::getDynamicObject(int index)
 
 void TileMap::destroyDynamicObject(int index)
 {
-	//delete dynamicObjects[index];
-	objectsToErase[index] = dynamicObjects[index];
-}
-
-void TileMap::eraseDynamicObjects()
-{
-	for (int i = 0; i < nDynamicObjects; ++i) {
-		if (objectsToErase[i] != nullptr) {
-			dynamicObjects[i] = nullptr;
-			objectsToErase[i] = nullptr;
-			delete objectsToErase[i];
-		}
-	}
+	dynamicObjects[index] = nullptr;
 }
 
 

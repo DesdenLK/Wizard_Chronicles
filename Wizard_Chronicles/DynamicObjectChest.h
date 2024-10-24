@@ -2,6 +2,8 @@
 #include "DynamicObject.h"  
 class DynamicObjectChest : public DynamicObject
 {
+	private:
+		bool chestOpened;
 	public:
 		void init(int id, string pathToFile, float x, float y, float w, float h, glm::vec2 quadSize, float spriteWidth, float spriteHeight, glm::vec2 offSet, ShaderProgram& shaderProgram, TileMap* map) override;
 		void setAnimations();
