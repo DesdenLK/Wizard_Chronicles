@@ -10,10 +10,10 @@ using json = nlohmann::json;
 
 
 
-TileMap *TileMap::createTileMap(const string &levelFile, const glm::vec2 &minCoords, ShaderProgram &program)
+TileMap *TileMap::createTileMap(const string &levelFile, const glm::vec2 &minCoords, ShaderProgram &program, int timeLimit)
 {
 	TileMap *map = new TileMap(levelFile, minCoords, program);
-
+	map->setTimeLeft(timeLimit);
 	return map;
 }
 
@@ -23,6 +23,8 @@ TileMap::TileMap(const string &levelFile, const glm::vec2 &minCoords, ShaderProg
 	this->program = &program;
 	loadLevel(levelFile, program);
 	prepareArrays(minCoords, program);
+
+	playerScore = 0;
 }
 
 TileMap::~TileMap()
@@ -86,6 +88,9 @@ void TileMap::render() const
 
 void TileMap::update(int deltaTime)
 {
+
+	timeLeft -= deltaTime;
+	cout << "Time left: " << timeLeft << endl;
 	for (int i = 0; i < nDynamicObjects; ++i) {
 		if (dynamicObjects[i] != nullptr) dynamicObjects[i]->update(deltaTime);
 	}
@@ -642,6 +647,26 @@ void TileMap::renderDynamicObjects()
 	for (int i = 0; i < nDynamicObjects; ++i) {
 		if (dynamicObjects[i] != nullptr) dynamicObjects[i]->render();
 	}
+}
+
+void TileMap::setPlayerScore(int score)
+{
+	playerScore = score;
+}
+
+int TileMap::getPlayerScore()
+{
+	return playerScore;
+}
+
+void TileMap::setTimeLeft(int time)
+{
+	timeLeft = time;
+}
+
+int TileMap::getTimeLeft()
+{
+	return timeLeft;
 }
 
 /*bool TileMap::isOnLadderTop(const glm::vec2& posPlayer, const glm::vec2& PlayerSize) {

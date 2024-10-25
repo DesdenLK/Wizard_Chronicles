@@ -46,6 +46,7 @@ void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
 
 	playerLifes = 3;
+	playerScore = 0;
 	godMode = false;
 	gPressed = false;
 	
@@ -266,6 +267,7 @@ int Player::getPlayerLifes()
 {
 	return playerLifes;
 }
+
 
 void Player::updatePlayerMovement(int deltaTime) {
 

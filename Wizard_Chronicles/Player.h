@@ -40,6 +40,7 @@ public:
 
 
 
+
 	glm::vec2 getPosition();
 	glm::vec2 getVelocity();
 	
@@ -59,7 +60,7 @@ private:
 
 	DynamicObject* objectPickedUp;
 
-	int playerLifes;
+	int playerLifes, playerScore;
 	bool gPressed;
 	bool godMode;
 

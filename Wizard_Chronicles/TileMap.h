@@ -34,7 +34,7 @@ private:
 
 public:
 	// Tile maps can only be created inside an OpenGL context
-	static TileMap *createTileMap(const string &levelFile, const glm::vec2 &minCoords, ShaderProgram &program);
+	static TileMap *createTileMap(const string &levelFile, const glm::vec2 &minCoords, ShaderProgram &program, int timeLimit);
 
 	~TileMap();
 
@@ -68,6 +68,11 @@ public:
 	void destroyDynamicObject(int index);
 
 	void renderDynamicObjects();
+
+	void setPlayerScore(int score);
+	int getPlayerScore();
+	void setTimeLeft(int time);
+	int getTimeLeft();
 
 	//void addPickableObject(PickableObject* object);
 	
@@ -110,6 +115,8 @@ private:
 	//vector<std::map<string,string>>* objects; branca enemics
 	std::map<int,Enemy*> enemies;		//(id_enemic,enemic)
 	int enemyToErase = -1, eraseAnimationTime;
+
+	int playerScore, timeLeft;
 };
 
 
