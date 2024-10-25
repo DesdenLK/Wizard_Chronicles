@@ -46,13 +46,25 @@ void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
 
 	playerLifes = 3;
+	godMode = false;
+	gPressed = false;
 	
 }
 
 void Player::update(int deltaTime)
 {
+
+	if (Game::instance().getKey(GLFW_KEY_G) and not gPressed) gPressed = true;
+	else if (not Game::instance().getKey(GLFW_KEY_G) and gPressed) {
+		gPressed = false;
+		godMode = not godMode;
+	}
+
+
+	if (Game::instance().getKey(GLFW_KEY_H)) playerLifes = 3;
+
 	if (isHurt) {
-		if (hurtTime == HURT_TIME) --playerLifes;
+		if (hurtTime == HURT_TIME and not godMode) --playerLifes;
 		hurtTime -= deltaTime;
 		hurtFrameTime -= deltaTime;
 		if (hurtTime <= 0) {

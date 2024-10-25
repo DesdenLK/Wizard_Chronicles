@@ -60,6 +60,8 @@ private:
 	DynamicObject* objectPickedUp;
 
 	int playerLifes;
+	bool gPressed;
+	bool godMode;
 
 };
 

@@ -48,8 +48,9 @@ void Scene::init()
 
 void Scene::update(int deltaTime)
 {
-	if (player->getPlayerLifes() == 0) init();
+	if (player->getPlayerLifes() == 0) { init(); Game::instance().setTries(Game::instance().getTries() - 1);  }
 
+	cout << "Lifes: " << player->getPlayerLifes() << endl;
 	currentTime += deltaTime;
 	map->update(deltaTime);
 	player->update(deltaTime);
