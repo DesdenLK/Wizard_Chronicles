@@ -3,8 +3,7 @@
 #include <sstream>
 #include <vector>
 #include "TileMap.h"
-#include "DynamicObjectBox.h"
-#include "DynamicObject.h"
+
 
 using namespace std;
 using json = nlohmann::json;
@@ -136,8 +135,9 @@ void TileMap::initDynamicObjects(const nlohmann::json& j, ShaderProgram &program
 			dynamicObjects[i]->init(i, "images/DynamicObjects/Chest.png", float(obj["x"]), float(obj["y"]), float(obj["width"]), float(obj["height"]), glm::vec2(float(obj["width"]), float(obj["height"])), 0.125, 1, glm::vec2(0, 0), program, this);
 
 			if (obj["properties"].size() > 0) {
-				dynamicObjects[i]->setPickableItem(obj["properties"][0]["value"]);
+				dynamicObjects[i]->setPickableObject(obj["properties"][0]["value"]);
 			}
+			cout << "PROPERTIES: " << obj["properties"][0]["value"] << endl;
 		}
 
 		else if (obj["type"] == "Barrel") {
@@ -567,11 +567,36 @@ int TileMap::pickingObject(const glm::vec2& pos, const glm::vec2& size)
 }
 
 void TileMap::addPickableObject(string type, glm::vec2 pos, glm::vec2 measures)
+{	
+	cout << "TYPE: " << type << endl;
+	if (type == "Cake") {
+		PickableObject* object = new Cake();
+		object->init(pickableObjects.size(), pos.x, pos.y, measures.x, measures.y, glm::vec2(10, 10), 0.25, 0.25, *program, this);
+		pickableObjects.push_back(object);
+		nPickableObjects++;
+	}
+	else if (type == "Coin") {
+		PickableObject* object = new Coin();
+		object->init(pickableObjects.size(), pos.x, pos.y, measures.x, measures.y, glm::vec2(10, 10), 0.25, 1, *program, this);
+		pickableObjects.push_back(object);
+		nPickableObjects++;
+	}
+}
+
+int TileMap::collisionWithPickableObject(const glm::vec2& posPlayer, const glm::vec2& playerSize)
 {
-	PickableObject* object = new PickableObject();
-	object->init(pickableObjects.size(), "images/DynamicObjects/Cake.png", pos.x, pos.y, measures.x, measures.y, glm::vec2(10, 10), 1, 1, *program, this);
-	pickableObjects.push_back(object);
-	nPickableObjects++;
+	for (int i = 0; i < nPickableObjects; ++i) {
+		if (pickableObjects[i] != nullptr) {
+			if (pickableObjects[i]->objectCollision(posPlayer, playerSize)) return i;
+		}
+	}
+	return -1;
+}
+
+void TileMap::erasePickableObject(int pickableObjectId)
+{
+	pickableObjects[pickableObjectId] = nullptr;
+	nPickableObjects--;
 }
 
 DynamicObject* TileMap::getDynamicObject(int index)

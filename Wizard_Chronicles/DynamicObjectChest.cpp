@@ -5,14 +5,14 @@
 
 
 
-enum BoxAnims { CHEST, DESTROY_CHEST, OPEN_CHEST, NUM_ANIMS };
+enum ChestAnims { CHEST, DESTROY_CHEST, OPEN_CHEST, NUM_ANIMS };
 
 
 void DynamicObjectChest::init(int id, string pathToFile, float x, float y, float w, float h, glm::vec2 quadSize, float spriteWidth, float spriteHeight, glm::vec2 offSet, ShaderProgram& shaderProgram, TileMap* map)
 {
 	DynamicObject::init(id, pathToFile, x, y, w, h, quadSize, spriteWidth, spriteHeight, offSet, shaderProgram, map);
 	chestOpened = false;
-	pickableItem = "coin";
+	pickableItem = "Coin";
 	setAnimations();
 }
 
@@ -83,6 +83,11 @@ void DynamicObjectChest::objectJump()
 			objectState.Jumping = !map->collisionMoveUp(posicio, measures, &posicio.y);
 		}
 	}
+}
+
+void DynamicObjectChest::setPickableObject(string item)
+{
+	pickableItem = item;
 }
 
 void DynamicObjectChest::destroyObject()

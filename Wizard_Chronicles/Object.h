@@ -22,7 +22,6 @@ public:
 	bool objectCollision(glm::vec2 pos, glm::vec2 size);
 
 	virtual bool isPickable();
-	virtual void setPickableItem(std::string item);
 
 	bool leftCollision(glm::vec2 pos, glm::vec2 size);
 	bool rightCollision(glm::vec2 pos, glm::vec2 size);

@@ -39,6 +39,8 @@ public:
 	virtual void objectFalling();
 	virtual void objectJump();
 
+	virtual void setPickableObject(string item);
+
 
 	//virtual void setAnimations();
 

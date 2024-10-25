@@ -13,6 +13,8 @@ class DynamicObjectChest : public DynamicObject
 		void objectFalling() override;
 		void objectJump() override;
 
+		void setPickableObject(string item) override;
+
 		void destroyObject() override;
 		void openChest();
 };

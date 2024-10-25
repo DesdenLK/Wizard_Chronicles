@@ -65,6 +65,9 @@ void Player::update(int deltaTime)
 	sprite->update(deltaTime);
 	updatePlayerMovement(deltaTime);
 
+	int pickableObjectID = map->collisionWithPickableObject(posPlayer, glm::vec2(32, 32));
+	if (pickableObjectID != -1) map->erasePickableObject(pickableObjectID);
+
 
 	if (objectPickedUp != nullptr) {
 		objectPickedUp->update(deltaTime);

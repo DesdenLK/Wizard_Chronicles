@@ -12,7 +12,8 @@
 #include "DynamicObjectChest.h"
 #include "DynamicObjectBox.h"
 
-#include "PickableObject.h"
+#include "Cake.h"
+#include "Coin.h"
 #include <map>
 
 
@@ -59,6 +60,9 @@ public:
 
 	int pickingObject(const glm::vec2& posPlayer, const glm::vec2& playerSize);
 	void addPickableObject(string type, glm::vec2 pos, glm::vec2 measures);
+	int collisionWithPickableObject(const glm::vec2& posPlayer, const glm::vec2& playerSize);
+	void erasePickableObject(int pickableObjectId);
+
 	DynamicObject* getDynamicObject(int index);
 	void destroyDynamicObject(int index);
 

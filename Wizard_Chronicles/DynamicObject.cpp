@@ -120,6 +120,11 @@ void DynamicObject::objectJump()
 	}
 }
 
+void DynamicObject::setPickableObject(string item)
+{
+	return;
+}
+
 bool DynamicObject::IsPickedUp() const
 {
 	return objectState.pickedUp;
