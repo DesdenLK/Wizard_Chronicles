@@ -266,11 +266,13 @@ void Player::updatePlayerMovement(int deltaTime) {
 	if (Game::instance().getKey(GLFW_KEY_W) && ladderCollision || playerState.Jumping) playerKey_W(deltaTime);
 	else if (!ladderCollision) playerFalling(deltaTime);
 
+	if (Game::instance().getKey(GLFW_KEY_S)) { playerKey_S(deltaTime); loopTimesInactive = 0; }
+
 	if (Game::instance().getKey(GLFW_KEY_A)) { playerKey_A(deltaTime); loopTimesInactive = 0; }
 
 	if (Game::instance().getKey(GLFW_KEY_D)) { playerKey_D(deltaTime); loopTimesInactive = 0; }
 
-	if (Game::instance().getKey(GLFW_KEY_S)) { playerKey_S(deltaTime); loopTimesInactive = 0; }
+
 
 	if (Game::instance().getKey(GLFW_KEY_ENTER)) { 
 		if (objectPickedUp == nullptr and playerState.canPickObject) playerPickObject(deltaTime); 
@@ -472,6 +474,14 @@ void Player::playerFalling(int deltaTime)
 
 void Player::playerKey_W(int deltaTime) {
 	// fet per l'escala, adaptar metodes per quan tinguem objectes que no es poden traspassar
+
+	if (isHurt != true and map->lateralCollisionWithEnemy(posPlayer, glm::vec2(32, 32)) != -1) {
+		isHurt = true;
+		hurtTime = HURT_TIME;
+		hurtFrameTime = HURT_FRAME_TIME;
+	}
+
+
 	if (map->ladderCollision(posPlayer, glm::vec2(32, 32))) {
 		playerState.Climbing = true;
 		playerState.Jumping = false;
@@ -547,6 +557,15 @@ void Player::playerKey_W(int deltaTime) {
 
 void Player::playerKey_S(int deltaTime)
 {
+    if (sprite->animation() != FALL_LEFT && sprite->animation() != FALL_RIGHT) {
+		if (isHurt != true and map->lateralCollisionWithEnemy(posPlayer, glm::vec2(32, 32)) != -1) {
+			isHurt = true;
+			hurtTime = HURT_TIME;
+			hurtFrameTime = HURT_FRAME_TIME;
+		}
+	}
+
+
 	if (map->ladderCollision(posPlayer, glm::vec2(32,32))) {
 		playerState.Climbing = true;
 	}

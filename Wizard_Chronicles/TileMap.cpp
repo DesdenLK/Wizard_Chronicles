@@ -513,11 +513,13 @@ bool TileMap::collisionMoveUp(const glm::vec2& pos, const glm::ivec2& size, floa
 
 int TileMap::lateralCollisionWithEnemy(const glm::vec2& posPlayer, const glm::vec2& playerSize) {
 	for (auto enemy : enemies) {
-		glm::vec2 enemyPos = enemy.second->getPosition();
-		glm::vec2 widthHeightEnemyBox = enemy.second->getBoundingBoxWH();
-		if (lateralBoxCollision(enemyPos, widthHeightEnemyBox, posPlayer, playerSize) and enemy.first != enemyToErase) {
-			cout << "collision with enemy with id: " << enemy.first << endl;
-			return enemy.first;
+		if (enemy.second->isHitBoxEnabled()) {
+			glm::vec2 enemyPos = enemy.second->getPosition();
+			glm::vec2 widthHeightEnemyBox = enemy.second->getBoundingBoxWH();
+			if (lateralBoxCollision(enemyPos, widthHeightEnemyBox, posPlayer, playerSize) and enemy.first != enemyToErase) {
+				cout << "collision with enemy with id: " << enemy.first << endl;
+				return enemy.first;
+			}
 		}
 	}
 	return -1;
@@ -525,12 +527,14 @@ int TileMap::lateralCollisionWithEnemy(const glm::vec2& posPlayer, const glm::ve
 
 int TileMap::verticalCollisionWithEnemy(const glm::vec2& posPlayer, const glm::vec2& playerSize) {
 	for (auto enemy : enemies) {
-		glm::vec2 enemyPos = enemy.second->getPosition();
-		glm::vec2 widthHeightEnemyBox = enemy.second->getBoundingBoxWH();
-		//cout << "possible collision with Player=(" << posPlayer.x << ',' << posPlayer.y << ",32,32) i Enemic (" << enemyPos.x << ',' << enemyPos.y << ',' << widthHeightEnemyBox[0] << ',' << widthHeightEnemyBox[1] << ')' << endl;
-		if (verticalBoxCollision(posPlayer, playerSize, enemyPos, widthHeightEnemyBox)) {
-			cout << "collision with enemy with id: " << enemy.first << endl;
-			return enemy.first;
+		if (enemy.second->isHitBoxEnabled()) {
+			glm::vec2 enemyPos = enemy.second->getPosition();
+			glm::vec2 widthHeightEnemyBox = enemy.second->getBoundingBoxWH();
+			//cout << "possible collision with Player=(" << posPlayer.x << ',' << posPlayer.y << ",32,32) i Enemic (" << enemyPos.x << ',' << enemyPos.y << ',' << widthHeightEnemyBox[0] << ',' << widthHeightEnemyBox[1] << ')' << endl;
+			if (verticalBoxCollision(posPlayer, playerSize, enemyPos, widthHeightEnemyBox)) {
+				cout << "collision with enemy with id: " << enemy.first << endl;
+				return enemy.first;
+			}
 		}
 	}
 	return -1;
@@ -669,6 +673,7 @@ bool TileMap::verticalBoxCollision(glm::vec2 coordsMin1, glm::vec2 widthHeight1,
 void TileMap::eraseEnemy(int enemyId) {
 	cout << "about to erase enemy with id: " << enemyId << " from enemies " << enemies.begin()->first << endl;
 	auto enemy = enemies[enemyId];
+	enemy->setHitBoxEnabled(false);
 	enemy->changeToDeadAnimation();
 	enemyToErase = enemyId;
 	eraseAnimationTime = enemy->getEraseAnimationTime();

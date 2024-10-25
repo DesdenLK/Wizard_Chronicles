@@ -29,10 +29,13 @@ public:
 	glm::vec2 getVelocity();
 	glm::vec2 getBoundingBoxWH();
 
+	bool isHitBoxEnabled();
+	void setHitBoxEnabled(bool hitBoxEnabled);
+
 protected:
 	int id;	// estrictament positiu
 	int eraseAnimationTime;
-	bool Jumping;
+	bool Jumping, hitBoxEnabled;
 	int loopTimesInactive;
 	glm::ivec2 tileMapDispl;
 	glm::vec2 posEnemy, EnemyVelocity, EnemyAcceleration;
