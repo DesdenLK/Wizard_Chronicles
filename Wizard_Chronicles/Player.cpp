@@ -44,12 +44,15 @@ void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 
 	tileMapDispl = tileMapPos;
 	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
+
+	playerLifes = 3;
 	
 }
 
 void Player::update(int deltaTime)
 {
 	if (isHurt) {
+		if (hurtTime == HURT_TIME) --playerLifes;
 		hurtTime -= deltaTime;
 		hurtFrameTime -= deltaTime;
 		if (hurtTime <= 0) {
@@ -62,6 +65,7 @@ void Player::update(int deltaTime)
 			hurtFrameTime = HURT_FRAME_TIME;
 		}
 	}
+
 	sprite->update(deltaTime);
 	updatePlayerMovement(deltaTime);
 
@@ -246,6 +250,11 @@ void Player::setAnimations() {
 	sprite->changeAnimation(true, 2);
 }
 
+int Player::getPlayerLifes()
+{
+	return playerLifes;
+}
+
 void Player::updatePlayerMovement(int deltaTime) {
 
 	bool KeysPressed = Game::instance().getKey(GLFW_KEY_W) || Game::instance().getKey(GLFW_KEY_A) || Game::instance().getKey(GLFW_KEY_S) || Game::instance().getKey(GLFW_KEY_D);
@@ -283,7 +292,7 @@ void Player::playerKey_A(int deltaTime) {
 	glm::vec2 initialPosPlayer = posPlayer;
 	posPlayer.x -= playerVelocity.x;
 
-	if (map->lateralCollisionWithEnemy(posPlayer, glm::vec2(32, 32)) != -1) {
+	if (isHurt != true  and map->lateralCollisionWithEnemy(posPlayer, glm::vec2(32, 32)) != -1) {
 		isHurt = true;
 		hurtTime = HURT_TIME;
 		hurtFrameTime = HURT_FRAME_TIME;
@@ -321,7 +330,7 @@ void Player::playerKey_D(int deltaTime) {
 	glm::vec2 initialPosPlayer = posPlayer;
 	posPlayer.x += playerVelocity.x;
 
-	if (map->lateralCollisionWithEnemy(posPlayer, glm::vec2(32, 32)) != -1) {
+	if (isHurt != true and map->lateralCollisionWithEnemy(posPlayer, glm::vec2(32, 32)) != -1) {
 		isHurt = true;
 		hurtTime = HURT_TIME;
 		hurtFrameTime = HURT_FRAME_TIME;
@@ -351,7 +360,7 @@ void Player::playerKey_D(int deltaTime) {
 }
 
 void Player::playerNOKeys(int deltaTime) {
-	if (map->lateralCollisionWithEnemy(posPlayer, glm::vec2(32, 32)) != -1) {
+	if (isHurt != true and map->lateralCollisionWithEnemy(posPlayer, glm::vec2(32, 32)) != -1) {
 		isHurt = true;
 		hurtTime = HURT_TIME;
 		hurtFrameTime = HURT_FRAME_TIME;

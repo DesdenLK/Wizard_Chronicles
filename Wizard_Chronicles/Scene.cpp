@@ -48,6 +48,8 @@ void Scene::init()
 
 void Scene::update(int deltaTime)
 {
+	if (player->getPlayerLifes() == 0) init();
+
 	currentTime += deltaTime;
 	map->update(deltaTime);
 	player->update(deltaTime);
