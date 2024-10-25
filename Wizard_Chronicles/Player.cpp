@@ -563,8 +563,8 @@ void Player::playerKey_S(int deltaTime)
 	else if (sprite->animation() == MOVE_LEFT || sprite->animation() == STAND_LEFT || sprite->animation() == HELLO_LEFT || sprite->animation() == STOPPING_LEFT) sprite->changeAnimation(true, CROUCH_LEFT);
 	else if (sprite->animation() == MOVE_RIGHT || sprite->animation() == STAND_RIGHT || sprite->animation() == HELLO_RIGHT || sprite->animation() == STOPPING_RIGHT) sprite->changeAnimation(true, CROUCH_RIGHT);
 
-	else if (sprite->animation() == JUMP_LEFT) sprite->changeAnimation(true, FALL_LEFT);
-	else if (sprite->animation() == JUMP_RIGHT) sprite->changeAnimation(true, FALL_RIGHT);
+	else if (sprite->animation() == JUMP_LEFT and objectPickedUp == nullptr) sprite->changeAnimation(true, FALL_LEFT);
+	else if (sprite->animation() == JUMP_RIGHT and objectPickedUp == nullptr) sprite->changeAnimation(true, FALL_RIGHT);
 
 	if (sprite->animation() == FALL_LEFT or sprite->animation() == FALL_RIGHT) {
 		int collidedEnemyId = map->verticalCollisionWithEnemy(posPlayer, glm::vec2(32, 32));
@@ -580,6 +580,8 @@ void Player::playerKey_S(int deltaTime)
 			// sumar punts al Player
 		}
 		else if (collidedEnemyId != -1) verticalCollisionTimeout -= deltaTime;
+
+		int collideWithChest = map->collisionWithChest(posPlayer, glm::vec2(32, 32));
 	}
 }
 

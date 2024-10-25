@@ -63,6 +63,7 @@ public:
 	int collisionWithPickableObject(const glm::vec2& posPlayer, const glm::vec2& playerSize);
 	void erasePickableObject(int pickableObjectId);
 
+	int collisionWithChest(const glm::vec2& posPlayer, const glm::vec2& playerSize);
 	DynamicObject* getDynamicObject(int index);
 	void destroyDynamicObject(int index);
 

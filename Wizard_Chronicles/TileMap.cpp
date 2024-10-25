@@ -599,6 +599,19 @@ void TileMap::erasePickableObject(int pickableObjectId)
 	nPickableObjects--;
 }
 
+int TileMap::collisionWithChest(const glm::vec2& posPlayer, const glm::vec2& playerSize)
+{
+	for (int i = 0; i < nDynamicObjects; ++i) {
+		if (dynamicObjects[i] != nullptr) {
+			if (dynamicObjects[i]->topCollision(posPlayer, playerSize) and dynamicObjects[i]->isChest()) {
+				dynamicObjects[i]->openChest(true);
+				return i;
+			};
+		}
+	}
+	return -1;
+}
+
 DynamicObject* TileMap::getDynamicObject(int index)
 {
 	return dynamicObjects[index];

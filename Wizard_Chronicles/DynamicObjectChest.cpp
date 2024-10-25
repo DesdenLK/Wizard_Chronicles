@@ -47,8 +47,8 @@ void DynamicObjectChest::objectFalling()
 	posicio.y += FALL_STEP;
 	speed.y = FALL_STEP;
 
-	if (speed.x > 0 and map->collisionMoveRight(posicio, measures)) { speed.x = 0; openChest(); }
-	else if (speed.x < 0 and map->collisionMoveLeft(posicio, measures)) { speed.x = 0; openChest(); }
+	if (speed.x > 0 and map->collisionMoveRight(posicio, measures)) { speed.x = 0; openChest(false); }
+	else if (speed.x < 0 and map->collisionMoveLeft(posicio, measures)) { speed.x = 0; openChest(false); }
 
 	posicio.x += speed.x;
 	if (map->collisionMoveDown(posicio, measures, &posicio.y))
@@ -56,7 +56,7 @@ void DynamicObjectChest::objectFalling()
 		//cout << "collision detected" << endl;
 		speed.x = 0;
 		speed.y = 0;
-		openChest();
+		openChest(false);
 	}
 }
 
@@ -65,8 +65,8 @@ void DynamicObjectChest::objectJump()
 	speed.y = JUMP_HEIGHT * sin(3.14159f * jumpAngle / 180.f);
 	jumpAngle += JUMP_ANGLE_STEP;
 
-	if (speed.x > 0 and map->collisionMoveRight(posicio, measures)) { speed.x = 0; openChest(); }
-	else if (speed.x < 0 and map->collisionMoveLeft(posicio, measures)) { speed.x = 0; openChest(); }
+	if (speed.x > 0 and map->collisionMoveRight(posicio, measures)) { speed.x = 0; openChest(false); }
+	else if (speed.x < 0 and map->collisionMoveLeft(posicio, measures)) { speed.x = 0; openChest(false); }
 	posicio.x += speed.x;
 
 	if (jumpAngle == 180)
@@ -90,6 +90,11 @@ void DynamicObjectChest::setPickableObject(string item)
 	pickableItem = item;
 }
 
+bool DynamicObjectChest::isChest() const
+{
+	return true;
+}
+
 void DynamicObjectChest::destroyObject()
 {
 	if (chestOpened and not objectState.destroyed) {
@@ -104,10 +109,10 @@ void DynamicObjectChest::destroyObject()
 
 }
 
-void DynamicObjectChest::openChest()
+void DynamicObjectChest::openChest(bool playerDropping)
 {
 
-	if (objectState.objectThrowed and not chestOpened) {
+	if ((objectState.objectThrowed and not chestOpened) or playerDropping) {
 		objectState.hitboxEnabled = false;
 		chestOpened = true;
 		sprite->changeAnimation(false, OPEN_CHEST);

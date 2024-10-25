@@ -50,12 +50,14 @@ public:
 
 	void pickObject();
 	void dropObject(float XSpeed);
+	virtual void openChest(bool playerDropping);
 	//void throwObject();
 
 
 	bool IsPickedUp() const;
 	bool IsDestroyed() const;
 	bool IsHitboxEnabled() const;
+	virtual bool isChest() const;
 
 	void setSpeed(glm::vec2 speed);
 };
