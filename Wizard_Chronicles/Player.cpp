@@ -83,7 +83,12 @@ void Player::update(int deltaTime)
 	updatePlayerMovement(deltaTime);
 
 	int pickableObjectID = map->collisionWithPickableObject(posPlayer, glm::vec2(32, 32));
-	if (pickableObjectID != -1) map->erasePickableObject(pickableObjectID);
+	if (pickableObjectID != -1) {
+		string type = map->getPickableObjectType(pickableObjectID);
+		if (type == "Cake") { map->setPlayerScore(map->getPlayerScore() + 10); playerLifes = min(3, playerLifes + 1); }
+		else if (type == "Coin") { map->setPlayerScore(map->getPlayerScore() + 500); }
+		map->erasePickableObject(pickableObjectID);
+	}
 
 
 	if (objectPickedUp != nullptr) {

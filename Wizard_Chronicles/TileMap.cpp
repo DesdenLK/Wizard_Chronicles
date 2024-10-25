@@ -37,8 +37,21 @@ TileMap::~TileMap()
 		delete middle;
 	if (foreground != NULL)
 		delete foreground;
-	if (staticObjects != NULL)
-		delete staticObjects;
+	if (staticObjects.size() > 0) {
+		for (int i = 0; i < nStaticObjects; ++i) {
+			delete staticObjects[i];
+		}
+	}
+	if (pickableObjects.size() > 0) {
+		for (int i = 0; i < nPickableObjects; ++i) {
+			delete pickableObjects[i];
+		}
+	}
+	if (stairs.size() > 0) {
+		for (int i = 0; i < nStairs; ++i) {
+			delete stairs[i];
+		}
+	}
 	if (dynamicObjects.size() > 0) {
 		for (int i = 0; i < nDynamicObjects; ++i) {
 			delete dynamicObjects[i];
@@ -90,7 +103,7 @@ void TileMap::update(int deltaTime)
 {
 
 	timeLeft -= deltaTime;
-	cout << "Time left: " << timeLeft << endl;
+	//cout << "Player score: " << playerScore << endl;
 	for (int i = 0; i < nDynamicObjects; ++i) {
 		if (dynamicObjects[i] != nullptr) dynamicObjects[i]->update(deltaTime);
 	}
@@ -188,25 +201,34 @@ bool TileMap::loadLevel(const string& levelFile, ShaderProgram& program)
 	auto static_objectsJSON = mapFile["layers"][3]["objects"];
 	auto dynamic_objectsJSON = mapFile["layers"][4]["objects"];
 	auto enemies_json = mapFile["layers"][5]["objects"];
+	auto pickable_objectsJSON = mapFile["layers"][6]["objects"];
 	
 	map = new int[mapSize.x * mapSize.y];
 	background = new int[mapSize.x * mapSize.y];
 	middle = new int[mapSize.x * mapSize.y];
 	foreground = new int[mapSize.x * mapSize.y];
 	
-	nStaticObjects = static_objectsJSON.size();
-	staticObjects = new StaticObject[nStaticObjects];
+	staticObjects = vector<StaticObject*>();
+	stairs = vector<StaticObject*>();
+
 	enemies = std::map<int,Enemy*>();
+
+	nPickableObjects = pickable_objectsJSON.size();
+	pickableObjects = vector<PickableObject*>(nPickableObjects);
+
 
 	copy(background_json.begin(), background_json.end(), background);
 	copy(middle_json.begin(), middle_json.end(), middle);
 	copy(foreground_json.begin(), foreground_json.end(), foreground);
 
 	// carregar els objectes a this.objects
-	for (int i = 0; i < nStaticObjects; ++i) {
+	for (int i = 0; i < static_objectsJSON.size(); ++i) {
 		auto obj = static_objectsJSON[i];
-		staticObjects[i] = StaticObject(i, obj["type"], float(obj["x"]), float(obj["y"]), float(obj["width"]), float(obj["height"]));
-  }
+		if (obj["type"] == "Stair") stairs.push_back(new StaticObject(i, obj["type"], float(obj["x"]), float(obj["y"]), float(obj["width"]), float(obj["height"])));
+		else staticObjects.push_back(new StaticObject(i, obj["type"], float(obj["x"]), float(obj["y"]), float(obj["width"]), float(obj["height"])));
+	}
+	nStaticObjects = staticObjects.size();
+	nStairs = stairs.size();
 	
 	// carregar els enemics a this.enemies
 	for (const auto& objEnemy : enemies_json) {
@@ -242,6 +264,21 @@ bool TileMap::loadLevel(const string& levelFile, ShaderProgram& program)
 	dynamicObjects = vector<DynamicObject*>(nDynamicObjects);
 
 	initDynamicObjects(dynamic_objectsJSON, program);
+
+	//PICKABLE OBJECTS
+	for (int i = 0; i < nPickableObjects; ++i) {
+		auto obj = pickable_objectsJSON[i];
+		if (obj["type"] == "Cake") {
+			PickableObject* object = new Cake();
+			object->init(i, float(obj["x"]), float(obj["y"]), float(obj["width"]), float(obj["height"]), glm::vec2(10, 10), 0.25, 0.25, program, this);
+			pickableObjects[i] = object;
+		}
+		else if (obj["type"] == "Coin") {
+			PickableObject* object = new Coin();
+			object->init(i, float(obj["x"]), float(obj["y"]), float(obj["width"]), float(obj["height"]), glm::vec2(10, 10), 0.25, 1, program, this);
+			pickableObjects[i] = object;
+		}
+	}
 
 
 
@@ -371,7 +408,7 @@ bool TileMap::collisionMoveLeft(const glm::vec2 &pos, const glm::ivec2 &size) co
 
 	for (int i = 0; i < nStaticObjects; ++i)
 	{
-		if (staticObjects[i].getType() != "Stair" && staticObjects[i].rightCollision(pos, size))
+		if (staticObjects[i] ->rightCollision(pos, size))
 		{
 			return true;
 		}
@@ -406,7 +443,7 @@ bool TileMap::collisionMoveRight(const glm::vec2 &pos, const glm::ivec2 &size) c
 
 	for (int i = 0; i < nStaticObjects; ++i)
 	{
-		if (staticObjects[i].getType() != "Stair" && staticObjects[i].leftCollision(pos, size))
+		if (staticObjects[i]->leftCollision(pos, size))
 		{
 			return true;
 		}
@@ -448,9 +485,9 @@ bool TileMap::collisionMoveDown(const glm::vec2 &pos, const glm::ivec2 &size, fl
 	//COL�LISI� AMB OBJECTES EST�TICS
 	for (int i = 0; i < nStaticObjects; ++i)
 	{
-		if (staticObjects[i].getType() != "Stair" && staticObjects[i].topCollision(pos, size))
+		if (staticObjects[i] -> topCollision(pos, size))
 		{
-			*posY = staticObjects[i].getPosicio().y  - size.y;
+			*posY = staticObjects[i] -> getPosicio().y  - size.y;
 			return true;
 		}
 
@@ -493,9 +530,9 @@ bool TileMap::collisionMoveUp(const glm::vec2& pos, const glm::ivec2& size, floa
 	//COL�LISI� AMB OBJECTES EST�TICS
 	for (int i = 0; i < nStaticObjects; ++i)
 	{
-		if (staticObjects[i].getType() != "Stair" && staticObjects[i].bottomCollision(pos, size))
+		if (staticObjects[i] -> bottomCollision(pos, size))
 		{
-			*posY = staticObjects[i].getPosicio().y + size.y + 2;
+			*posY = staticObjects[i]->getPosicio().y + size.y + 2;
 			return true;
 		}
 
@@ -555,10 +592,9 @@ int TileMap::enemyCollision(const glm::vec2& pos, const glm::vec2& size) {
 
 bool TileMap::ladderCollision(const glm::vec2& pos, const glm::vec2& size)
 {
-	for (int i = 0; i < nStaticObjects; ++i) {
-		if (staticObjects[i].getType() == "Stair") {
-			if (staticObjects[i].objectCollision(pos, size)) return true;
-		}
+	for (int i = 0; i < nStairs; ++i) {
+		
+		if (stairs[i] -> objectCollision(pos, size)) return true;
 	}
 	return false;
 }
@@ -583,12 +619,14 @@ void TileMap::addPickableObject(string type, glm::vec2 pos, glm::vec2 measures)
 		object->init(pickableObjects.size(), pos.x, pos.y, measures.x, measures.y, glm::vec2(10, 10), 0.25, 0.25, *program, this);
 		pickableObjects.push_back(object);
 		nPickableObjects++;
+		cout << "Cake added" << endl;
 	}
 	else if (type == "Coin") {
 		PickableObject* object = new Coin();
 		object->init(pickableObjects.size(), pos.x, pos.y, measures.x, measures.y, glm::vec2(10, 10), 0.25, 1, *program, this);
 		pickableObjects.push_back(object);
 		nPickableObjects++;
+		cout << "Coin added" << endl;
 	}
 }
 
@@ -605,7 +643,6 @@ int TileMap::collisionWithPickableObject(const glm::vec2& posPlayer, const glm::
 void TileMap::erasePickableObject(int pickableObjectId)
 {
 	pickableObjects[pickableObjectId] = nullptr;
-	nPickableObjects--;
 }
 
 int TileMap::collisionWithChest(const glm::vec2& posPlayer, const glm::vec2& playerSize)
@@ -633,13 +670,17 @@ void TileMap::destroyDynamicObject(int index)
 
 
 bool TileMap::isOnLadderTop(const glm::vec2& posPlayer, const glm::vec2& playerSize) {
-	StaticObject ladderObj = staticObjects[0];
-	return posPlayer.y <= ladderObj.getPosicio().y;
+	for (int i = 0; i < nStairs; ++i) {
+		if (stairs[i]->objectCollision(posPlayer, playerSize)) return posPlayer.y <= stairs[i] -> getPosicio().y;
+	}
+	return false;
 }
 
 bool TileMap::isOnLadderBottom(const glm::vec2& posPlayer, const glm::vec2& playerSize) {
-	StaticObject ladderObj = staticObjects[0];
-	return posPlayer.y + playerSize.y >= ladderObj.getPosicio().y + ladderObj.getMeasures().y;
+	for (int i = 0; i < nStairs; ++i) {
+		if (stairs[i]->objectCollision(posPlayer, playerSize)) return posPlayer.y + playerSize.y >= stairs[i] -> getPosicio().y + stairs[i] -> getMeasures().y;;
+	}
+	return false;
 }
 
 void TileMap::renderDynamicObjects()
@@ -669,6 +710,11 @@ int TileMap::getTimeLeft()
 	return timeLeft;
 }
 
+string TileMap::getPickableObjectType(int index)
+{
+	return pickableObjects[index]->getType();
+}
+
 /*bool TileMap::isOnLadderTop(const glm::vec2& posPlayer, const glm::vec2& PlayerSize) {
 	// objects[0] es l escala, si es canvia canviar aquest codi
 	std::map<string,string> ladderObj = (*objects)[0];
@@ -696,6 +742,7 @@ bool TileMap::verticalBoxCollision(glm::vec2 coordsMin1, glm::vec2 widthHeight1,
 }
 
 void TileMap::eraseEnemy(int enemyId) {
+	playerScore += 100;
 	cout << "about to erase enemy with id: " << enemyId << " from enemies " << enemies.begin()->first << endl;
 	auto enemy = enemies[enemyId];
 	enemy->setHitBoxEnabled(false);

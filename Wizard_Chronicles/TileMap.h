@@ -74,6 +74,8 @@ public:
 	void setTimeLeft(int time);
 	int getTimeLeft();
 
+	string getPickableObjectType(int index);
+
 	//void addPickableObject(PickableObject* object);
 	
 private:
@@ -102,7 +104,7 @@ private:
 
 	int* map, * background, * middle, * foreground;
 	
-	StaticObject* staticObjects;
+	vector<StaticObject*> staticObjects;
 	int nStaticObjects;
 
 	vector<DynamicObject*> dynamicObjects;
@@ -110,6 +112,10 @@ private:
 
 	vector<PickableObject*> pickableObjects;
 	int nPickableObjects;
+
+	vector<StaticObject*> stairs;
+	int nStairs;
+
 
 
 	//vector<std::map<string,string>>* objects; branca enemics

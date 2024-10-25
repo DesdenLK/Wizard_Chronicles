@@ -45,6 +45,7 @@ public:
     //virtual void setAnimations();
 
     bool isPickable() override;
+    virtual string getType() = 0;
 };
 
 #endif // _PICKABLE_OBJECT_INCLUDE
