@@ -9,8 +9,8 @@
 #define SCREEN_X 0
 #define SCREEN_Y 0
 
-#define INIT_PLAYER_X_TILES 7  //branca enemics 20
-#define INIT_PLAYER_Y_TILES 35
+#define INIT_PLAYER_X_TILES 7
+#define INIT_PLAYER_Y_TILES 9
 
 
 Scene::Scene()
@@ -60,8 +60,6 @@ void Scene::render()
 {
 	glm::mat4 modelview;
 
-
-	
 	projection = camera->cameraPositionNOCENTRAT(player->getPosition());
 	texProgram.use();
 	texProgram.setUniformMatrix4f("projection", projection);
