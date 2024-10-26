@@ -35,7 +35,7 @@ Scene::~Scene()
 void Scene::init()
 {
 	initShaders();
-	map = TileMap::createTileMap("levels/Luca.tmj", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
+	map = TileMap::createTileMap("levels/BeeAdded.tmj", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
 	player = new Player();
 	camera = new Camera();
 	

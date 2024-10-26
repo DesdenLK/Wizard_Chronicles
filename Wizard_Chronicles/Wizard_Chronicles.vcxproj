@@ -134,6 +134,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AnimKeyframes.h" />
+    <ClInclude Include="BeeEnemy.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CaterpillarEnemy.h" />
     <ClInclude Include="DynamicObject.h" />
@@ -153,6 +154,7 @@
     <ClInclude Include="TileMap.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="BeeEnemy.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CaterpillarEnemy.cpp" />
     <ClCompile Include="DynamicObject.cpp" />

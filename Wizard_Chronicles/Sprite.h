@@ -33,7 +33,8 @@ public:
 	void setNumberAnimations(int nAnimations);
 	void setAnimationSpeed(int animId, int keyframesPerSec);
 	void addKeyframe(int animId, const glm::vec2 &frame);
-	void changeAnimation(bool loopAnimation, int animId);
+	void changeAnimation(bool 
+		, int animId);
 	int animation() const;
 
 	void renderNumAnims(int numberOfFrames, int deltaTime);

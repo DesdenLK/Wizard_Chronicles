@@ -9,6 +9,7 @@
 
 #include "StaticObject.h"
 #include "CaterpillarEnemy.h"
+#include "BeeEnemy.h"
 #include "DynamicObjectChest.h"
 #include "DynamicObjectBox.h"
 
@@ -101,6 +102,7 @@ private:
 	vector<PickableObject*> pickableObjects;
 	int nPickableObjects;
 
+	vector<StaticObject*> invisibleObjects;
 
 	//vector<std::map<string,string>>* objects; branca enemics
 	std::map<int,Enemy*> enemies;		//(id_enemic,enemic)

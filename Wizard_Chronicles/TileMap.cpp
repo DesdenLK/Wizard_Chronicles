@@ -183,6 +183,7 @@ bool TileMap::loadLevel(const string& levelFile, ShaderProgram& program)
 	auto static_objectsJSON = mapFile["layers"][3]["objects"];
 	auto dynamic_objectsJSON = mapFile["layers"][4]["objects"];
 	auto enemies_json = mapFile["layers"][5]["objects"];
+	//auto invisible_objectsJSON = mapFile["layers"][6]["objects"];
 	
 	map = new int[mapSize.x * mapSize.y];
 	background = new int[mapSize.x * mapSize.y];
@@ -202,6 +203,10 @@ bool TileMap::loadLevel(const string& levelFile, ShaderProgram& program)
 		auto obj = static_objectsJSON[i];
 		staticObjects[i] = StaticObject(i, obj["type"], float(obj["x"]), float(obj["y"]), float(obj["width"]), float(obj["height"]));
   }
+
+	/*for (const auto& invisibleObject : invisible_objectsJSON) {
+		
+	}*/
 	
 	// carregar els enemics a this.enemies
 	for (const auto& objEnemy : enemies_json) {
@@ -227,7 +232,13 @@ bool TileMap::loadLevel(const string& levelFile, ShaderProgram& program)
 					cout << "enemy start pos: " << '(' << enemyStartPos[0] << ',' << enemyStartPos[1] << ')' << endl;
 					enemies.insert(std::make_pair(enemyId, caterpillar));
 				}
-				// afegir tipus enemics
+				else if ((string)it.value().dump() == "\"Bee\"") {
+					BeeEnemy* bee = new BeeEnemy();
+					bee->init(enemyId, glm::ivec2(0, 0), program, "images/enemics/bee/beeSpriteSheet.png", glm::ivec2(16,16), glm::vec2((1.f / 8.f), 1.f), enemyBoundingBoxWH, 1000);
+					bee->setPosition(enemyStartPos);
+					bee->setTileMap(this);
+					enemies.insert(std::make_pair(enemyId, bee));
+				}
 			}
 		}
 	}
