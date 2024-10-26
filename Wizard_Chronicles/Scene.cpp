@@ -31,7 +31,6 @@ Scene::~Scene()
 }
 
 
-
 void Scene::init()
 {
 	initShaders();
