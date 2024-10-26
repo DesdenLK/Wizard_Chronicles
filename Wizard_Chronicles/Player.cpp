@@ -7,7 +7,7 @@
 
 
 #define JUMP_ANGLE_STEP 4
-#define JUMP_HEIGHT 50
+#define JUMP_HEIGHT 60
 #define FALL_STEP 4
 
 #define SPRITE_WIDTH 1/20.f
@@ -15,7 +15,7 @@
 
 #define HURT_TIME 1000 //in ms
 #define HURT_FRAME_TIME 50
-#define VERTICAL_COL_TIMEOUT 500 //in ms
+#define VERTICAL_COL_TIMEOUT 0 //in ms
 
 
 enum PlayerAnims
@@ -576,15 +576,6 @@ void Player::playerKey_W(int deltaTime) {
 
 void Player::playerKey_S(int deltaTime)
 {
-    if (sprite->animation() != FALL_LEFT && sprite->animation() != FALL_RIGHT) {
-		if (isHurt != true and map->lateralCollisionWithEnemy(posPlayer, glm::vec2(32, 32)) != -1) {
-			isHurt = true;
-			hurtTime = HURT_TIME;
-			hurtFrameTime = HURT_FRAME_TIME;
-		}
-	}
-
-
 	if (map->ladderCollision(posPlayer, glm::vec2(32,32))) {
 		playerState.Climbing = true;
 	}
@@ -615,20 +606,29 @@ void Player::playerKey_S(int deltaTime)
 
 	if (sprite->animation() == FALL_LEFT or sprite->animation() == FALL_RIGHT) {
 		int collidedEnemyId = map->verticalCollisionWithEnemy(posPlayer, glm::vec2(32, 32));
-		if (collidedEnemyId != -1 and verticalCollisionTimeout <= 0) {
-			map->eraseEnemy(collidedEnemyId);
-			cout << "player velocity before collision: " << playerVelocity.y << endl;
-			cout << "pos player before collision: " << posPlayer.y << endl;
-			posPlayer.y -= playerVelocity.y;
-			sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
-			cout << "pos player after collision: " << posPlayer.y << endl;
-			sprite->changeAnimation(true, STAND_RIGHT);
-			verticalCollisionTimeout = VERTICAL_COL_TIMEOUT;
-			// sumar punts al Player
+		if (collidedEnemyId != -1) {
+			if (verticalCollisionTimeout <= 0) {
+				map->eraseEnemy(collidedEnemyId);
+				posPlayer.y -= playerVelocity.y;
+				sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
+				sprite->changeAnimation(true, STAND_RIGHT);
+				verticalCollisionTimeout = VERTICAL_COL_TIMEOUT;
+				// sumar punts al Player
+			}
+			else verticalCollisionTimeout -= deltaTime;
 		}
-		else if (collidedEnemyId != -1) verticalCollisionTimeout -= deltaTime;
+		else {
+			if (isHurt == false and map->lateralCollisionWithEnemy(posPlayer, glm::vec2(32, 32)) != -1) {
+				isHurt = true;
+				hurtTime = HURT_TIME;
+				hurtFrameTime = HURT_FRAME_TIME;
+			}
+		}
 
 		int collideWithChest = map->collisionWithChest(posPlayer, glm::vec2(32, 32));
+	}
+	if (sprite->animation() != FALL_LEFT && sprite->animation() != FALL_RIGHT) {
+		
 	}
 }
 

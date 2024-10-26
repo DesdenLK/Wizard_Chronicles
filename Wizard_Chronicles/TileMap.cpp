@@ -573,7 +573,7 @@ int TileMap::lateralCollisionWithEnemy(const glm::vec2& posPlayer, const glm::ve
 			glm::vec2 enemyPos = enemy.second->getPosition();
 			glm::vec2 widthHeightEnemyBox = enemy.second->getBoundingBoxWH();
 			if (lateralBoxCollision(enemyPos, widthHeightEnemyBox, posPlayer, playerSize) and enemy.first != enemyToErase) {
-				cout << "collision with enemy with id: " << enemy.first << endl;
+				cout << "lateral collision with enemy with id: " << enemy.first << endl;
 				return enemy.first;
 			}
 		}
@@ -588,7 +588,7 @@ int TileMap::verticalCollisionWithEnemy(const glm::vec2& posPlayer, const glm::v
 			glm::vec2 widthHeightEnemyBox = enemy.second->getBoundingBoxWH();
 			//cout << "possible collision with Player=(" << posPlayer.x << ',' << posPlayer.y << ",32,32) i Enemic (" << enemyPos.x << ',' << enemyPos.y << ',' << widthHeightEnemyBox[0] << ',' << widthHeightEnemyBox[1] << ')' << endl;
 			if (verticalBoxCollision(posPlayer, playerSize, enemyPos, widthHeightEnemyBox)) {
-				cout << "collision with enemy with id: " << enemy.first << endl;
+				cout << "vertical collision with enemy with id: " << enemy.first << endl;
 				return enemy.first;
 			}
 		}

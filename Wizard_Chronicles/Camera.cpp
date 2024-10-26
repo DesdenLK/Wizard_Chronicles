@@ -15,11 +15,12 @@ glm::mat4 Camera::init(glm::vec2 pos, int width, int height)
 glm::mat4 Camera::cameraPositionNOCENTRAT(glm::vec2 posPlayer)
 {
 
-	if ((posPlayer.x - cameraPos.x) < CAMERA_WIDTH / 3) {
-		cameraPos.x = posPlayer.x - CAMERA_WIDTH / 3;
+	if ((posPlayer.x - cameraPos.x) < CAMERA_WIDTH / 2) {
+		cameraPos.x = posPlayer.x - CAMERA_WIDTH / 2;
 	}
-	if ((posPlayer.x - cameraPos.x) > (2 * CAMERA_WIDTH / 3)) {
-		cameraPos.x = posPlayer.x - (2 * CAMERA_WIDTH / 3);
+
+	if ((posPlayer.x - cameraPos.x) > (CAMERA_WIDTH / 2)) {
+		cameraPos.x = posPlayer.x - (CAMERA_WIDTH / 2);
 	}
 
 	if ((posPlayer.y - cameraPos.y) < CAMERA_HEIGHT / 3) {

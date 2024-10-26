@@ -9,8 +9,8 @@
 #define SCREEN_X 0
 #define SCREEN_Y 0
 
-#define INIT_PLAYER_X_TILES 21  //branca enemics 20
-#define INIT_PLAYER_Y_TILES 14
+#define INIT_PLAYER_X_TILES 7  //branca enemics 20
+#define INIT_PLAYER_Y_TILES 35
 
 
 Scene::Scene()
@@ -35,7 +35,7 @@ Scene::~Scene()
 void Scene::init()
 {
 	initShaders();
-	map = TileMap::createTileMap("levels/AlbertMergeLucaiBees.tmj", glm::vec2(SCREEN_X, SCREEN_Y), texProgram, 50 * 1000);
+	map = TileMap::createTileMap("levels/lvl1.tmj", glm::vec2(SCREEN_X, SCREEN_Y), texProgram, 50 * 1000);
 	player = new Player();
 	camera = new Camera();
 	
@@ -51,7 +51,7 @@ void Scene::update(int deltaTime)
 	if (player->getPlayerLifes() == 0) { init(); Game::instance().setTries(Game::instance().getTries() - 1);  }
 	if (map->getTimeLeft() <= 0) { init(); Game::instance().setTries(Game::instance().getTries() - 1); }
 
-	cout << "Lifes: " << player->getPlayerLifes() << endl;
+	//cout << "Lifes: " << player->getPlayerLifes() << endl;
 	currentTime += deltaTime;
 	map->update(deltaTime);
 	player->update(deltaTime);
