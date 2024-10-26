@@ -17,7 +17,9 @@ enum EnemyAnims
 
 void CaterpillarEnemy::updateEnemyMovement(int deltaTime) {
 	posEnemy += EnemyVelocity;
-	if ((EnemyVelocity.x < 0 and map->collisionMoveLeft(posEnemy, glm::ivec2(25, 25))) or (EnemyVelocity.x > 0 and map->collisionMoveRight(posEnemy, glm::ivec2(25, 25)))) {
+	if ((EnemyVelocity.x < 0 and map->collisionMoveLeft(posEnemy, glm::ivec2(25, 25))) or 
+		(EnemyVelocity.x > 0 and map->collisionMoveRight(posEnemy, glm::ivec2(25, 25))) or
+		map->collisionWithInvisibleObject(posEnemy, glm::ivec2(25, 25))) {
 		posEnemy -= EnemyVelocity;
 		EnemyVelocity = -EnemyVelocity;
 		switch (sprite->animation()) {

@@ -68,6 +68,8 @@ public:
 	DynamicObject* getDynamicObject(int index);
 	void destroyDynamicObject(int index);
 
+	bool collisionWithInvisibleObject(const glm::vec2& pos, const glm::vec2& size);
+
 	void renderDynamicObjects();
 
 	void setPlayerScore(int score);
@@ -118,6 +120,7 @@ private:
 	int nStairs;
 
 	vector<StaticObject*> invisibleObjects;
+	int nInvisibleObjects;
 
 
 	//vector<std::map<string,string>>* objects; branca enemics

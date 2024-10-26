@@ -202,7 +202,7 @@ bool TileMap::loadLevel(const string& levelFile, ShaderProgram& program)
 	auto dynamic_objectsJSON = mapFile["layers"][4]["objects"];
 	auto enemies_json = mapFile["layers"][5]["objects"];
 	auto pickable_objectsJSON = mapFile["layers"][6]["objects"];
-	//auto invisible_objectsJSON = mapFile["layers"][7]["objects"];
+	auto invisible_objectsJSON = mapFile["layers"][7]["objects"];
 	
 	map = new int[mapSize.x * mapSize.y];
 	background = new int[mapSize.x * mapSize.y];
@@ -211,6 +211,7 @@ bool TileMap::loadLevel(const string& levelFile, ShaderProgram& program)
 	
 	staticObjects = vector<StaticObject*>();
 	stairs = vector<StaticObject*>();
+	invisibleObjects = vector<StaticObject*>();
 
 	enemies = std::map<int,Enemy*>();
 
@@ -231,9 +232,11 @@ bool TileMap::loadLevel(const string& levelFile, ShaderProgram& program)
 	nStaticObjects = staticObjects.size();
 	nStairs = stairs.size();
 
-	/*for (const auto& invisibleObject : invisible_objectsJSON) {
-		
-	}*/
+	for (int i = 0; i < invisible_objectsJSON.size(); ++i) {
+		auto obj = invisible_objectsJSON[i];
+		invisibleObjects.push_back(new StaticObject(i, obj["type"], float(obj["x"]), float(obj["y"]), float(obj["width"]), float(obj["height"])));
+	}
+	nInvisibleObjects = invisibleObjects.size();
 	
 	// carregar els enemics a this.enemies
 	for (const auto& objEnemy : enemies_json) {
@@ -754,7 +757,6 @@ bool TileMap::verticalBoxCollision(glm::vec2 coordsMin1, glm::vec2 widthHeight1,
 
 void TileMap::eraseEnemy(int enemyId) {
 	playerScore += 100;
-	cout << "about to erase enemy with id: " << enemyId << " from enemies " << enemies.begin()->first << endl;
 	auto enemy = enemies[enemyId];
 	enemy->setHitBoxEnabled(false);
 	enemy->changeToDeadAnimation();
@@ -762,3 +764,12 @@ void TileMap::eraseEnemy(int enemyId) {
 	eraseAnimationTime = enemy->getEraseAnimationTime();
 }
 
+bool TileMap::collisionWithInvisibleObject(const glm::vec2& pos, const glm::vec2& size) {
+	for (int i = 0; i < nInvisibleObjects; ++i) {
+		auto obj = invisibleObjects[i];
+		glm::vec2 posObj = obj->getPosicio();
+		glm::vec2 measuresObj = obj->getMeasures();
+		if (lateralBoxCollision(pos, size, posObj, measuresObj) or verticalBoxCollision(pos, size, posObj, measuresObj)) return true;
+	}
+	return false;
+}
