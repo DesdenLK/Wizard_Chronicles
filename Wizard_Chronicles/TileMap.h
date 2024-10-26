@@ -84,7 +84,7 @@ public:
 private:
 	bool loadLevel(const string &levelFile, ShaderProgram& program);
 	void prepareArrays(const glm::vec2 &minCoords, ShaderProgram &program);
-	void addTileVertices(vector<float>& vertices, const glm::vec2& posTile, const glm::vec2 texCoordTile[2]);
+	void addTileVertices(vector<float>& vertices, const glm::vec2& posTile, const glm::vec2 texCoordTile[2], int tilesheetID);
 	void createVAO(GLuint& vao, GLuint& vbo, const std::vector<float>& vertices, ShaderProgram& program);
 
 	void initDynamicObjects(const nlohmann::json& j, ShaderProgram& program);
@@ -95,15 +95,15 @@ private:
 private:
 	GLuint vaoBackground, vaoMiddle, vaoForeground;
 	GLuint vboBackground, vboMiddle, vboForeground;
-	GLint posLocation, texCoordLocation;
+	GLint posLocation, texCoordLocation, tilesetIDLocation;
 	ShaderProgram *program;
 
 	int nBackgroundTiles, nMiddleTiles, nForegroundTiles;
 
-	glm::ivec2 position, mapSize, tilesheetSize;
+	glm::ivec2 position, mapSize, tilesheetSize, tilesheetSize2;
 	int tileSize, blockSize;
-	Texture tilesheet;
-	glm::vec2 tileTexSize;
+	Texture tilesheet, tilesheet2;
+	glm::vec2 tileTexSize, tileTexSize2;
 
 	int* map, * background, * middle, * foreground;
 	
