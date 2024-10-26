@@ -13,7 +13,8 @@
 #include "DynamicObjectChest.h"
 #include "DynamicObjectBox.h"
 
-#include "PickableObject.h"
+#include "Cake.h"
+#include "Coin.h"
 #include <map>
 
 
@@ -34,7 +35,7 @@ private:
 
 public:
 	// Tile maps can only be created inside an OpenGL context
-	static TileMap *createTileMap(const string &levelFile, const glm::vec2 &minCoords, ShaderProgram &program);
+	static TileMap *createTileMap(const string &levelFile, const glm::vec2 &minCoords, ShaderProgram &program, int timeLimit);
 
 	~TileMap();
 
@@ -60,10 +61,21 @@ public:
 
 	int pickingObject(const glm::vec2& posPlayer, const glm::vec2& playerSize);
 	void addPickableObject(string type, glm::vec2 pos, glm::vec2 measures);
+	int collisionWithPickableObject(const glm::vec2& posPlayer, const glm::vec2& playerSize);
+	void erasePickableObject(int pickableObjectId);
+
+	int collisionWithChest(const glm::vec2& posPlayer, const glm::vec2& playerSize);
 	DynamicObject* getDynamicObject(int index);
 	void destroyDynamicObject(int index);
 
 	void renderDynamicObjects();
+
+	void setPlayerScore(int score);
+	int getPlayerScore();
+	void setTimeLeft(int time);
+	int getTimeLeft();
+
+	string getPickableObjectType(int index);
 
 	//void addPickableObject(PickableObject* object);
 	
@@ -93,7 +105,7 @@ private:
 
 	int* map, * background, * middle, * foreground;
 	
-	StaticObject* staticObjects;
+	vector<StaticObject*> staticObjects;
 	int nStaticObjects;
 
 	vector<DynamicObject*> dynamicObjects;
@@ -102,11 +114,17 @@ private:
 	vector<PickableObject*> pickableObjects;
 	int nPickableObjects;
 
+	vector<StaticObject*> stairs;
+	int nStairs;
+
 	vector<StaticObject*> invisibleObjects;
+
 
 	//vector<std::map<string,string>>* objects; branca enemics
 	std::map<int,Enemy*> enemies;		//(id_enemic,enemic)
 	int enemyToErase = -1, eraseAnimationTime;
+
+	int playerScore, timeLeft;
 };
 
 

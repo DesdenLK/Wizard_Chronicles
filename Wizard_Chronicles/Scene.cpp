@@ -35,7 +35,7 @@ Scene::~Scene()
 void Scene::init()
 {
 	initShaders();
-	map = TileMap::createTileMap("levels/BeeAdded.tmj", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
+	map = TileMap::createTileMap("levels/Luca.tmj", glm::vec2(SCREEN_X, SCREEN_Y), texProgram, 50 * 1000);
 	player = new Player();
 	camera = new Camera();
 	
@@ -48,6 +48,10 @@ void Scene::init()
 
 void Scene::update(int deltaTime)
 {
+	if (player->getPlayerLifes() == 0) { init(); Game::instance().setTries(Game::instance().getTries() - 1);  }
+	if (map->getTimeLeft() <= 0) { init(); Game::instance().setTries(Game::instance().getTries() - 1); }
+
+	cout << "Lifes: " << player->getPlayerLifes() << endl;
 	currentTime += deltaTime;
 	map->update(deltaTime);
 	player->update(deltaTime);

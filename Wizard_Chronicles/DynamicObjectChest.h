@@ -13,8 +13,12 @@ class DynamicObjectChest : public DynamicObject
 		void objectFalling() override;
 		void objectJump() override;
 
+		void setPickableObject(string item) override;
+
+		bool isChest() const override;
+
 		void destroyObject() override;
-		void openChest();
+		void openChest(bool playerDropping) override;
 };
 #endif // _DYNAMIC_OBJECT_CHEST_INCLUDE
 

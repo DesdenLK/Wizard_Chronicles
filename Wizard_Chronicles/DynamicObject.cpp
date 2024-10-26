@@ -73,6 +73,11 @@ void DynamicObject::dropObject(float XSpeed)
 	speed.x = XSpeed;
 }
 
+void DynamicObject::openChest(bool playerDropping)
+{
+	return;
+}
+
 void DynamicObject::objectFalling()
 {
 	posicio.y += FALL_STEP;
@@ -120,6 +125,11 @@ void DynamicObject::objectJump()
 	}
 }
 
+void DynamicObject::setPickableObject(string item)
+{
+	return;
+}
+
 bool DynamicObject::IsPickedUp() const
 {
 	return objectState.pickedUp;
@@ -133,6 +143,11 @@ bool DynamicObject::IsDestroyed() const
 bool DynamicObject::IsHitboxEnabled() const
 {
 	return objectState.hitboxEnabled;
+}
+
+bool DynamicObject::isChest() const
+{
+	return false;
 }
 
 void DynamicObject::setSpeed(glm::vec2 speed)

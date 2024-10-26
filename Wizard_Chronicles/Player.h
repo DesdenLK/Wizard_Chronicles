@@ -36,6 +36,9 @@ public:
 	void setPosition(const glm::vec2 &pos);
 	void setAnimations();
 
+	int getPlayerLifes();
+
+
 
 
 	glm::vec2 getPosition();
@@ -56,6 +59,10 @@ private:
 	TileMap *map;
 
 	DynamicObject* objectPickedUp;
+
+	int playerLifes, playerScore;
+	bool gPressed;
+	bool godMode;
 
 };
 

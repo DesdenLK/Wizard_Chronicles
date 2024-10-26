@@ -30,6 +30,8 @@ public:
 	void init();
 	bool update(int deltaTime);
 	void render();
+
+	int tries;
 	
 	// Input callback methods
 	void keyPressed(int key);
@@ -39,6 +41,9 @@ public:
 	void mouseRelease(int button);
 
 	bool getKey(int key) const;
+
+	void setTries(int t);
+	int getTries() const;
 
 private:
 	bool bPlay; // Continue to play game?

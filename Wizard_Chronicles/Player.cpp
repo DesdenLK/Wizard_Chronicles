@@ -44,12 +44,28 @@ void Player::init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram)
 
 	tileMapDispl = tileMapPos;
 	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
+
+	playerLifes = 3;
+	playerScore = 0;
+	godMode = false;
+	gPressed = false;
 	
 }
 
 void Player::update(int deltaTime)
 {
+
+	if (Game::instance().getKey(GLFW_KEY_G) and not gPressed) gPressed = true;
+	else if (not Game::instance().getKey(GLFW_KEY_G) and gPressed) {
+		gPressed = false;
+		godMode = not godMode;
+	}
+
+
+	if (Game::instance().getKey(GLFW_KEY_H)) playerLifes = 3;
+
 	if (isHurt) {
+		if (hurtTime == HURT_TIME and not godMode) --playerLifes;
 		hurtTime -= deltaTime;
 		hurtFrameTime -= deltaTime;
 		if (hurtTime <= 0) {
@@ -62,8 +78,17 @@ void Player::update(int deltaTime)
 			hurtFrameTime = HURT_FRAME_TIME;
 		}
 	}
+
 	sprite->update(deltaTime);
 	updatePlayerMovement(deltaTime);
+
+	int pickableObjectID = map->collisionWithPickableObject(posPlayer, glm::vec2(32, 32));
+	if (pickableObjectID != -1) {
+		string type = map->getPickableObjectType(pickableObjectID);
+		if (type == "Cake") { map->setPlayerScore(map->getPlayerScore() + 10); playerLifes = min(3, playerLifes + 1); }
+		else if (type == "Coin") { map->setPlayerScore(map->getPlayerScore() + 500); }
+		map->erasePickableObject(pickableObjectID);
+	}
 
 
 	if (objectPickedUp != nullptr) {
@@ -243,6 +268,12 @@ void Player::setAnimations() {
 	sprite->changeAnimation(true, 2);
 }
 
+int Player::getPlayerLifes()
+{
+	return playerLifes;
+}
+
+
 void Player::updatePlayerMovement(int deltaTime) {
 
 	bool KeysPressed = Game::instance().getKey(GLFW_KEY_W) || Game::instance().getKey(GLFW_KEY_A) || Game::instance().getKey(GLFW_KEY_S) || Game::instance().getKey(GLFW_KEY_D);
@@ -254,11 +285,13 @@ void Player::updatePlayerMovement(int deltaTime) {
 	if (Game::instance().getKey(GLFW_KEY_W) && ladderCollision || playerState.Jumping) playerKey_W(deltaTime);
 	else if (!ladderCollision) playerFalling(deltaTime);
 
+	if (Game::instance().getKey(GLFW_KEY_S)) { playerKey_S(deltaTime); loopTimesInactive = 0; }
+
 	if (Game::instance().getKey(GLFW_KEY_A)) { playerKey_A(deltaTime); loopTimesInactive = 0; }
 
 	if (Game::instance().getKey(GLFW_KEY_D)) { playerKey_D(deltaTime); loopTimesInactive = 0; }
 
-	if (Game::instance().getKey(GLFW_KEY_S)) { playerKey_S(deltaTime); loopTimesInactive = 0; }
+
 
 	if (Game::instance().getKey(GLFW_KEY_ENTER)) { 
 		if (objectPickedUp == nullptr and playerState.canPickObject) playerPickObject(deltaTime); 
@@ -280,7 +313,7 @@ void Player::playerKey_A(int deltaTime) {
 	glm::vec2 initialPosPlayer = posPlayer;
 	posPlayer.x -= playerVelocity.x;
 
-	if (map->lateralCollisionWithEnemy(posPlayer, glm::vec2(32, 32)) != -1) {
+	if (isHurt != true  and map->lateralCollisionWithEnemy(posPlayer, glm::vec2(32, 32)) != -1) {
 		isHurt = true;
 		hurtTime = HURT_TIME;
 		hurtFrameTime = HURT_FRAME_TIME;
@@ -318,7 +351,7 @@ void Player::playerKey_D(int deltaTime) {
 	glm::vec2 initialPosPlayer = posPlayer;
 	posPlayer.x += playerVelocity.x;
 
-	if (map->lateralCollisionWithEnemy(posPlayer, glm::vec2(32, 32)) != -1) {
+	if (isHurt != true and map->lateralCollisionWithEnemy(posPlayer, glm::vec2(32, 32)) != -1) {
 		isHurt = true;
 		hurtTime = HURT_TIME;
 		hurtFrameTime = HURT_FRAME_TIME;
@@ -348,7 +381,7 @@ void Player::playerKey_D(int deltaTime) {
 }
 
 void Player::playerNOKeys(int deltaTime) {
-	if (map->lateralCollisionWithEnemy(posPlayer, glm::vec2(32, 32)) != -1) {
+	if (isHurt != true and map->lateralCollisionWithEnemy(posPlayer, glm::vec2(32, 32)) != -1) {
 		isHurt = true;
 		hurtTime = HURT_TIME;
 		hurtFrameTime = HURT_FRAME_TIME;
@@ -460,6 +493,14 @@ void Player::playerFalling(int deltaTime)
 
 void Player::playerKey_W(int deltaTime) {
 	// fet per l'escala, adaptar metodes per quan tinguem objectes que no es poden traspassar
+
+	if (isHurt != true and map->lateralCollisionWithEnemy(posPlayer, glm::vec2(32, 32)) != -1) {
+		isHurt = true;
+		hurtTime = HURT_TIME;
+		hurtFrameTime = HURT_FRAME_TIME;
+	}
+
+
 	if (map->ladderCollision(posPlayer, glm::vec2(32, 32))) {
 		playerState.Climbing = true;
 		playerState.Jumping = false;
@@ -535,6 +576,15 @@ void Player::playerKey_W(int deltaTime) {
 
 void Player::playerKey_S(int deltaTime)
 {
+    if (sprite->animation() != FALL_LEFT && sprite->animation() != FALL_RIGHT) {
+		if (isHurt != true and map->lateralCollisionWithEnemy(posPlayer, glm::vec2(32, 32)) != -1) {
+			isHurt = true;
+			hurtTime = HURT_TIME;
+			hurtFrameTime = HURT_FRAME_TIME;
+		}
+	}
+
+
 	if (map->ladderCollision(posPlayer, glm::vec2(32,32))) {
 		playerState.Climbing = true;
 	}
@@ -560,8 +610,8 @@ void Player::playerKey_S(int deltaTime)
 	else if (sprite->animation() == MOVE_LEFT || sprite->animation() == STAND_LEFT || sprite->animation() == HELLO_LEFT || sprite->animation() == STOPPING_LEFT) sprite->changeAnimation(true, CROUCH_LEFT);
 	else if (sprite->animation() == MOVE_RIGHT || sprite->animation() == STAND_RIGHT || sprite->animation() == HELLO_RIGHT || sprite->animation() == STOPPING_RIGHT) sprite->changeAnimation(true, CROUCH_RIGHT);
 
-	else if (sprite->animation() == JUMP_LEFT) sprite->changeAnimation(true, FALL_LEFT);
-	else if (sprite->animation() == JUMP_RIGHT) sprite->changeAnimation(true, FALL_RIGHT);
+	else if (sprite->animation() == JUMP_LEFT and objectPickedUp == nullptr) sprite->changeAnimation(true, FALL_LEFT);
+	else if (sprite->animation() == JUMP_RIGHT and objectPickedUp == nullptr) sprite->changeAnimation(true, FALL_RIGHT);
 
 	if (sprite->animation() == FALL_LEFT or sprite->animation() == FALL_RIGHT) {
 		int collidedEnemyId = map->verticalCollisionWithEnemy(posPlayer, glm::vec2(32, 32));
@@ -577,6 +627,8 @@ void Player::playerKey_S(int deltaTime)
 			// sumar punts al Player
 		}
 		else if (collidedEnemyId != -1) verticalCollisionTimeout -= deltaTime;
+
+		int collideWithChest = map->collisionWithChest(posPlayer, glm::vec2(32, 32));
 	}
 }
 

@@ -174,8 +174,8 @@
                  "type":"Barrel",
                  "visible":true,
                  "width":15,
-                 "x":708.30303030303,
-                 "y":500.030303030302
+                 "x":707.30303030303,
+                 "y":491.030303030302
                 }, 
                 {
                  "height":16,
@@ -193,6 +193,23 @@
                  "width":16,
                  "x":877,
                  "y":367
+                }, 
+                {
+                 "height":16,
+                 "id":22,
+                 "name":"Chest",
+                 "properties":[
+                        {
+                         "name":"DropObject",
+                         "type":"string",
+                         "value":"Coin"
+                        }],
+                 "rotation":0,
+                 "type":"Chest",
+                 "visible":true,
+                 "width":16,
+                 "x":585.333333333333,
+                 "y":466.242424242424
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -221,9 +238,42 @@
          "visible":true,
          "x":0,
          "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":9,
+         "name":"PickableObjects",
+         "objects":[
+                {
+                 "height":10,
+                 "id":23,
+                 "name":"Cake",
+                 "rotation":0,
+                 "type":"Cake",
+                 "visible":true,
+                 "width":10,
+                 "x":491.666666666667,
+                 "y":399.666666666667
+                }, 
+                {
+                 "height":10,
+                 "id":24,
+                 "name":"Coin",
+                 "rotation":0,
+                 "type":"Coin",
+                 "visible":true,
+                 "width":10,
+                 "x":459,
+                 "y":429.666666666667
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
         }],
- "nextlayerid":9,
- "nextobjectid":22,
+ "nextlayerid":10,
+ "nextobjectid":26,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.11.0",

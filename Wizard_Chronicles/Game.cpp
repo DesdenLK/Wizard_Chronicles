@@ -1,17 +1,21 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include "Game.h"
+#include <iostream>
 
 
 void Game::init()
 {
 	bPlay = true;
+	tries = 3;
 	glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
 	scene.init();
 }
 
 bool Game::update(int deltaTime)
 {
+	if (tries == 0) bPlay = false;
+	//std::cout << "Tries: " << tries << endl;
 	scene.update(deltaTime);
 
 	return bPlay;
@@ -50,6 +54,16 @@ void Game::mouseRelease(int button)
 bool Game::getKey(int key) const
 {
 	return keys[key];
+}
+
+void Game::setTries(int t)
+{
+	tries = t;
+}
+
+int Game::getTries() const
+{
+	return tries;
 }
 
 

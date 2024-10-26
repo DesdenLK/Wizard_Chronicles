@@ -22,6 +22,7 @@ void Enemy::init(int id, const glm::ivec2& tileMapPos, ShaderProgram& shaderProg
 	loopTimesInactive = 0;
 	EnemyVelocity = glm::vec2(INI_VELOCITY_X, INI_VELOCITY_Y);
 	EnemyAcceleration = glm::vec2(0, 0);
+	hitBoxEnabled = true;
 
 	bool loaded = spritesheet.loadFromFile(pathToSpritesheet, TEXTURE_PIXEL_FORMAT_RGBA);
 	if (!loaded) cout << "texture could not load" << endl;
@@ -73,6 +74,16 @@ glm::vec2 Enemy::getVelocity() {
 
 glm::vec2 Enemy::getBoundingBoxWH() {
 	return boundingBoxWidthHeight;
+}
+
+bool Enemy::isHitBoxEnabled()
+{
+	return hitBoxEnabled;
+}
+
+void Enemy::setHitBoxEnabled(bool hitBoxEnabled)
+{
+	this->hitBoxEnabled = hitBoxEnabled;
 }
 
 void Enemy::EnemyFalling(int deltaTime)
