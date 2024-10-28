@@ -79,6 +79,8 @@ public:
 
 	string getPickableObjectType(int index);
 
+	bool holeCollision(const glm::vec2& pos, const glm::vec2& size);
+
 	//void addPickableObject(PickableObject* object);
 	
 private:
@@ -122,6 +124,8 @@ private:
 	vector<StaticObject*> invisibleObjects;
 	int nInvisibleObjects;
 
+	vector<StaticObject*> holes;
+	int nHoles;
 
 	//vector<std::map<string,string>>* objects; branca enemics
 	std::map<int,Enemy*> enemies;		//(id_enemic,enemic)

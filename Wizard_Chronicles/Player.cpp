@@ -489,6 +489,9 @@ void Player::playerFalling(int deltaTime)
 			startY = int(posPlayer.y);
 		}
 	}
+	if (map->holeCollision(posPlayer, glm::vec2(32, 32))) {
+		playerLifes = 0;
+	}
 }
 
 void Player::playerKey_W(int deltaTime) {

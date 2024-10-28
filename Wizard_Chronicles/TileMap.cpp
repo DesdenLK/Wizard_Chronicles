@@ -203,6 +203,7 @@ bool TileMap::loadLevel(const string& levelFile, ShaderProgram& program)
 	auto enemies_json = mapFile["layers"][5]["objects"];
 	auto pickable_objectsJSON = mapFile["layers"][6]["objects"];
 	auto invisible_objectsJSON = mapFile["layers"][7]["objects"];
+	auto holes_objectsJSON = mapFile["layers"][8]["objects"];
 	
 	map = new int[mapSize.x * mapSize.y];
 	background = new int[mapSize.x * mapSize.y];
@@ -212,6 +213,7 @@ bool TileMap::loadLevel(const string& levelFile, ShaderProgram& program)
 	staticObjects = vector<StaticObject*>();
 	stairs = vector<StaticObject*>();
 	invisibleObjects = vector<StaticObject*>();
+	holes = vector<StaticObject*>();
 
 	enemies = std::map<int,Enemy*>();
 
@@ -293,6 +295,12 @@ bool TileMap::loadLevel(const string& levelFile, ShaderProgram& program)
 			pickableObjects[i] = object;
 		}
 	}
+
+	for (int i = 0; i < holes_objectsJSON.size(); ++i) {
+		auto obj = holes_objectsJSON[i];
+		holes.push_back(new StaticObject(i, obj["type"], float(obj["x"]), float(obj["y"]), float(obj["width"]), float(obj["height"])));
+	}
+	nHoles = holes.size();
 
 
 
@@ -727,6 +735,14 @@ int TileMap::getTimeLeft()
 string TileMap::getPickableObjectType(int index)
 {
 	return pickableObjects[index]->getType();
+}
+
+bool TileMap::holeCollision(const glm::vec2& pos, const glm::vec2& size)
+{
+	for (int i = 0; i < nHoles; ++i) {
+		if (holes[i]->objectCollision(pos, size)) return true;
+	}
+	return false;
 }
 
 /*bool TileMap::isOnLadderTop(const glm::vec2& posPlayer, const glm::vec2& PlayerSize) {
