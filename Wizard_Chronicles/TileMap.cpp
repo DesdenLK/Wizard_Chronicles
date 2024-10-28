@@ -459,7 +459,7 @@ void TileMap::createVAO(GLuint& vao, GLuint& vbo, const std::vector<float>& vert
 	texCoordLocation = program.bindVertexAttribute("texCoord", 2, 4 * sizeof(float) + sizeof(int), (void*)(2 * sizeof(float)));
 	/*glEnableVertexAttribArray(tilesetIDLocation);
 	glVertexAttribIPointer(tilesetIDLocation,1,GL_INT,4 * sizeof(float) + sizeof(int),(void*)(4 * sizeof(float)));*/
-	tilesetIDLocation = program.bindVertexAttribute("tilesetID", 1, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+	tilesetIDLocation = program.bindVertexAttribute("tilesetID", 1, 4 * sizeof(float), (void*)(4 * sizeof(float)));
 }
 
 // Collision tests for axis aligned bounding boxes.
