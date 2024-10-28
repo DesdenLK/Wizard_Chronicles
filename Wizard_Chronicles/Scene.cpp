@@ -59,7 +59,8 @@ void Scene::update(int deltaTime)
 	map->update(deltaTime);
 	player->update(deltaTime);
 
-	gui->update(deltaTime, player->getPlayerLifes());
+
+	gui->update(deltaTime, player->getPlayerLifes(), Game::instance().getTries(), map->getPlayerScore(), map->getTimeLeft() / 1000);
 }
 
 void Scene::render()
