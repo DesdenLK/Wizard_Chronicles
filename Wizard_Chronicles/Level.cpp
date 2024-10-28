@@ -189,7 +189,7 @@ Level1::~Level1()
 void Level1::init()
 {
 	initShaders();
-	map = TileMap::createTileMap("levels/Luca.tmj", glm::vec2(SCREEN_X, SCREEN_Y), texProgram, 200 * 1000);
+	map = TileMap::createTileMap("levels/lvl1.tmj", glm::vec2(SCREEN_X, SCREEN_Y), texProgram, 200 * 1000);
 	player = new Player();
 	camera = new Camera();
 
