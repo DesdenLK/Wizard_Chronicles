@@ -8,6 +8,7 @@
 #include "Player.h"
 #include "Enemy.h"
 #include "Camera.h"
+#include "Gui.h"
 
 
 
@@ -36,6 +37,8 @@ private:
 	ShaderProgram texProgram;
 	float currentTime;
 	glm::mat4 projection;
+
+	Gui* gui;
 
 };
 

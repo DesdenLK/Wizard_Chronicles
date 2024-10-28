@@ -144,6 +144,7 @@
     <ClInclude Include="DynamicObjectChest.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="Gui.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="PickableObject.h" />
     <ClInclude Include="Player.h" />
@@ -166,6 +167,7 @@
     <ClCompile Include="DynamicObjectChest.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="Gui.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="PickableObject.cpp" />

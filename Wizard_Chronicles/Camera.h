@@ -10,6 +10,8 @@ public:
 	glm::mat4 cameraPositionCENTRAT(glm::vec2 posPlayer, glm::vec2 PlayerV);
 	glm::mat4 cameraPositionMix(glm::vec2 posPlayer, glm::vec2 PlayerV);
 
+	glm::vec2 getCameraPos() { return cameraPos; }
+
 private:
 	glm::mat4 projection;
 	glm::vec2 cameraPos;
