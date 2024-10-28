@@ -3,6 +3,7 @@
 
 
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include "ShaderProgram.h"
 #include "TileMap.h"
 #include "Player.h"
@@ -23,22 +24,22 @@ public:
 	Scene();
 	~Scene();
 
-	void init();
-	void update(int deltaTime);
-	void render();
+	virtual void init();
+	virtual void update(int deltaTime);
+	virtual void render();
+
+	virtual bool inInstructions();
+	virtual int getLevel();
+
+	virtual bool isLevelFinished();
 
 private:
 	void initShaders();
 
-private:
-	TileMap *map;
-	Player *player;
-	Camera* camera;
+protected:
 	ShaderProgram texProgram;
 	float currentTime;
 	glm::mat4 projection;
-
-	Gui* gui;
 
 };
 

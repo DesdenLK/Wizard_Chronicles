@@ -4,6 +4,7 @@
 
 #include <GLFW/glfw3.h>
 #include "Scene.h"
+#include "Level.h"
 
 
 #define SCREEN_WIDTH 640
@@ -30,8 +31,6 @@ public:
 	void init();
 	bool update(int deltaTime);
 	void render();
-
-	int tries;
 	
 	// Input callback methods
 	void keyPressed(int key);
@@ -47,9 +46,13 @@ public:
 
 private:
 	bool bPlay; // Continue to play game?
+	bool startScene, credits, level, mainMenu;
+
+	bool enterPressed;
+
 	bool keys[GLFW_KEY_LAST+1]; // Store key states so that 
-							    // we can have access at any time
-	Scene scene;
+	int tries;						    // we can have access at any time
+	Scene* scene;
 
 };
 

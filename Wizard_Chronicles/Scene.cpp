@@ -15,74 +15,43 @@
 
 Scene::Scene()
 {
-	map = NULL;
-	player = NULL;
-	camera = NULL;
 }
 
 Scene::~Scene()
 {
-	if(map != NULL)
-		delete map;
-	if(player != NULL)
-		delete player;
-	if (camera != NULL)
-		delete camera;
 }
 
 
 void Scene::init()
 {
 	initShaders();
-	map = TileMap::createTileMap("levels/Luca.tmj", glm::vec2(SCREEN_X, SCREEN_Y), texProgram, 200 * 1000);
-	player = new Player();
-	camera = new Camera();
-	
-	player->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
-	player->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize(), INIT_PLAYER_Y_TILES * map->getTileSize()));
-	player->setTileMap(map);
-	projection = camera->init(glm::vec2(0,0), SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
+	projection = glm::ortho(0.0f, float(SCREEN_WIDTH), float(SCREEN_HEIGHT), 0.0f);
 	currentTime = 0.0f;
-
-	gui = new Gui();
-	glm::vec2 pos = camera->getCameraPos();
-	gui->init(pos, glm::vec2(SCREEN_WIDTH, SCREEN_HEIGHT), 1, 1, texProgram);
 }
 
 void Scene::update(int deltaTime)
 {
-	if (player->getPlayerLifes() == 0) { init(); Game::instance().setTries(Game::instance().getTries() - 1);  }
-	if (map->getTimeLeft() <= 0) { init(); Game::instance().setTries(Game::instance().getTries() - 1); }
-
-	//cout << "Lifes: " << player->getPlayerLifes() << endl;
-	currentTime += deltaTime;
-	map->update(deltaTime);
-	player->update(deltaTime);
-
-
-	gui->update(deltaTime, player->getPlayerLifes(), Game::instance().getTries(), map->getPlayerScore(), map->getTimeLeft() / 1000);
+	return;
 }
 
 void Scene::render()
 {
-	glm::mat4 modelview;
+	return;
+}
 
-	projection = camera->cameraPositionNOCENTRAT(player->getPosition());
-	texProgram.use();
-	texProgram.setUniformMatrix4f("projection", projection);
-	texProgram.setUniform4f("color", 1.0f, 1.0f, 1.0f, 1.0f);
-	modelview = glm::mat4(1.0f);
-	texProgram.setUniformMatrix4f("modelview", modelview);
-	texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);
-	//map->renderDynamicObjects();
-	map->render();
-	player->render();
+bool Scene::inInstructions()
+{
+	return false;
+}
 
-	glm::mat4 guiProjection = glm::ortho(0.0f, float(SCREEN_WIDTH), float(SCREEN_HEIGHT), 0.0f);
-	texProgram.setUniformMatrix4f("projection", guiProjection);
-	texProgram.setUniformMatrix4f("modelview", modelview);
-	gui->render();
+int Scene::getLevel()
+{
+	return -1;
+}
 
+bool Scene::isLevelFinished()
+{
+	return false;
 }
 
 
