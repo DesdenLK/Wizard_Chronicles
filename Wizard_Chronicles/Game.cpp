@@ -62,6 +62,7 @@ bool Game::update(int deltaTime)
 
 	else if (credits and getKey(GLFW_KEY_ENTER) and not enterPressed) {
 		bPlay = false;
+
 	}
 
 	if (not getKey(GLFW_KEY_ENTER) and enterPressed) enterPressed = false;
