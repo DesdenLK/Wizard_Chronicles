@@ -337,7 +337,7 @@ void Player::playerKey_A(int deltaTime) {
 		glm::vec2 interpolatedPos = initialPosPlayer + t * (targetPosPlayer - initialPosPlayer);
 
 
-		if (map->collisionMoveLeft(interpolatedPos, glm::ivec2(32, 32))) {
+		if (map->collisionMoveLeft(posPlayer, glm::ivec2(32, 32))) {
 			posPlayer.x = initialPosPlayer.x;
 			sprite->changeAnimation(true, STAND_LEFT);
 			break;
@@ -374,7 +374,7 @@ void Player::playerKey_D(int deltaTime) {
 	for (float t = 0.0f; t <= 1.0f; t += 1.0f / playerVelocity.x) {
 		glm::vec2 interpolatedPos = initialPosPlayer + t * (targetPosPlayer - initialPosPlayer);
 
-		if (map->collisionMoveRight(interpolatedPos, glm::ivec2(32, 32))) {
+		if (map->collisionMoveRight(posPlayer, glm::ivec2(32, 32))) {
 			posPlayer.x = initialPosPlayer.x;
 			sprite->changeAnimation(true, STAND_RIGHT);
 			break;

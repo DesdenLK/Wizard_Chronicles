@@ -123,26 +123,26 @@
                  "y":384.666666666667
                 }, 
                 {
-                 "height":25,
+                 "height":24,
                  "id":19,
                  "name":"",
                  "rotation":0,
                  "type":"Box",
                  "visible":true,
-                 "width":26,
-                 "x":545.833333333333,
-                 "y":484.333333333333
+                 "width":23.5,
+                 "x":548.333333333333,
+                 "y":485.333333333333
                 }, 
                 {
-                 "height":16,
+                 "height":22,
                  "id":20,
                  "name":"",
                  "rotation":0,
                  "type":"Box",
                  "visible":true,
-                 "width":16,
-                 "x":581.833333333333,
-                 "y":493
+                 "width":26,
+                 "x":578.333333333333,
+                 "y":488
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -208,8 +208,8 @@
                  "type":"Chest",
                  "visible":true,
                  "width":16,
-                 "x":585.333333333333,
-                 "y":466.242424242424
+                 "x":646.833333333333,
+                 "y":410.242424242424
                 }],
          "opacity":1,
          "type":"objectgroup",
