@@ -129,20 +129,20 @@
                  "rotation":0,
                  "type":"Box",
                  "visible":true,
-                 "width":25,
-                 "x":547.333333333333,
+                 "width":26,
+                 "x":545.833333333333,
                  "y":484.333333333333
                 }, 
                 {
-                 "height":22.3333333333333,
+                 "height":16,
                  "id":20,
                  "name":"",
                  "rotation":0,
                  "type":"Box",
                  "visible":true,
-                 "width":26.3333333333334,
-                 "x":578.333333333333,
-                 "y":488
+                 "width":16,
+                 "x":581.833333333333,
+                 "y":493
                 }],
          "opacity":1,
          "type":"objectgroup",

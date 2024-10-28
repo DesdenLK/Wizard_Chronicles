@@ -289,6 +289,8 @@ void Player::updatePlayerMovement(int deltaTime) {
 
 	if (Game::instance().getKey(GLFW_KEY_A)) { playerKey_A(deltaTime); loopTimesInactive = 0; }
 
+	if (!Game::instance().getKey(GLFW_KEY_A) and !Game::instance().getKey(GLFW_KEY_D)) { playerVelocity.x = 0; }
+
 	if (Game::instance().getKey(GLFW_KEY_D)) { playerKey_D(deltaTime); loopTimesInactive = 0; }
 
 
