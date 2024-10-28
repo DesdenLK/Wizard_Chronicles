@@ -57,8 +57,9 @@ void Scene::update(int deltaTime)
 	//cout << "Lifes: " << player->getPlayerLifes() << endl;
 	currentTime += deltaTime;
 	map->update(deltaTime);
-	gui->update(deltaTime);
-	player->update(deltaTime);;
+	player->update(deltaTime);
+
+	gui->update(deltaTime, player->getPlayerLifes());
 }
 
 void Scene::render()
