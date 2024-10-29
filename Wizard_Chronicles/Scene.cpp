@@ -34,7 +34,7 @@ Scene::~Scene()
 void Scene::init()
 {
 	initShaders();
-	map = TileMap::createTileMap("levels/Luca.tmj", glm::vec2(SCREEN_X, SCREEN_Y), texProgram, 200 * 1000);
+	map = TileMap::createTileMap("levels/Dragon.tmj", glm::vec2(SCREEN_X, SCREEN_Y), texProgram, 200 * 1000);
 	player = new Player();
 	camera = new Camera();
 	
@@ -43,6 +43,8 @@ void Scene::init()
 	player->setTileMap(map);
 	projection = camera->init(glm::vec2(0,0), SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
 	currentTime = 0.0f;
+
+	map->setPlayer(player);
 
 	gui = new Gui();
 	glm::vec2 pos = camera->getCameraPos();

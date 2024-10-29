@@ -10,6 +10,7 @@
 #include "StaticObject.h"
 #include "CaterpillarEnemy.h"
 #include "BeeEnemy.h"
+#include "Dragon.h"
 #include "DynamicObjectChest.h"
 #include "DynamicObjectBox.h"
 
@@ -72,6 +73,8 @@ public:
 
 	void renderDynamicObjects();
 
+	void setPlayer(Player* player);
+
 	void setPlayerScore(int score);
 	int getPlayerScore();
 	void setTimeLeft(int time);
@@ -129,6 +132,8 @@ private:
 
 	//vector<std::map<string,string>>* objects; branca enemics
 	std::map<int,Enemy*> enemies;		//(id_enemic,enemic)
+	int dragonBossId;
+	Dragon* dragonBoss;
 	int enemyToErase = -1, eraseAnimationTime;
 
 	int playerScore, timeLeft;

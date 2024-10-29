@@ -139,6 +139,7 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CaterpillarEnemy.h" />
     <ClInclude Include="Coin.h" />
+    <ClInclude Include="Dragon.h" />
     <ClInclude Include="DynamicObject.h" />
     <ClInclude Include="DynamicObjectBox.h" />
     <ClInclude Include="DynamicObjectChest.h" />
@@ -162,6 +163,7 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CaterpillarEnemy.cpp" />
     <ClCompile Include="Coin.cpp" />
+    <ClCompile Include="Dragon.cpp" />
     <ClCompile Include="DynamicObject.cpp" />
     <ClCompile Include="DynamicObjectBox.cpp" />
     <ClCompile Include="DynamicObjectChest.cpp" />

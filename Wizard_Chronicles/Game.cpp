@@ -11,7 +11,7 @@ void Game::init()
 	glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
 	scene.init();
 }
-
+ 
 bool Game::update(int deltaTime)
 {
 	if (tries == 0) bPlay = false;

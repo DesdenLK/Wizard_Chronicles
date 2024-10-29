@@ -59,6 +59,9 @@ TileMap::~TileMap()
 	}
 }
 
+void TileMap::setPlayer(Player* player) {
+	dragonBoss->setPlayer(player);
+}
 
 void TileMap::render() const
 {
@@ -94,9 +97,11 @@ void TileMap::render() const
 		if (pickableObjects[i] != nullptr) pickableObjects[i]->render();
 	}
   
-  for (auto& enemy : enemies) {
+	for (auto& enemy : enemies) {
 		enemy.second->render();
-  }
+	}
+	
+	dragonBoss->render();
 }
 
 void TileMap::update(int deltaTime)
@@ -119,9 +124,11 @@ void TileMap::update(int deltaTime)
 		  enemyToErase = -1;
 	  }
   }
-  for (auto& enemy : enemies) {
+	for (auto& enemy : enemies) {
 	  enemy.second->update(deltaTime);
-  }
+	}
+
+	dragonBoss->update(deltaTime);
 }
 
 void TileMap::free()
@@ -271,10 +278,21 @@ bool TileMap::loadLevel(const string& levelFile, ShaderProgram& program)
 					bee->setTileMap(this);
 					enemies.insert(std::make_pair(enemyId, bee));
 				}
+
+				else if ((string)it.value().dump() == "\"Dragon\"") {
+					cout << "dragon detected" << endl;
+					Dragon* dragon = new Dragon();
+					dragon->Dragon::init(enemyId, glm::ivec2(0, 0), program, "images/enemics/Boss/DRAGON/Dragon-boss-export.png", glm::ivec2(80,112), glm::ivec2(48,32), enemyBoundingBoxWH, 1000);
+					dragon->setPosition(enemyStartPos);
+					dragon->setTileMap(this);
+					dragonBoss = dragon;
+					dragonBossId = enemyId;
+					cout << "dragon boss added" << endl;
+				}
 			}
 		}
 	}
-		cout << "nombre d'enemics enregistrats: " << enemies.size() << " amb id: " << enemies.begin()->first << endl;
+		//cout << "nombre d'enemics enregistrats: " << enemies.size() << " amb id: " << enemies.begin()->first << endl;
 
 	nDynamicObjects = dynamic_objectsJSON.size();
 	dynamicObjects = vector<DynamicObject*>(nDynamicObjects);
@@ -586,6 +604,14 @@ int TileMap::lateralCollisionWithEnemy(const glm::vec2& posPlayer, const glm::ve
 			}
 		}
 	}
+	if (dragonBoss->isHitBoxEnabled()) {
+		glm::vec2 enemyPos = dragonBoss->getPosition();
+		glm::vec2 widthHeightEnemyBox = dragonBoss->getBoundingBoxWH();
+		if (lateralBoxCollision(enemyPos, widthHeightEnemyBox, posPlayer, playerSize) and dragonBossId != enemyToErase) {
+			cout << "lateral collision with dragon with id: " << dragonBossId << endl;
+			return dragonBossId;
+		}
+	}
 	return -1;
 }
 
@@ -599,6 +625,14 @@ int TileMap::verticalCollisionWithEnemy(const glm::vec2& posPlayer, const glm::v
 				cout << "vertical collision with enemy with id: " << enemy.first << endl;
 				return enemy.first;
 			}
+		}
+	}
+	if (dragonBoss->isHitBoxEnabled()) {
+		glm::vec2 enemyPos = dragonBoss->getPosition();
+		glm::vec2 widthHeightEnemyBox = dragonBoss->getBoundingBoxWH();
+		if (verticalBoxCollision(posPlayer, playerSize, enemyPos, widthHeightEnemyBox) and dragonBossId != enemyToErase) {
+			cout << "vertical collision with dragon with id: " << dragonBossId << endl;
+			return dragonBossId;
 		}
 	}
 	return -1;
@@ -772,12 +806,14 @@ bool TileMap::verticalBoxCollision(glm::vec2 coordsMin1, glm::vec2 widthHeight1,
 }
 
 void TileMap::eraseEnemy(int enemyId) {
-	playerScore += 100;
-	auto enemy = enemies[enemyId];
-	enemy->setHitBoxEnabled(false);
-	enemy->changeToDeadAnimation();
-	enemyToErase = enemyId;
-	eraseAnimationTime = enemy->getEraseAnimationTime();
+	if (enemyId != dragonBossId) {
+		playerScore += 100;
+		auto enemy = enemies[enemyId];
+		enemy->setHitBoxEnabled(false);
+		enemy->changeToDeadAnimation();
+		enemyToErase = enemyId;
+		eraseAnimationTime = enemy->getEraseAnimationTime();
+	}
 }
 
 bool TileMap::collisionWithInvisibleObject(const glm::vec2& pos, const glm::vec2& size) {
