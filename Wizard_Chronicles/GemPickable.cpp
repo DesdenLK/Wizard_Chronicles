@@ -21,10 +21,3 @@ string GemPickable::getType() {
 	return "Gem";
 }
 
-void GemPickable::objectFalling() {
-	PickableObject::objectFalling();
-}
-
-void GemPickable::objectJump() {
-	PickableObject::objectJump();
-}

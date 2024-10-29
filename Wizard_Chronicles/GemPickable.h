@@ -16,8 +16,6 @@ public:
     void render();
     void update(int deltaTime);
 
-    virtual void objectFalling() override;
-    virtual void objectJump() override;
 
     virtual void init(int id, float x, float y, float w, float h, glm::vec2 quadSize, float spriteWidth, float spriteHeight, ShaderProgram& shaderProgram, TileMap* map) override;
     virtual string getType() override;
