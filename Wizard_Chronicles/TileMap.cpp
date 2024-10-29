@@ -138,6 +138,7 @@ void TileMap::update(int deltaTime)
 		if (eraseDragonTime <= 0) {
 			dragonRender = false;
 			dragonErase = false;
+			dragonBoss == nullptr;
 		}
 	}
 
@@ -145,10 +146,11 @@ void TileMap::update(int deltaTime)
 	  enemy.second->update(deltaTime);
 	}
 
-	if (dragonBoss != nullptr) dragonBoss->update(deltaTime);
-
-	for (int i = 0; i < projectiles.size(); ++i) {
-		if (projectiles[i] != nullptr) projectiles[i]->update(deltaTime);
+	if (dragonBoss != nullptr) {
+		dragonBoss->update(deltaTime);
+		for (int i = 0; i < projectiles.size(); ++i) {
+			if (projectiles[i] != nullptr) projectiles[i]->update(deltaTime);
+		}
 	}
 }
 
@@ -160,11 +162,13 @@ void TileMap::free()
 }
 
 void TileMap::initProjectiles(const vector<glm::vec2>& projectileVectors, const glm::vec2& startPos) {
-	projectiles = vector<ObjectProjectile*>();
-	for (int i = 0; i < projectileVectors.size(); ++i) {
-		ObjectProjectile* p = new ObjectProjectile();
-		p->ObjectProjectile::init(projectiles.size(), "images/enemics/Boss/DRAGON/Dragon-boss-export.png", startPos, glm::vec2(16,16), *program, this, projectileVectors[i]);
-		projectiles.push_back(p);
+	if (!dragonErase) {
+		projectiles = vector<ObjectProjectile*>();
+		for (int i = 0; i < projectileVectors.size(); ++i) {
+			ObjectProjectile* p = new ObjectProjectile();
+			p->ObjectProjectile::init(projectiles.size(), "images/enemics/Boss/DRAGON/Dragon-boss-export.png", startPos, glm::vec2(16, 16), *program, this, projectileVectors[i]);
+			projectiles.push_back(p);
+		}
 	}
 }
 
