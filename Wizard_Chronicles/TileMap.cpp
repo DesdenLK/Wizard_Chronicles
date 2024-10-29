@@ -679,14 +679,16 @@ int TileMap::enemyCollision(const glm::vec2& pos, const glm::vec2& size) {
 
 int TileMap::collisionWithProjectile(const glm::vec2& posPlayer, const glm::vec2& playerSize) {
 	for (int i = 0; i < projectiles.size(); ++i) {
-		ObjectProjectile* projectile = projectiles[i];
-		glm::vec2 projPos = projectile->getPosition();
-		glm::vec2 widthHeightEnemyBox = projectile->getBoundingBoxWH();
-		if (verticalBoxCollision(posPlayer, playerSize, projPos, widthHeightEnemyBox) or lateralBoxCollision(posPlayer, playerSize, projPos, widthHeightEnemyBox)) {
-			cout << "collision with projectile with id: " << i << endl;
-			projectiles[i]->destroyObject();
-			projectiles[i] == nullptr;
-			return i;
+		if (projectiles[i] != nullptr) {
+			ObjectProjectile* projectile = projectiles[i];
+			glm::vec2 projPos = projectile->getPosition();
+			glm::vec2 widthHeightEnemyBox = projectile->getBoundingBoxWH();
+			if (verticalBoxCollision(posPlayer, playerSize, projPos, widthHeightEnemyBox) or lateralBoxCollision(posPlayer, playerSize, projPos, widthHeightEnemyBox)) {
+				cout << "collision with projectile with id: " << i << endl;
+				projectiles[i]->destroyObject();
+				projectiles[i] = nullptr;
+				return i;
+			}
 		}
 	}
 	return -1;
@@ -854,8 +856,8 @@ void TileMap::eraseEnemy(int enemyId) {
 			dragonErase = true;
 			eraseDragonTime = dragonBoss->getEraseAnimationTime();
 			for (int i = 0; i < projectiles.size(); ++i) {
-				projectiles[i]->destroyObject();
-				projectiles[i] == nullptr;
+				if (projectiles[i] != nullptr) projectiles[i]->destroyObject();
+				projectiles[i] = nullptr;
 			}
 			cout << "POS: " << posGem.x << " " << posGem.y << endl;
 			addPickableObject("Gem", posGem, glm::vec2(16, 16));
