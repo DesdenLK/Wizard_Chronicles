@@ -43,8 +43,11 @@ void Level::init()
 	player->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
 	player->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize(), INIT_PLAYER_Y_TILES * map->getTileSize()));
 	player->setTileMap(map);
+
 	projection = camera->init(glm::vec2(0, 0), SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
 	currentTime = 0.0f;
+
+	map->setPlayer(player);
 
 	gui = new Gui();
 	glm::vec2 pos = camera->getCameraPos();
@@ -60,8 +63,9 @@ void Level::update(int deltaTime)
 
 	//cout << "Lifes: " << player->getPlayerLifes() << endl;
 	currentTime += deltaTime;
-	map->update(deltaTime);
+
 	player->update(deltaTime);
+	map->update(deltaTime);
 
 
 	gui->update(deltaTime, player->getPlayerLifes(), Game::instance().getTries(), map->getPlayerScore(), map->getTimeLeft() / 1000);
@@ -147,12 +151,12 @@ TutorialLevel::~TutorialLevel()
 void TutorialLevel::init()
 {
 	initShaders();
-	map = TileMap::createTileMap("levels/Luca.tmj", glm::vec2(SCREEN_X, SCREEN_Y), texProgram, 200 * 1000);
+	map = TileMap::createTileMap("levels/Tutorial.tmj", glm::vec2(SCREEN_X, SCREEN_Y), texProgram, 200 * 1000);
 	player = new Player();
 	camera = new Camera();
 
 	player->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
-	player->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize(), INIT_PLAYER_Y_TILES * map->getTileSize()));
+	player->setPosition(glm::vec2(3 * map->getTileSize(), 9 * map->getTileSize()));
 	player->setTileMap(map);
 	projection = camera->init(glm::vec2(0, 0), SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
 	currentTime = 0.0f;
@@ -189,7 +193,7 @@ Level1::~Level1()
 void Level1::init()
 {
 	initShaders();
-	map = TileMap::createTileMap("levels/lvl1.tmj", glm::vec2(SCREEN_X, SCREEN_Y), texProgram, 200 * 1000);
+	map = TileMap::createTileMap("levels/Dragon.tmj", glm::vec2(SCREEN_X, SCREEN_Y), texProgram, 200 * 1000);
 	player = new Player();
 	camera = new Camera();
 
@@ -198,6 +202,8 @@ void Level1::init()
 	player->setTileMap(map);
 	projection = camera->init(glm::vec2(0, 0), SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
 	currentTime = 0.0f;
+
+	map->setPlayer(player);
 
 	gui = new Gui();
 	glm::vec2 pos = camera->getCameraPos();
