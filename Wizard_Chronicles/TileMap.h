@@ -10,8 +10,10 @@
 #include "StaticObject.h"
 #include "CaterpillarEnemy.h"
 #include "BeeEnemy.h"
+#include "Dragon.h"
 #include "DynamicObjectChest.h"
 #include "DynamicObjectBox.h"
+
 
 #include "Cake.h"
 #include "Coin.h"
@@ -26,6 +28,9 @@
 
 class DynamicObject;
 class Enemy;
+class ObjectProjectile;
+//class PickableObject;
+
 
 class TileMap
 {
@@ -57,6 +62,8 @@ public:
 	int enemyCollision(const glm::vec2& pos, const glm::vec2& size);
 	int lateralCollisionWithEnemy(const glm::vec2& posPlayer, const glm::vec2& playerSize);
 	int verticalCollisionWithEnemy(const glm::vec2& posPlayer, const glm::vec2& playerSize);
+	int collisionWithProjectile(const glm::vec2& posPlayer, const glm::vec2& playerSize);
+	void initProjectiles(const vector<glm::vec2>& projectileVectors, const glm::vec2& startPos);
 	void eraseEnemy(int enemyId);
 
 	int pickingObject(const glm::vec2& posPlayer, const glm::vec2& playerSize);
@@ -71,6 +78,8 @@ public:
 	bool collisionWithInvisibleObject(const glm::vec2& pos, const glm::vec2& size);
 
 	void renderDynamicObjects();
+
+	void setPlayer(Player* player);
 
 	void setPlayerScore(int score);
 	int getPlayerScore();
@@ -127,9 +136,14 @@ private:
 	vector<StaticObject*> holes;
 	int nHoles;
 
-	//vector<std::map<string,string>>* objects; branca enemics
+	vector<ObjectProjectile*> projectiles;
+
 	std::map<int,Enemy*> enemies;		//(id_enemic,enemic)
+	int dragonBossId;
+	Dragon* dragonBoss;
 	int enemyToErase = -1, eraseAnimationTime;
+	bool dragonErase, dragonRender;
+	int eraseDragonTime;
 
 	int playerScore, timeLeft;
 };

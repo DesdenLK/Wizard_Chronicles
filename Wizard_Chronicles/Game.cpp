@@ -21,7 +21,7 @@ void Game::init()
 	scene = new StartScene();
 	scene -> init();
 }
-
+ 
 bool Game::update(int deltaTime)
 {
 	if (getKey(GLFW_KEY_ENTER) and startScene and not enterPressed) {

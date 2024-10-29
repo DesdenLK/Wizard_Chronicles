@@ -20,6 +20,7 @@ void Cake::init(int id, float x, float y, float w, float h, glm::vec2 quadSize, 
 
 
 
+
 	spritesheet.loadFromFile("images/DynamicObjects/Cakes.png", TEXTURE_PIXEL_FORMAT_RGBA);
 	sprite = Sprite::createSprite(quadSize, glm::vec2(spriteWidth, spriteHeight), &spritesheet, &shaderProgram);
 
