@@ -33,9 +33,6 @@ void DynamicObject::update(int deltaTime)
 	}
 	else objectFalling();
 
-
-
-	
 	sprite->update(deltaTime);
 	sprite->setPosition(posicio);
 	//cout << "X: " << posicio.x << " Y: " << posicio.y << endl;

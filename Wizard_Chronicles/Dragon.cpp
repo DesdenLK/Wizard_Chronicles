@@ -12,6 +12,9 @@
 #define SHOOTING_TIME_DELAY 1000.f		// temps que transcorre entre 2 series de dispars de projectils (una serie acaba quan el drac ha disparat i deixa de fixar el cap)
 #define RENDER_SHOOTING_TIME 1500.f		// durada de quan el drac fixa el cap a la direcció del player i dispara els projectils
 
+#define FALL_VELOCITY_DEAD 1
+#define HURT_TIME 1000
+
 #define M_PI 3.1415926535897932384626433832795
 
 enum DragonBodyAnims
@@ -36,6 +39,8 @@ void Dragon::init(int id, const glm::ivec2& tileMapPos, ShaderProgram& shaderPro
 	hitBoxEnabled = true;
 	shootingTimeout = SHOOTING_TIME_DELAY;
 	renderShootingTime = 0;
+	lifes = 3;
+	isHurt = false;
 	dragonPhase = IDLE;
 
 	bool loaded = spritesheet.loadFromFile(pathToSpritesheet, TEXTURE_PIXEL_FORMAT_RGBA);
@@ -51,8 +56,20 @@ void Dragon::init(int id, const glm::ivec2& tileMapPos, ShaderProgram& shaderPro
 	dragonHead->setPosition(glm::vec2(float(tileMapDispl.x + posEnemy.x + HEAD_OFFSET_X), float(tileMapDispl.y + posEnemy.y + HEAD_OFFSET_Y)));
 }
 
-void Dragon::updateEnemyMovement(int deltaTime) {
+void Dragon::update(int deltaTime) {
+	if (isHurt) {
+		hurtTime -= deltaTime;
+		if (hurtTime <= 0) isHurt = false;
+	}
+	sprite->update(deltaTime);
 	dragonHead->update(deltaTime);
+	updateEnemyMovement(deltaTime);
+	posEnemy += EnemyVelocity;
+	sprite->setPosition(glm::vec2(float(tileMapDispl.x + posEnemy.x), float(tileMapDispl.y + posEnemy.y)));
+	dragonHead->setPosition(glm::vec2(float(tileMapDispl.x + posEnemy.x + HEAD_OFFSET_X), float(tileMapDispl.y + posEnemy.y + HEAD_OFFSET_Y)));
+}
+
+void Dragon::updateEnemyMovement(int deltaTime) {
 	// Idle phase (not shooting)
 	if (dragonPhase == IDLE) {
 		if (shootingTimeout > 0) shootingTimeout -= deltaTime;
@@ -64,23 +81,41 @@ void Dragon::updateEnemyMovement(int deltaTime) {
 			else if (centerPosPlayer.x > posEnemy.x + boundingBoxWidthHeight.x) dragonHead->changeAnimation(true, LOOK_FIXED_RIGHT_DOWN);
 			else dragonHead->changeAnimation(true, LOOK_FIXED_DOWN);
 
-			// el primer projectil es llenca apuntant a l'objectiu (vector dragonHeadPos-centerPosPlayer), els altres dos 45 graus desviats a cada banda
-			glm::vec2 playerDragonDir = dragonHead->getPosition() - centerPosPlayer;
+			// el primer projectil es llenca apuntant a l'objectiu (vector centerPosPlayer-dragonHeadPos), els altres dos a dispersionAngle graus desviats a cada banda
+			glm::vec2 playerDragonDir = centerPosPlayer - dragonHead->getPosition();
 			vector<glm::vec2> projectileDirections = vector<glm::vec2>(3);
 
-			float dispersionAngle = M_PI / 4.f;
+			float dispersionAngle = M_PI / 5.f;	// en radians
 			projectileDirections[0] = glm::normalize(playerDragonDir);
-			projectileDirections[0] *= glm::vec2(2, 2);		// multiplicar per la velocitat del projectil
+			projectileDirections[0] *= glm::vec2(4,4);		// multiplicar per la velocitat del projectil
 
 			projectileDirections[1] = glm::vec2(playerDragonDir.x * glm::cos(dispersionAngle) - playerDragonDir.y * glm::sin(dispersionAngle), playerDragonDir.x * glm::sin(dispersionAngle) + playerDragonDir.y * glm::cos(dispersionAngle));
 			projectileDirections[1] = glm::normalize(projectileDirections[1]);
-			projectileDirections[1] *= glm::vec2(1, 1);
+			projectileDirections[1] *= glm::vec2(2, 2);
 
 			projectileDirections[2] = glm::vec2(playerDragonDir.x * glm::cos(-dispersionAngle) - playerDragonDir.y * glm::sin(-dispersionAngle), playerDragonDir.x * glm::sin(-dispersionAngle) + playerDragonDir.y * glm::cos(-dispersionAngle));
 			projectileDirections[2] = glm::normalize(projectileDirections[2]);
-			projectileDirections[2] *= glm::vec2(1, 1);
+			projectileDirections[2] *= glm::vec2(2, 2);
 
-			map->initProjectiles(projectileDirections, dragonHead->getPosition());
+			glm::vec2 projectileStartPos = dragonHead->getPosition();
+			/*// (48,32) dragonHead size
+			switch (dragonHead->animation()) {
+				case LOOK_FIXED_LEFT_DOWN:
+					projectileStartPos += glm::vec2(10,16);
+					break;
+
+				case LOOK_FIXED_DOWN:
+					projectileStartPos += glm::vec2(24,32);
+					break;
+
+				case LOOK_FIXED_RIGHT_DOWN:
+					projectileStartPos += glm::vec2(30, 0);
+					break;
+
+				default:
+					break;
+			}*/
+			map->initProjectiles(projectileDirections, projectileStartPos);
 			renderShootingTime = RENDER_SHOOTING_TIME;
 			shootingTimeout = SHOOTING_TIME_DELAY;
 		}
@@ -129,13 +164,31 @@ void Dragon::setAnimations() {
 	dragonHead->changeAnimation(true, LOOK);
 }
 
+// retorna cert si el drac ha mort, fals altrament
+bool Dragon::takeDamage(int damage) {
+	if (!isHurt) {
+		lifes -= damage;
+		isHurt = true; hurtTime = HURT_TIME;
+		sprite->setAlpha(0.3f);
+		if (lifes <= 0) {
+			changeToDeadAnimation();
+			return true;
+		}
+	}
+	return false;
+}
+
 void Dragon::render() {
-	cout << "rendering dragon" << endl;
+	if (isHurt) {
+		sprite->setAlpha(0.3);
+		dragonHead->setAlpha(0.3);
+	}
+	else {
+		sprite->setAlpha(1.f);
+		dragonHead->setAlpha(1.f);
+	}
 	sprite->render();
 	dragonHead->render();
-	cout << "dragon body pos: " << '(' << sprite->getPosition().x << ',' << sprite->getPosition().y << ')' << endl;
-	cout << "dragon head pos: " << '(' << dragonHead->getPosition().x << ',' << dragonHead->getPosition().y << ')' << endl;
-	cout << "dragon rendered" << endl;
 }
 
 void Dragon::setPosition(const glm::vec2& pos) {
@@ -149,9 +202,9 @@ void Dragon::setPlayer(Player* player) {
 }
 
 void Dragon::changeToDeadAnimation() {
-	return;
+	EnemyVelocity = glm::vec2(0.f, FALL_VELOCITY_DEAD);
 }
 
 int Dragon::getEraseAnimationTime() {
-	return 1000;
+	return 4000.f/FALL_VELOCITY_DEAD;
 }

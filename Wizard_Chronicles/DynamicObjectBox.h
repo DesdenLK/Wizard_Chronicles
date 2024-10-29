@@ -1,6 +1,9 @@
 #ifndef _DYNAMIC_OBJECT_BOX_INCLUDE
 #define _DYNAMIC_OBJECT_BOX_INCLUDE
+
 #include "DynamicObject.h"  
+class TileMap;
+
 class DynamicObjectBox : public DynamicObject  
 {  
 public:  

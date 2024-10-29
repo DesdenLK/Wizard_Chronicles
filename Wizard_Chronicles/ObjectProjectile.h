@@ -14,6 +14,9 @@ public:
     void init(int id, std::string pathToFile, glm::vec2 startPos, glm::vec2 quadSize, ShaderProgram& shaderProgram, TileMap* map, const glm::vec2& velocityDir);
     void setAnimations();
 
+	glm::vec2 getPosition();
+	glm::vec2 getBoundingBoxWH();
+
     void update(int deltaTime);
 	void render();
     void destroyObject();

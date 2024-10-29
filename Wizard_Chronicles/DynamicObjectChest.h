@@ -1,6 +1,7 @@
 #ifndef _DYNAMIC_OBJECT_CHEST_INCLUDE
 #define _DYNAMIC_OBJECT_CHEST_INCLUDE
 #include "DynamicObject.h"  
+
 class DynamicObjectChest : public DynamicObject
 {
 	private:

@@ -143,6 +143,7 @@
     <ClInclude Include="DynamicObject.h" />
     <ClInclude Include="DynamicObjectBox.h" />
     <ClInclude Include="DynamicObjectChest.h" />
+    <ClInclude Include="GemPickable.h" />
     <ClInclude Include="ObjectProjectile.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="Game.h" />
@@ -168,6 +169,7 @@
     <ClCompile Include="DynamicObject.cpp" />
     <ClCompile Include="DynamicObjectBox.cpp" />
     <ClCompile Include="DynamicObjectChest.cpp" />
+    <ClCompile Include="GemPickable.cpp" />
     <ClCompile Include="ObjectProjectile.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="Game.cpp" />

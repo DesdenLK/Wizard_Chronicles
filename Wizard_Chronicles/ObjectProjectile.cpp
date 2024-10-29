@@ -27,9 +27,21 @@ void ObjectProjectile::init(int id, string pathToFile, glm::vec2 startPos, glm::
 	setAnimations();
 }
 
+glm::vec2 ObjectProjectile::getPosition() {
+	return posicio;
+}
+
+glm::vec2 ObjectProjectile::getBoundingBoxWH() {
+	return measures;
+}
+
 void ObjectProjectile::update(int deltaTime) {
 	sprite->update(deltaTime);
-	posicio -= velocityDir;
+	posicio += velocityDir;
+	float posY = posicio.y + measures.y;
+	if (map->collisionMoveDown(posicio, measures, &posY) or map->collisionMoveLeft(posicio, measures) or map->collisionMoveRight(posicio, measures)) {
+		destroyObject();
+	}
 	sprite->setPosition(posicio);
 	//cout << "X: " << posicio.x << " Y: " << posicio.y << endl;
 }
@@ -47,7 +59,7 @@ void ObjectProjectile::setAnimations()
 	sprite->addKeyframe(ALIVE, glm::vec2(SPRITE_WIDTH, 11 * SPRITE_HEIGHT));
 	sprite->addKeyframe(ALIVE, glm::vec2(2 * SPRITE_WIDTH, 11 * SPRITE_HEIGHT));
 
-	sprite->setAnimationSpeed(DESTROY, 4);
+	sprite->setAnimationSpeed(DESTROY, 6);
 	sprite->addKeyframe(DESTROY, glm::vec2(SPRITE_WIDTH, 12 * SPRITE_HEIGHT));
 	sprite->addKeyframe(DESTROY, glm::vec2(0.f, 12 * SPRITE_HEIGHT));
 
@@ -55,5 +67,6 @@ void ObjectProjectile::setAnimations()
 }
 
 void ObjectProjectile::destroyObject() {
-	sprite->changeAnimation(true, DESTROY);
+	sprite->changeAnimation(false, DESTROY);
+	velocityDir = glm::vec2(0.f, 0.f);
 }

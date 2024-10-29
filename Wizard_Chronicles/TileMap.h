@@ -14,6 +14,7 @@
 #include "DynamicObjectChest.h"
 #include "DynamicObjectBox.h"
 
+
 #include "Cake.h"
 #include "Coin.h"
 #include <map>
@@ -28,6 +29,8 @@
 class DynamicObject;
 class Enemy;
 class ObjectProjectile;
+//class PickableObject;
+
 
 class TileMap
 {
@@ -59,6 +62,7 @@ public:
 	int enemyCollision(const glm::vec2& pos, const glm::vec2& size);
 	int lateralCollisionWithEnemy(const glm::vec2& posPlayer, const glm::vec2& playerSize);
 	int verticalCollisionWithEnemy(const glm::vec2& posPlayer, const glm::vec2& playerSize);
+	int collisionWithProjectile(const glm::vec2& posPlayer, const glm::vec2& playerSize);
 	void initProjectiles(const vector<glm::vec2>& projectileVectors, const glm::vec2& startPos);
 	void eraseEnemy(int enemyId);
 
@@ -134,11 +138,12 @@ private:
 
 	vector<ObjectProjectile*> projectiles;
 
-	//vector<std::map<string,string>>* objects; branca enemics
 	std::map<int,Enemy*> enemies;		//(id_enemic,enemic)
 	int dragonBossId;
 	Dragon* dragonBoss;
 	int enemyToErase = -1, eraseAnimationTime;
+	bool dragonErase, dragonRender;
+	int eraseDragonTime;
 
 	int playerScore, timeLeft;
 };

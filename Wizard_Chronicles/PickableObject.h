@@ -31,7 +31,7 @@ protected:
 
 
 public:
-    virtual void init(int id, float x, float y, float w, float h, glm::vec2 quadSize, float spriteWidth, float spriteHeight, ShaderProgram& shaderProgram, TileMap* map) = 0;
+    virtual void init(int id, string pathToFile, float x, float y, float w, float h, glm::vec2 quadSize, float spriteWidth, float spriteHeight, ShaderProgram& shaderProgram, TileMap* map) = 0;
 
     void render();
     void update(int deltaTime);

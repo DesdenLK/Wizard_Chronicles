@@ -315,7 +315,7 @@ void Player::playerKey_A(int deltaTime) {
 	glm::vec2 initialPosPlayer = posPlayer;
 	posPlayer.x -= playerVelocity.x;
 
-	if (isHurt != true  and map->lateralCollisionWithEnemy(posPlayer, glm::vec2(32, 32)) != -1) {
+	if (isHurt != true and (map->lateralCollisionWithEnemy(posPlayer, glm::vec2(32, 32)) != -1 or map->collisionWithProjectile(posPlayer, glm::vec2(32, 32)) != -1)) {
 		isHurt = true;
 		hurtTime = HURT_TIME;
 		hurtFrameTime = HURT_FRAME_TIME;
@@ -353,7 +353,7 @@ void Player::playerKey_D(int deltaTime) {
 	glm::vec2 initialPosPlayer = posPlayer;
 	posPlayer.x += playerVelocity.x;
 
-	if (isHurt != true and map->lateralCollisionWithEnemy(posPlayer, glm::vec2(32, 32)) != -1) {
+	if (isHurt == false and (map->lateralCollisionWithEnemy(posPlayer, glm::vec2(32, 32)) != -1 or map->collisionWithProjectile(posPlayer, glm::vec2(32, 32)) != -1)) {
 		isHurt = true;
 		hurtTime = HURT_TIME;
 		hurtFrameTime = HURT_FRAME_TIME;
@@ -383,7 +383,7 @@ void Player::playerKey_D(int deltaTime) {
 }
 
 void Player::playerNOKeys(int deltaTime) {
-	if (isHurt != true and map->lateralCollisionWithEnemy(posPlayer, glm::vec2(32, 32)) != -1) {
+	if (isHurt == false and (map->lateralCollisionWithEnemy(posPlayer, glm::vec2(32, 32)) != -1 or map->collisionWithProjectile(posPlayer, glm::vec2(32, 32)) != -1)) {
 		isHurt = true;
 		hurtTime = HURT_TIME;
 		hurtFrameTime = HURT_FRAME_TIME;
@@ -499,7 +499,7 @@ void Player::playerFalling(int deltaTime)
 void Player::playerKey_W(int deltaTime) {
 	// fet per l'escala, adaptar metodes per quan tinguem objectes que no es poden traspassar
 
-	if (isHurt != true and map->lateralCollisionWithEnemy(posPlayer, glm::vec2(32, 32)) != -1) {
+	if (isHurt == false and (map->lateralCollisionWithEnemy(posPlayer, glm::vec2(32, 32)) != -1 or map->collisionWithProjectile(posPlayer, glm::vec2(32, 32)) != -1)) {
 		isHurt = true;
 		hurtTime = HURT_TIME;
 		hurtFrameTime = HURT_FRAME_TIME;
@@ -618,12 +618,11 @@ void Player::playerKey_S(int deltaTime)
 				sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
 				sprite->changeAnimation(true, STAND_RIGHT);
 				verticalCollisionTimeout = VERTICAL_COL_TIMEOUT;
-				// sumar punts al Player
 			}
 			else verticalCollisionTimeout -= deltaTime;
 		}
 		else {
-			if (isHurt == false and map->lateralCollisionWithEnemy(posPlayer, glm::vec2(32, 32)) != -1) {
+			if (isHurt == false and (map->lateralCollisionWithEnemy(posPlayer, glm::vec2(32, 32)) != -1 or map->collisionWithProjectile(posPlayer, glm::vec2(32, 32)) != -1)) {
 				isHurt = true;
 				hurtTime = HURT_TIME;
 				hurtFrameTime = HURT_FRAME_TIME;

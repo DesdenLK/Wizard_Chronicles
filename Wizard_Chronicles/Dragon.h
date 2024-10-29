@@ -15,9 +15,12 @@ class Dragon :
 {
 public:
 	void init(int id, const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram, string pathToSpritesheet, const glm::ivec2& spriteBodyDimensions, const glm::ivec2& spriteHeadDimensions, const glm::vec2& hitboxWH, int eraseAnimTime);
+	void update(int deltaTime);
 	void render();
 	void setPlayer(Player* player);
 	void setPosition(const glm::vec2& pos);
+	bool takeDamage(int damage);
+
 	void updateEnemyMovement(int deltaTime) override;
 	void setAnimations() override;
 	void changeToDeadAnimation() override;
@@ -29,6 +32,8 @@ private:
 	float shootingTimeout;
 	float renderShootingTime;
 	Phase dragonPhase;
+	int lifes, hurtTime, hurtFrameTime;
+	bool isHurt;
 };
 
 #endif
