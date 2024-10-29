@@ -92,6 +92,8 @@ public:
 	
 	bool holeCollision(const glm::vec2& pos, const glm::vec2& size);
 
+	bool isGemObtained();
+
 	//void addPickableObject(PickableObject* object);
 	
 private:
@@ -149,6 +151,8 @@ private:
 	int eraseDragonTime;
 
 	int playerScore, timeLeft;
+
+	bool gemObtained = false;
 };
 
 

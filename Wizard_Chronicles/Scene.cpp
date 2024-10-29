@@ -54,6 +54,16 @@ bool Scene::isLevelFinished()
 	return false;
 }
 
+bool Scene::gameOverAnimationFinished()
+{
+	return false;
+}
+
+bool Scene::LevelPassedAnimationFinished()
+{
+	return false;
+}
+
 
 void Scene::initShaders()
 {

@@ -797,6 +797,17 @@
                  "width":10,
                  "x":4551.66666666667,
                  "y":302.333333333333
+                }, 
+                {
+                 "height":10,
+                 "id":73,
+                 "name":"Gem",
+                 "rotation":0,
+                 "type":"Gem",
+                 "visible":true,
+                 "width":10,
+                 "x":4669,
+                 "y":296
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -937,7 +948,7 @@
          "y":0
         }],
  "nextlayerid":10,
- "nextobjectid":73,
+ "nextobjectid":74,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.11.0",

@@ -23,7 +23,7 @@ enum PlayerAnims
 	HELLO_LEFT, HELLO_RIGHT, STAND_LEFT, STAND_RIGHT, MOVE_LEFT, MOVE_RIGHT, STOPPING_LEFT, STOPPING_RIGHT, 
 	JUMP_LEFT, JUMP_RIGHT, FALL_LEFT, FALL_RIGHT, CROUCH_LEFT, CROUCH_RIGHT, CLIMB, PICKING_LEFT, PICKING_RIGHT,
 	STAND_LEFT_OBJECT,STAND_RIGHT_OBJECT,
-	MOVING_LEFT_OBJECT, MOVING_RIGHT_OBJECT, NUM_ANIMS
+	MOVING_LEFT_OBJECT, MOVING_RIGHT_OBJECT, JUMPING_LEFT_OBJECT, JUMPING_RIGHT_OBJECT, NUM_ANIMS
 };
 
 
@@ -265,6 +265,14 @@ void Player::setAnimations() {
 	sprite->addKeyframe(MOVING_RIGHT_OBJECT, glm::vec2(13 * SPRITE_WIDTH, 6 * SPRITE_HEIGHT));
 	sprite->addKeyframe(MOVING_RIGHT_OBJECT, glm::vec2(13 * SPRITE_WIDTH, 7 * SPRITE_HEIGHT));
 
+	//JUMPING_LEFT_OBJECT
+	sprite->setAnimationSpeed(JUMPING_LEFT_OBJECT, 8);
+	sprite->addKeyframe(JUMPING_LEFT_OBJECT, glm::vec2(12 * SPRITE_WIDTH, 9*SPRITE_HEIGHT));
+
+	//JUMPING_RIGHT_OBJECT
+	sprite->setAnimationSpeed(JUMPING_RIGHT_OBJECT, 8);
+	sprite->addKeyframe(JUMPING_RIGHT_OBJECT, glm::vec2(11 * SPRITE_WIDTH, 9 * SPRITE_HEIGHT));
+
 	sprite->changeAnimation(true, 2);
 }
 
@@ -331,7 +339,8 @@ void Player::playerKey_A(int deltaTime) {
 		else if (sprite->animation() != MOVING_LEFT_OBJECT and objectPickedUp != nullptr)  sprite->changeAnimation(true, MOVING_LEFT_OBJECT);
 	}
 	else {
-		if (sprite->animation() != JUMP_LEFT) sprite->changeAnimation(true, JUMP_LEFT);
+		if (sprite->animation() != JUMP_LEFT and objectPickedUp == nullptr) sprite->changeAnimation(true, JUMP_LEFT);
+		else if (sprite->animation() != JUMPING_LEFT_OBJECT and objectPickedUp != nullptr) sprite->changeAnimation(true, JUMPING_LEFT_OBJECT);
 	}
 
 	// Poisicio final
@@ -344,7 +353,8 @@ void Player::playerKey_A(int deltaTime) {
 
 		if (map->collisionMoveLeft(posPlayer, glm::ivec2(32, 32))) {
 			posPlayer.x = initialPosPlayer.x;
-			sprite->changeAnimation(true, STAND_LEFT);
+			if (objectPickedUp == nullptr) sprite->changeAnimation(true, STAND_LEFT);
+			else sprite->changeAnimation(true, STAND_LEFT_OBJECT);
 			break;
 		}
 	}
@@ -375,7 +385,8 @@ void Player::playerKey_D(int deltaTime) {
 
 	}
 	else {
-		if (sprite->animation() != JUMP_RIGHT) sprite->changeAnimation(true, JUMP_RIGHT);
+		if (sprite->animation() != JUMP_RIGHT and objectPickedUp == nullptr) sprite->changeAnimation(true, JUMP_RIGHT);
+		else if (sprite->animation() != JUMPING_RIGHT_OBJECT and objectPickedUp != nullptr)  sprite->changeAnimation(true, JUMPING_RIGHT_OBJECT);
 	}
 	// Poisicio final
 	glm::vec2 targetPosPlayer = posPlayer;
@@ -386,7 +397,8 @@ void Player::playerKey_D(int deltaTime) {
 
 		if (map->collisionMoveRight(posPlayer, glm::ivec2(32, 32))) {
 			posPlayer.x = initialPosPlayer.x;
-			sprite->changeAnimation(true, STAND_RIGHT);
+			if (objectPickedUp == nullptr) sprite->changeAnimation(true, STAND_RIGHT);
+			else sprite->changeAnimation(true, STAND_RIGHT_OBJECT);
 			break;
 		}
 	}
@@ -498,6 +510,9 @@ void Player::playerFalling(int deltaTime)
 		if (sprite->animation() == FALL_LEFT || sprite->animation() == JUMP_LEFT) sprite->changeAnimation(true, STAND_LEFT);
 		else if (sprite->animation() == FALL_RIGHT || sprite->animation() == JUMP_RIGHT) sprite->changeAnimation(true, STAND_RIGHT);
 
+		if (sprite->animation() == JUMPING_LEFT_OBJECT) sprite->changeAnimation(true, STAND_LEFT_OBJECT);
+		else if (sprite->animation() == JUMPING_RIGHT_OBJECT) sprite->changeAnimation(true, STAND_RIGHT_OBJECT);
+
 		playerVelocity.y = 0;
 		if (Game::instance().getKey(GLFW_KEY_W))
 		{
@@ -543,42 +558,48 @@ void Player::playerKey_W(int deltaTime) {
 	else {
 		playerState.Climbing = false;
 		playerState.isOnLadderTop = false;
-		switch (sprite->animation()) {
-		case MOVE_LEFT:
-			sprite->changeAnimation(true, JUMP_LEFT);
-			break;
+		if (objectPickedUp != nullptr) {
+			if (sprite->animation() == STAND_LEFT_OBJECT) sprite->changeAnimation(true, JUMPING_LEFT_OBJECT);
+			else if (sprite->animation() == STAND_RIGHT_OBJECT) sprite->changeAnimation(true, JUMPING_RIGHT_OBJECT);
+		}
+		else {
+			switch (sprite->animation()) {
+			case MOVE_LEFT:
+				sprite->changeAnimation(true, JUMP_LEFT);
+				break;
 
-		case MOVE_RIGHT:
-			sprite->changeAnimation(true, JUMP_RIGHT);
-			break;
+			case MOVE_RIGHT:
+				sprite->changeAnimation(true, JUMP_RIGHT);
+				break;
 
-		case STAND_LEFT:
-			sprite->changeAnimation(true, JUMP_LEFT);
-			break;
+			case STAND_LEFT:
+				sprite->changeAnimation(true, JUMP_LEFT);
+				break;
 
-		case STAND_RIGHT:
-			sprite->changeAnimation(true, JUMP_RIGHT);
-			break;
+			case STAND_RIGHT:
+				sprite->changeAnimation(true, JUMP_RIGHT);
+				break;
 
-		case CROUCH_LEFT:
-			sprite->changeAnimation(true, JUMP_LEFT);
-			break;
+			case CROUCH_LEFT:
+				sprite->changeAnimation(true, JUMP_LEFT);
+				break;
 
-		case CROUCH_RIGHT:
-			sprite->changeAnimation(true, JUMP_RIGHT);
-			break;
-		
-		case CLIMB:
-			sprite->changeAnimation(true, STAND_RIGHT);
-			break;
+			case CROUCH_RIGHT:
+				sprite->changeAnimation(true, JUMP_RIGHT);
+				break;
 
-		case HELLO_LEFT:
-			sprite->changeAnimation(true, JUMP_LEFT);
-			break;
-		
-		case HELLO_RIGHT:
-			sprite->changeAnimation(true, JUMP_RIGHT);
-			break;
+			case CLIMB:
+				sprite->changeAnimation(true, STAND_RIGHT);
+				break;
+
+			case HELLO_LEFT:
+				sprite->changeAnimation(true, JUMP_LEFT);
+				break;
+
+			case HELLO_RIGHT:
+				sprite->changeAnimation(true, JUMP_RIGHT);
+				break;
+			}
 		}
 		playerVelocity.y = JUMP_HEIGHT * sin(3.14159f * jumpAngle / 180.f);
 		jumpAngle += JUMP_ANGLE_STEP;
@@ -657,7 +678,11 @@ void Player::playerKey_S(int deltaTime)
 		int collideWithChest = map->collisionWithChest(posPlayer, glm::vec2(32, 32));
 	}
 	if (sprite->animation() != FALL_LEFT && sprite->animation() != FALL_RIGHT) {
-		
+		if (isHurt == false and (map->lateralCollisionWithEnemy(posPlayer, glm::vec2(32, 32)) != -1 or map->collisionWithProjectile(posPlayer, glm::vec2(32, 32)) != -1)) {
+			isHurt = true;
+			hurtTime = HURT_TIME;
+			hurtFrameTime = HURT_FRAME_TIME;
+		}
 	}
 }
 
@@ -680,8 +705,8 @@ void Player::playerDropObject(int deltaTime) {
 	DynamicObject* object = objectPickedUp;
 	objectPickedUp = nullptr;
 
-	if (sprite->animation() == JUMP_LEFT or sprite->animation() == MOVING_LEFT_OBJECT) object->dropObject(-playerVelocity.x);
-	else if (sprite->animation() == JUMP_RIGHT or sprite->animation() == MOVING_RIGHT_OBJECT) object->dropObject(playerVelocity.x);
+	if (sprite->animation() == JUMP_LEFT or sprite->animation() == MOVING_LEFT_OBJECT or sprite->animation() == JUMPING_LEFT_OBJECT) object->dropObject(-playerVelocity.x);
+	else if (sprite->animation() == JUMP_RIGHT or sprite->animation() == MOVING_RIGHT_OBJECT or sprite->animation() == JUMPING_RIGHT_OBJECT) object->dropObject(playerVelocity.x);
 	else object->dropObject(0);
 
 	if (sprite->animation() == PICKING_LEFT) sprite->changeAnimation(true, STAND_LEFT);

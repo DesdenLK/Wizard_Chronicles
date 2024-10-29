@@ -53,24 +53,45 @@ void Level::init()
 	glm::vec2 pos = camera->getCameraPos();
 	gui->init(pos, glm::vec2(SCREEN_WIDTH, SCREEN_HEIGHT), 1, 1, texProgram);
 
+	levelPassedText.loadFromFile("images/levelPassed.png", TEXTURE_PIXEL_FORMAT_RGBA);
+	levelPassed = Sprite::createSprite(glm::vec2(SCREEN_WIDTH, SCREEN_HEIGHT), glm::vec2(0.2, 1), &levelPassedText, &texProgram);
+
+	GameOverText.loadFromFile("images/GameOver.png", TEXTURE_PIXEL_FORMAT_RGBA);
+	gameOver = Sprite::createSprite(glm::vec2(SCREEN_WIDTH, SCREEN_HEIGHT), glm::vec2(0.2, 1), &GameOverText, &texProgram);
+
+	setAnimations();
 	levelFinished = false;
 }
 
 void Level::update(int deltaTime)
 {
-	if (player->getPlayerLifes() == 0) { init(); Game::instance().setTries(Game::instance().getTries() - 1); }
-	if (map->getTimeLeft() <= 0) { init(); Game::instance().setTries(Game::instance().getTries() - 1); }
+	if (not boolGameOver) {
+		if (player->getPlayerLifes() == 0) { init(); Game::instance().setTries(Game::instance().getTries() - 1); }
+		if (map->getTimeLeft() <= 0) { init(); Game::instance().setTries(Game::instance().getTries() - 1); }
 
-	//cout << "Lifes: " << player->getPlayerLifes() << endl;
-	currentTime += deltaTime;
+		//cout << "Lifes: " << player->getPlayerLifes() << endl;
+		currentTime += deltaTime;
 
-	player->update(deltaTime);
-	map->update(deltaTime);
+		player->update(deltaTime);
+		map->update(deltaTime);
+
+		gui->update(deltaTime, player->getPlayerLifes(), Game::instance().getTries(), map->getPlayerScore(), map->getTimeLeft() / 1000);
 
 
-	gui->update(deltaTime, player->getPlayerLifes(), Game::instance().getTries(), map->getPlayerScore(), map->getTimeLeft() / 1000);
+		if (not levelFinished) levelFinished = map->isGemObtained();
+		if (Game::instance().getKey(GLFW_KEY_F)) levelFinished = true;
+		if (levelFinished) levelPassed->update(deltaTime);
 
-	if (Game::instance().getKey(GLFW_KEY_F)) levelFinished = true;
+
+		boolGameOver = Game::instance().getTries() == 0;
+
+	}
+
+	else {
+		gameOver->update(deltaTime);
+	}
+		
+
 }
 
 void Level::render()
@@ -91,6 +112,8 @@ void Level::render()
 	glm::mat4 guiProjection = glm::ortho(0.0f, float(SCREEN_WIDTH), float(SCREEN_HEIGHT), 0.0f);
 	texProgram.setUniformMatrix4f("projection", guiProjection);
 	texProgram.setUniformMatrix4f("modelview", modelview);
+	if (boolGameOver) gameOver->render();
+	else if (levelFinished) levelPassed->render();
 	gui->render();
 
 }
@@ -98,6 +121,16 @@ void Level::render()
 bool Level::isLevelFinished()
 {
 	return levelFinished;
+}
+
+bool Level::gameOverAnimationFinished()
+{
+	return gameOver->isAnimationFinished();
+}
+
+bool Level::LevelPassedAnimationFinished()
+{
+	return levelPassed->isAnimationFinished();
 }
 
 
@@ -129,6 +162,31 @@ void Level::initShaders()
 	texProgram.bindFragmentOutput("outColor");
 	vShader.free();
 	fShader.free();
+}
+
+void Level::setAnimations()
+{
+	levelPassed->setNumberAnimations(1);
+	gameOver->setNumberAnimations(1);
+
+	levelPassed->setAnimationSpeed(0, 2);
+	levelPassed->addKeyframe(0, glm::vec2(0.f, 0.f));
+	levelPassed->addKeyframe(0, glm::vec2(0.2f, 0.f));
+	levelPassed->addKeyframe(0, glm::vec2(0.4f, 0.f));
+	levelPassed->addKeyframe(0, glm::vec2(0.6f, 0.f));
+	levelPassed->addKeyframe(0, glm::vec2(0.8f, 0.f));
+
+	gameOver->setAnimationSpeed(0, 8);
+	gameOver->addKeyframe(0, glm::vec2(0.f, 0.f));
+	gameOver->addKeyframe(0, glm::vec2(0.2f, 0.f));
+	gameOver->addKeyframe(0, glm::vec2(0.4f, 0.f));
+	gameOver->addKeyframe(0, glm::vec2(0.6f, 0.f));
+	gameOver->addKeyframe(0, glm::vec2(0.8f, 0.f));
+
+	levelPassed->changeAnimation(false, 0);
+	gameOver->changeAnimation(false, 0);
+
+
 }
 
 TutorialLevel::TutorialLevel()
@@ -165,7 +223,15 @@ void TutorialLevel::init()
 	glm::vec2 pos = camera->getCameraPos();
 	gui->init(pos, glm::vec2(SCREEN_WIDTH, SCREEN_HEIGHT), 1, 1, texProgram);
 
+	levelPassedText.loadFromFile("images/levelPassed.png", TEXTURE_PIXEL_FORMAT_RGBA);
+	levelPassed = Sprite::createSprite(glm::vec2(SCREEN_WIDTH, SCREEN_HEIGHT), glm::vec2(0.2, 1), &levelPassedText, &texProgram);
+
+	GameOverText.loadFromFile("images/GameOver.png", TEXTURE_PIXEL_FORMAT_RGBA);
+	gameOver = Sprite::createSprite(glm::vec2(SCREEN_WIDTH, SCREEN_HEIGHT), glm::vec2(0.2, 1), &GameOverText, &texProgram);
+
 	levelFinished = false;
+
+	setAnimations();
 }
 
 int TutorialLevel::getLevel()
@@ -209,7 +275,15 @@ void Level1::init()
 	glm::vec2 pos = camera->getCameraPos();
 	gui->init(pos, glm::vec2(SCREEN_WIDTH, SCREEN_HEIGHT), 1, 1, texProgram);
 
+	levelPassedText.loadFromFile("images/levelPassed.png", TEXTURE_PIXEL_FORMAT_RGBA);
+	levelPassed = Sprite::createSprite(glm::vec2(SCREEN_WIDTH, SCREEN_HEIGHT), glm::vec2(0.2, 1), &levelPassedText, &texProgram);
+
+	GameOverText.loadFromFile("images/GameOver.png", TEXTURE_PIXEL_FORMAT_RGBA);
+	gameOver = Sprite::createSprite(glm::vec2(SCREEN_WIDTH, SCREEN_HEIGHT), glm::vec2(0.2, 1), &GameOverText, &texProgram);
+
 	levelFinished = false;
+
+	setAnimations();
 }
 
 int Level1::getLevel()

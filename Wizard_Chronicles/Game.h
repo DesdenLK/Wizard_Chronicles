@@ -48,6 +48,7 @@ private:
 	bool bPlay; // Continue to play game?
 	bool startScene, credits, level, mainMenu;
 
+
 	bool enterPressed;
 
 	bool keys[GLFW_KEY_LAST+1]; // Store key states so that 

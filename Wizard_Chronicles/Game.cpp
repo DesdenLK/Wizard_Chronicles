@@ -45,7 +45,7 @@ bool Game::update(int deltaTime)
 		enterPressed = true;
 	}
 
-	else if (level and scene -> isLevelFinished()) {
+	else if (level and scene -> isLevelFinished() and scene->LevelPassedAnimationFinished() and Game::instance().getKey(GLFW_KEY_ENTER) and not enterPressed) {
 		level = false;
 		if (scene->getLevel() == 0) {
 			delete scene;
@@ -58,6 +58,7 @@ bool Game::update(int deltaTime)
 			scene = new Credit();
 		}
 		scene->init();
+		enterPressed = true;
 	}
 
 	else if (credits and getKey(GLFW_KEY_ENTER) and not enterPressed) {
@@ -66,7 +67,8 @@ bool Game::update(int deltaTime)
 
 	if (not getKey(GLFW_KEY_ENTER) and enterPressed) enterPressed = false;
 
-	if (tries == 0) bPlay = false;
+	if (tries == 0 and scene->gameOverAnimationFinished() and getKey(GLFW_KEY_ENTER) and not enterPressed) { delete scene; enterPressed = true; init(); };
+
 	//std::cout << "Tries: " << tries << endl;
 	scene -> update(deltaTime);
 
