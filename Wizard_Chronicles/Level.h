@@ -12,6 +12,8 @@ public:
 	virtual void render();
 
 	bool isLevelFinished() override;
+	bool gameOverAnimationFinished() override;
+	bool LevelPassedAnimationFinished() override;
 
 protected:
 	void initShaders();
@@ -25,8 +27,16 @@ protected:
 	glm::mat4 projection;
 
 	Gui* gui;
+	Texture levelPassedText;
+	Sprite* levelPassed;
 
-	bool levelFinished;
+	Texture GameOverText;
+	Sprite* gameOver;
+
+	bool levelFinished, boolGameOver;
+
+	void setAnimations();
+
 };
 
 class TutorialLevel : public Level

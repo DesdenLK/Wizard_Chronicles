@@ -221,13 +221,13 @@ bool TileMap::loadLevel(const string& levelFile, ShaderProgram& program)
 	mapSize.y = mapFile["height"];
 	tileSize = mapFile["tilewidth"];
 	blockSize = mapFile["tileheight"];
-	tileSheetFile = "images/Swamp.png";
+	tileSheetFile = "images/SwampDungeon.png";
 	tilesheet.loadFromFile(tileSheetFile, TEXTURE_PIXEL_FORMAT_RGBA);
 	tilesheet.setWrapS(GL_CLAMP_TO_EDGE);
 	tilesheet.setWrapT(GL_CLAMP_TO_EDGE);
 	tilesheet.setMinFilter(GL_NEAREST);
 	tilesheet.setMagFilter(GL_NEAREST);
-	tilesheetSize.x = 20;
+	tilesheetSize.x = 33;
 	tilesheetSize.y = 27;
 	tileTexSize = glm::vec2(1.f / tilesheetSize.x, 1.f / tilesheetSize.y);
 
@@ -339,8 +339,13 @@ bool TileMap::loadLevel(const string& levelFile, ShaderProgram& program)
 			pickableObjects[i] = object;
 		}
 		else if (obj["type"] == "Coin") {
-			PickableObject* object = new GemPickable();
+			PickableObject* object = new Coin();
 			object->init(i, float(obj["x"]), float(obj["y"]), float(obj["width"]), float(obj["height"]), glm::vec2(10, 10), 0.25, 1, program, this);
+			pickableObjects[i] = object;
+		}
+		else if (obj["type"] == "Gem") {
+			PickableObject* object = new GemPickable();
+			object->init(i, float(obj["x"]), float(obj["y"]), float(obj["width"]), float(obj["height"]), glm::vec2(10, 10), 1, 1, program, this);
 			pickableObjects[i] = object;
 		}
 	}
@@ -753,6 +758,7 @@ int TileMap::collisionWithPickableObject(const glm::vec2& posPlayer, const glm::
 
 void TileMap::erasePickableObject(int pickableObjectId)
 {
+	if (pickableObjects[pickableObjectId]->getType() == "Gem") gemObtained = true;
 	pickableObjects[pickableObjectId] = nullptr;
 }
 
@@ -832,6 +838,11 @@ bool TileMap::holeCollision(const glm::vec2& pos, const glm::vec2& size)
 		if (holes[i]->objectCollision(pos, size)) return true;
 	}
 	return false;
+}
+
+bool TileMap::isGemObtained()
+{
+	return gemObtained;
 }
 
 bool TileMap::lateralBoxCollision(glm::vec2 coordsMin1, glm::vec2 widthHeight1, glm::vec2 coordsMin2, glm::vec2 widthHeight2) {

@@ -32,6 +32,8 @@ public:
 	virtual int getLevel();
 
 	virtual bool isLevelFinished();
+	virtual bool gameOverAnimationFinished();
+	virtual bool LevelPassedAnimationFinished();
 
 private:
 	void initShaders();
