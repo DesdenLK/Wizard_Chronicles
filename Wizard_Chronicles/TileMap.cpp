@@ -22,12 +22,12 @@ TileMap *TileMap::createTileMap(const string &levelFile, const glm::vec2 &minCoo
 
 TileMap::TileMap(const string &levelFile, const glm::vec2 &minCoords, ShaderProgram &program)
 {
+	dragonRender = false;
 	this->program = &program;
 	loadLevel(levelFile, program);
 	prepareArrays(minCoords, program);
 
 	playerScore = 0;
-	dragonRender = false;
 	dragonErase = false;
 }
 
