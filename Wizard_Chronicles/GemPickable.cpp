@@ -3,10 +3,17 @@
 
 void GemPickable::init(int id, float x, float y, float w, float h, glm::vec2 quadSize, float spriteWidth, float spriteHeight, ShaderProgram& shaderProgram, TileMap* map) {
 	this->id = id;
-	objectState.Jumping = false;
-	objectState.Falling = true;
-	jumpAngle = JUMP_ANGLE_STEP_PICKOBJ;
-	startY = JUMP_HEIGHT_PICKOBJ;
+	posicio = glm::vec2(x, y);
+	measures = glm::vec2(w, h);
+	speed = glm::vec2(0, 0);
+
+	jumpAngle = 0;
+	startY = posicio.y;
+	objectState = { true, false };
+
+	this->map = map;
+
+
 
 	posicio = glm::vec2(x, y);
 	measures = glm::vec2(w, h);

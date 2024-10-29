@@ -339,7 +339,7 @@ bool TileMap::loadLevel(const string& levelFile, ShaderProgram& program)
 			pickableObjects[i] = object;
 		}
 		else if (obj["type"] == "Coin") {
-			PickableObject* object = new Coin();
+			PickableObject* object = new GemPickable();
 			object->init(i, float(obj["x"]), float(obj["y"]), float(obj["width"]), float(obj["height"]), glm::vec2(10, 10), 0.25, 1, program, this);
 			pickableObjects[i] = object;
 		}
