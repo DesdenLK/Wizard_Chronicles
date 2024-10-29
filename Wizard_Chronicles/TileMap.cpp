@@ -731,7 +731,7 @@ void TileMap::addPickableObject(string type, glm::vec2 pos, glm::vec2 measures)
 		cout << "Coin added" << endl;
 	}
 	else {
-		GemPickable* gem = new GemPickable();
+		PickableObject* gem = new GemPickable();
 		gem->init(pickableObjects.size(), pos.x, pos.y, 16.f, 16.f, glm::vec2(16, 16), 1.f, 1.f, *program, this);
 		pickableObjects.push_back(gem);
 		nPickableObjects++;
