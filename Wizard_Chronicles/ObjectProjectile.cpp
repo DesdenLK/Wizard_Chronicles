@@ -39,11 +39,16 @@ void ObjectProjectile::update(int deltaTime) {
 	sprite->update(deltaTime);
 	posicio += velocityDir;
 	float posY = posicio.y + measures.y;
-	if (map->collisionMoveDown(posicio, measures, &posY) or map->collisionMoveLeft(posicio, measures) or map->collisionMoveRight(posicio, measures)) {
+	if (map->collisionMoveDown(posicio, measures, &posY) or map->collisionMoveLeft(posicio, measures) or map->collisionMoveRight(posicio, measures) and not collided) {
 		destroyObject();
+		collided = true;
 	}
 	sprite->setPosition(posicio);
 	//cout << "X: " << posicio.x << " Y: " << posicio.y << endl;
+}
+
+bool ObjectProjectile::hasCollided() {
+	return collided;
 }
 
 void ObjectProjectile::render() {

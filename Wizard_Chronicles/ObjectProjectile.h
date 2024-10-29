@@ -20,9 +20,11 @@ public:
     void update(int deltaTime);
 	void render();
     void destroyObject();
+	bool hasCollided();
 
 private:
 	int loopTimesDestroy;
+	bool collided;
 
 	glm::vec2 velocityDir;
 	Texture spritesheet;

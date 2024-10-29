@@ -149,7 +149,10 @@ void TileMap::update(int deltaTime)
 	if (dragonBoss != nullptr) {
 		dragonBoss->update(deltaTime);
 		for (int i = 0; i < projectiles.size(); ++i) {
-			if (projectiles[i] != nullptr) projectiles[i]->update(deltaTime);
+			if (projectiles[i] != nullptr) {
+				projectiles[i]->update(deltaTime);
+				if (projectiles[i]->hasCollided()) projectiles[i] = nullptr;
+			}
 		}
 	}
 }
