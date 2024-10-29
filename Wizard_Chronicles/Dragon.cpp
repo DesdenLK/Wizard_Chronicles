@@ -68,7 +68,7 @@ void Dragon::updateEnemyMovement(int deltaTime) {
 			glm::vec2 playerDragonDir = dragonHead->getPosition() - centerPosPlayer;
 			vector<glm::vec2> projectileDirections = vector<glm::vec2>(3);
 
-			float dispersionAngle = M_PI / 4.f;
+			float dispersionAngle = M_PI / 5.f;
 			projectileDirections[0] = glm::normalize(playerDragonDir);
 			projectileDirections[0] *= glm::vec2(2, 2);		// multiplicar per la velocitat del projectil
 
