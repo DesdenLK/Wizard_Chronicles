@@ -729,6 +729,12 @@ void TileMap::addPickableObject(string type, glm::vec2 pos, glm::vec2 measures)
 		nPickableObjects++;
 		cout << "Coin added" << endl;
 	}
+	else {
+		GemPickable* gem = new GemPickable();
+		gem->init(0, pos.x, pos.y, 16.f, 16.f, glm::vec2(16, 16), 1.f, 1.f, *program, this);
+		pickableObjects.push_back(gem);
+		++nPickableObjects;
+	}
 }
 
 int TileMap::collisionWithPickableObject(const glm::vec2& posPlayer, const glm::vec2& playerSize)
@@ -848,11 +854,7 @@ void TileMap::eraseEnemy(int enemyId) {
 				projectiles[i]->destroyObject();
 				projectiles[i] == nullptr;
 			}
-			GemPickable* gem = new GemPickable();
-			glm::vec2 posGem = dragonBoss->getPosition();
-			gem->init(0,"images/dragonGem.png",posGem.x, posGem.y, 16.f, 16.f, glm::vec2(16,16), 1.f, 1.f, *program, this);
-			pickableObjects.push_back(gem);
-			++nPickableObjects;
+			addPickableObject("Gem", dragonBoss->getPosition(), glm::vec2(16, 16));
 		}
 
 	}

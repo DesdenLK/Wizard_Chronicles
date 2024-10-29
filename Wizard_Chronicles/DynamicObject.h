@@ -8,7 +8,7 @@
 #define JUMP_HEIGHT 20
 #define FALL_STEP 1
 
-
+class TileMap;
 
 class DynamicObject : public Object {
 protected:
