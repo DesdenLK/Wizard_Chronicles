@@ -64,8 +64,8 @@ void Dragon::updateEnemyMovement(int deltaTime) {
 			else if (centerPosPlayer.x > posEnemy.x + boundingBoxWidthHeight.x) dragonHead->changeAnimation(true, LOOK_FIXED_RIGHT_DOWN);
 			else dragonHead->changeAnimation(true, LOOK_FIXED_DOWN);
 
-			// el primer projectil es llenca apuntant a l'objectiu (vector centerPosPlayer-dragonHeadPos), els altres dos 45 graus desviats a cada banda
-			glm::vec2 playerDragonDir = centerPosPlayer - dragonHead->getPosition();
+			// el primer projectil es llenca apuntant a l'objectiu (vector dragonHeadPos-centerPosPlayer), els altres dos 45 graus desviats a cada banda
+			glm::vec2 playerDragonDir = dragonHead->getPosition() - centerPosPlayer;
 			vector<glm::vec2> projectileDirections = vector<glm::vec2>(3);
 
 			float dispersionAngle = M_PI / 4.f;
@@ -80,7 +80,7 @@ void Dragon::updateEnemyMovement(int deltaTime) {
 			projectileDirections[2] = glm::normalize(projectileDirections[2]);
 			projectileDirections[2] *= glm::vec2(1, 1);
 
-			//map->initProjectiles(projectileDirections);
+			map->initProjectiles(projectileDirections, dragonHead->getPosition());
 			renderShootingTime = RENDER_SHOOTING_TIME;
 			shootingTimeout = SHOOTING_TIME_DELAY;
 		}

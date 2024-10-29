@@ -3,6 +3,7 @@
 #include <sstream>
 #include <vector>
 #include "TileMap.h"
+#include "ObjectProjectile.h"
 
 
 using namespace std;
@@ -100,6 +101,10 @@ void TileMap::render() const
 	for (auto& enemy : enemies) {
 		enemy.second->render();
 	}
+
+	for (auto& projectile : projectiles) {
+		projectile->render();
+	}
 	
 	dragonBoss->render();
 }
@@ -129,6 +134,10 @@ void TileMap::update(int deltaTime)
 	}
 
 	dragonBoss->update(deltaTime);
+
+	for (auto& projectile : projectiles) {
+		projectile->update(deltaTime);
+	}
 }
 
 void TileMap::free()
@@ -136,6 +145,15 @@ void TileMap::free()
 	glDeleteBuffers(1, &vboBackground);
 	glDeleteBuffers(1, &vboMiddle);
 	glDeleteBuffers(1, &vboForeground);
+}
+
+void TileMap::initProjectiles(const vector<glm::vec2>& projectileVectors, const glm::vec2& startPos) {
+	projectiles = vector<ObjectProjectile*>();
+	for (int i = 0; i < projectileVectors.size(); ++i) {
+		ObjectProjectile* p = new ObjectProjectile();
+		p->ObjectProjectile::init(projectiles.size(), "images/enemics/Boss/DRAGON/Dragon-boss-export.png", startPos, glm::vec2(16,16), *program, this, projectileVectors[i]);
+		projectiles.push_back(p);
+	}
 }
 
 void TileMap::initDynamicObjects(const nlohmann::json& j, ShaderProgram &program)

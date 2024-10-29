@@ -27,6 +27,7 @@
 
 class DynamicObject;
 class Enemy;
+class ObjectProjectile;
 
 class TileMap
 {
@@ -58,6 +59,7 @@ public:
 	int enemyCollision(const glm::vec2& pos, const glm::vec2& size);
 	int lateralCollisionWithEnemy(const glm::vec2& posPlayer, const glm::vec2& playerSize);
 	int verticalCollisionWithEnemy(const glm::vec2& posPlayer, const glm::vec2& playerSize);
+	void initProjectiles(const vector<glm::vec2>& projectileVectors, const glm::vec2& startPos);
 	void eraseEnemy(int enemyId);
 
 	int pickingObject(const glm::vec2& posPlayer, const glm::vec2& playerSize);
@@ -129,6 +131,8 @@ private:
 
 	vector<StaticObject*> holes;
 	int nHoles;
+
+	vector<ObjectProjectile*> projectiles;
 
 	//vector<std::map<string,string>>* objects; branca enemics
 	std::map<int,Enemy*> enemies;		//(id_enemic,enemic)
