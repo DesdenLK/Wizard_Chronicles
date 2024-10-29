@@ -5,6 +5,11 @@
 
 class Player;
 
+enum Phase
+{
+	IDLE, SHOOTING
+};
+
 class Dragon :
     public Enemy
 {
@@ -23,6 +28,7 @@ private:
 	Player* player;
 	float shootingTimeout;
 	float renderShootingTime;
+	Phase dragonPhase;
 };
 
 #endif

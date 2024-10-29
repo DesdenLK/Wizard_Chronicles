@@ -24,6 +24,7 @@ enum DragonHeadAnims
 	LOOK, LOOK_FIXED_LEFT, LOOK_FIXED_LEFT_DOWN, LOOK_FIXED_DOWN, LOOK_FIXED_RIGHT_DOWN, NUM_ANIMS_H
 };
 
+
 void Dragon::init(int id, const glm::ivec2& tileMapPos, ShaderProgram& shaderProgram, string pathToSpritesheet, const glm::ivec2& spriteBodyDimensions, const glm::ivec2& spriteHeadDimensions, const glm::vec2& hitboxWH, int eraseAnimTime) {
 	this->id = id;
 	eraseAnimationTime = eraseAnimTime;
@@ -35,6 +36,7 @@ void Dragon::init(int id, const glm::ivec2& tileMapPos, ShaderProgram& shaderPro
 	hitBoxEnabled = true;
 	shootingTimeout = SHOOTING_TIME_DELAY;
 	renderShootingTime = 0;
+	dragonPhase = IDLE;
 
 	bool loaded = spritesheet.loadFromFile(pathToSpritesheet, TEXTURE_PIXEL_FORMAT_RGBA);
 	if (!loaded) cout << "texture could not load" << endl;
@@ -50,39 +52,50 @@ void Dragon::init(int id, const glm::ivec2& tileMapPos, ShaderProgram& shaderPro
 }
 
 void Dragon::updateEnemyMovement(int deltaTime) {
-	cout << "shooting timeout: " << shootingTimeout << endl;
 	dragonHead->update(deltaTime);
-	if (renderShootingTime == 0 and shootingTimeout == SHOOTING_TIME_DELAY) sprite->changeAnimation(true, LOOK);
-	else if (shootingTimeout <= 0) {
-		cout << "position of dragon boss: " << posEnemy.x << " - " << posEnemy.y << endl;
-		glm::vec2 centerPosPlayer = player->getPosition() + glm::vec2(16,16);
-		if (centerPosPlayer.x < posEnemy.x - boundingBoxWidthHeight.x/2.f) dragonHead->changeAnimation(true, LOOK_FIXED_LEFT);
-		else if (centerPosPlayer.x < posEnemy.x) dragonHead->changeAnimation(true, LOOK_FIXED_LEFT_DOWN);
-		else if (centerPosPlayer.x > posEnemy.x + boundingBoxWidthHeight.x) dragonHead->changeAnimation(true, LOOK_FIXED_RIGHT_DOWN);
-		else dragonHead->changeAnimation(true, LOOK_FIXED_DOWN);
+	// Idle phase (not shooting)
+	if (dragonPhase == IDLE) {
+		if (shootingTimeout > 0) shootingTimeout -= deltaTime;
+		else {
+			dragonPhase = SHOOTING;
+			glm::vec2 centerPosPlayer = player->getPosition() + glm::vec2(16, 16);
+			if (centerPosPlayer.x < posEnemy.x - boundingBoxWidthHeight.x / 2.f) dragonHead->changeAnimation(true, LOOK_FIXED_LEFT);
+			else if (centerPosPlayer.x < posEnemy.x) dragonHead->changeAnimation(true, LOOK_FIXED_LEFT_DOWN);
+			else if (centerPosPlayer.x > posEnemy.x + boundingBoxWidthHeight.x) dragonHead->changeAnimation(true, LOOK_FIXED_RIGHT_DOWN);
+			else dragonHead->changeAnimation(true, LOOK_FIXED_DOWN);
 
-		// el primer projectil es llenca apuntant a l'objectiu (vector centerPosPlayer-dragonHeadPos), els altres dos 45 graus desviats a cada banda
-		glm::vec2 playerDragonDir = centerPosPlayer - dragonHead->getPosition();
-		vector<glm::vec2> projectileDirections = vector<glm::vec2>(3);
+			// el primer projectil es llenca apuntant a l'objectiu (vector centerPosPlayer-dragonHeadPos), els altres dos 45 graus desviats a cada banda
+			glm::vec2 playerDragonDir = centerPosPlayer - dragonHead->getPosition();
+			vector<glm::vec2> projectileDirections = vector<glm::vec2>(3);
 
-		float dispersionAngle = M_PI / 4.f;
-		projectileDirections[0] = glm::normalize(playerDragonDir);
-		projectileDirections[0] *= glm::vec2(2, 2);		// multiplicar per la velocitat del projectil
+			float dispersionAngle = M_PI / 4.f;
+			projectileDirections[0] = glm::normalize(playerDragonDir);
+			projectileDirections[0] *= glm::vec2(2, 2);		// multiplicar per la velocitat del projectil
 
-		projectileDirections[1] = glm::vec2(playerDragonDir.x * glm::cos(dispersionAngle) - playerDragonDir.y * glm::sin(dispersionAngle), playerDragonDir.x * glm::sin(dispersionAngle) + playerDragonDir.y * glm::cos(dispersionAngle));
-		projectileDirections[1] = glm::normalize(projectileDirections[1]);
-		projectileDirections[1] *= glm::vec2(1, 1);
+			projectileDirections[1] = glm::vec2(playerDragonDir.x * glm::cos(dispersionAngle) - playerDragonDir.y * glm::sin(dispersionAngle), playerDragonDir.x * glm::sin(dispersionAngle) + playerDragonDir.y * glm::cos(dispersionAngle));
+			projectileDirections[1] = glm::normalize(projectileDirections[1]);
+			projectileDirections[1] *= glm::vec2(1, 1);
 
-		projectileDirections[2] = glm::vec2(playerDragonDir.x * glm::cos(-dispersionAngle) - playerDragonDir.y * glm::sin(-dispersionAngle), playerDragonDir.x * glm::sin(-dispersionAngle) + playerDragonDir.y * glm::cos(-dispersionAngle));
-		projectileDirections[2] = glm::normalize(projectileDirections[2]);
-		projectileDirections[2] *= glm::vec2(1, 1);
+			projectileDirections[2] = glm::vec2(playerDragonDir.x * glm::cos(-dispersionAngle) - playerDragonDir.y * glm::sin(-dispersionAngle), playerDragonDir.x * glm::sin(-dispersionAngle) + playerDragonDir.y * glm::cos(-dispersionAngle));
+			projectileDirections[2] = glm::normalize(projectileDirections[2]);
+			projectileDirections[2] *= glm::vec2(1, 1);
 
-		//map->initProjectiles(projectileDirections);
-		renderShootingTime = RENDER_SHOOTING_TIME;
-		shootingTimeout = SHOOTING_TIME_DELAY;
+			//map->initProjectiles(projectileDirections);
+			renderShootingTime = RENDER_SHOOTING_TIME;
+			shootingTimeout = SHOOTING_TIME_DELAY;
+		}
 	}
-	if (renderShootingTime > 0) renderShootingTime -= deltaTime;
-	else shootingTimeout -= deltaTime;
+	// Shooting phase
+	else {
+		if (renderShootingTime > 0) renderShootingTime -= deltaTime;
+		else {
+			dragonPhase = IDLE;
+			renderShootingTime = 0;
+			shootingTimeout = SHOOTING_TIME_DELAY;
+			dragonHead->changeAnimation(true, LOOK);
+		}
+	}
+	
 }
 
 void Dragon::setAnimations() {
