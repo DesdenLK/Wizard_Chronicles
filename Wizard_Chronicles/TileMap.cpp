@@ -27,7 +27,7 @@ TileMap::TileMap(const string &levelFile, const glm::vec2 &minCoords, ShaderProg
 	prepareArrays(minCoords, program);
 
 	playerScore = 0;
-	dragonRender = true;
+	dragonRender = false;
 	dragonErase = false;
 }
 
@@ -145,7 +145,7 @@ void TileMap::update(int deltaTime)
 	  enemy.second->update(deltaTime);
 	}
 
-	dragonBoss->update(deltaTime);
+	if (dragonBoss != nullptr) dragonBoss->update(deltaTime);
 
 	for (int i = 0; i < projectiles.size(); ++i) {
 		if (projectiles[i] != nullptr) projectiles[i]->update(deltaTime);
@@ -317,6 +317,7 @@ bool TileMap::loadLevel(const string& levelFile, ShaderProgram& program)
 					dragon->setTileMap(this);
 					dragonBoss = dragon;
 					dragonBossId = enemyId;
+					dragonRender = true;	
 					cout << "dragon boss added" << endl;
 				}
 			}
@@ -634,7 +635,7 @@ int TileMap::lateralCollisionWithEnemy(const glm::vec2& posPlayer, const glm::ve
 			}
 		}
 	}
-	if (dragonBoss->isHitBoxEnabled()) {
+	if (dragonBoss != nullptr and dragonBoss->isHitBoxEnabled()) {
 		glm::vec2 enemyPos = dragonBoss->getPosition();
 		glm::vec2 widthHeightEnemyBox = dragonBoss->getBoundingBoxWH();
 		if (lateralBoxCollision(enemyPos, widthHeightEnemyBox, posPlayer, playerSize) and dragonBossId != enemyToErase) {
@@ -657,7 +658,7 @@ int TileMap::verticalCollisionWithEnemy(const glm::vec2& posPlayer, const glm::v
 			}
 		}
 	}
-	if (dragonBoss->isHitBoxEnabled()) {
+	if (dragonBoss != nullptr and dragonBoss->isHitBoxEnabled()) {
 		glm::vec2 enemyPos = dragonBoss->getPosition();
 		glm::vec2 widthHeightEnemyBox = dragonBoss->getBoundingBoxWH();
 		if (verticalBoxCollision(posPlayer, playerSize, enemyPos, widthHeightEnemyBox) and dragonBossId != enemyToErase) {
