@@ -5,6 +5,7 @@
 #include "ShaderProgram.h"
 #include "Sprite.h"
 
+
 class TileMap;
 
 class ObjectProjectile :
@@ -20,11 +21,11 @@ public:
     void update(int deltaTime);
 	void render();
     void destroyObject();
-	bool hasCollided();
+	bool isHitboxEnabled();
 
 private:
 	int loopTimesDestroy;
-	bool collided;
+	bool hitboxEnabled;
 
 	glm::vec2 velocityDir;
 	Texture spritesheet;

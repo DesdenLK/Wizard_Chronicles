@@ -65,6 +65,7 @@ TileMap::~TileMap()
 
 void TileMap::setPlayer(Player* player) {
 	dragonBoss->setPlayer(player);
+	//this->player = player;
 }
 
 void TileMap::render() const
@@ -151,7 +152,6 @@ void TileMap::update(int deltaTime)
 		for (int i = 0; i < projectiles.size(); ++i) {
 			if (projectiles[i] != nullptr) {
 				projectiles[i]->update(deltaTime);
-				if (projectiles[i]->hasCollided()) projectiles[i] = nullptr;
 			}
 		}
 	}
@@ -173,6 +173,10 @@ void TileMap::initProjectiles(const vector<glm::vec2>& projectileVectors, const 
 			projectiles.push_back(p);
 		}
 	}
+}
+
+void TileMap::eraseProjectile(int projectileId) {
+	projectiles[projectileId] = nullptr;
 }
 
 void TileMap::initDynamicObjects(const nlohmann::json& j, ShaderProgram &program)
@@ -686,14 +690,13 @@ int TileMap::enemyCollision(const glm::vec2& pos, const glm::vec2& size) {
 
 int TileMap::collisionWithProjectile(const glm::vec2& posPlayer, const glm::vec2& playerSize) {
 	for (int i = 0; i < projectiles.size(); ++i) {
-		if (projectiles[i] != nullptr) {
+		if (projectiles[i] != nullptr and projectiles[i]->isHitboxEnabled()) {
 			ObjectProjectile* projectile = projectiles[i];
 			glm::vec2 projPos = projectile->getPosition();
 			glm::vec2 widthHeightEnemyBox = projectile->getBoundingBoxWH();
 			if (verticalBoxCollision(posPlayer, playerSize, projPos, widthHeightEnemyBox) or lateralBoxCollision(posPlayer, playerSize, projPos, widthHeightEnemyBox)) {
 				cout << "collision with projectile with id: " << i << endl;
 				projectiles[i]->destroyObject();
-				projectiles[i] = nullptr;
 				return i;
 			}
 		}
@@ -864,7 +867,6 @@ void TileMap::eraseEnemy(int enemyId) {
 			eraseDragonTime = dragonBoss->getEraseAnimationTime();
 			for (int i = 0; i < projectiles.size(); ++i) {
 				if (projectiles[i] != nullptr) projectiles[i]->destroyObject();
-				projectiles[i] = nullptr;
 			}
 			cout << "POS: " << posGem.x << " " << posGem.y << endl;
 			addPickableObject("Gem", posGem, glm::vec2(16, 16));
@@ -890,3 +892,8 @@ bool TileMap::collisionWithInvisibleObject(const glm::vec2& pos, const glm::vec2
 	}
 	return false;
 }
+
+/*bool TileMap::collisionWithPlayer(const glm::vec2& pos, const glm::vec2& size) {
+	if (lateralBoxCollision(pos, size, player->getPosition(), glm::vec2(32,32)) or verticalBoxCollision(pos, size, player->getPosition(), glm::vec2(32, 32))) return true;
+	return false;
+}*/

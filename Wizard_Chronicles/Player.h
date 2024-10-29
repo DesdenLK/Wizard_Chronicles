@@ -39,8 +39,6 @@ public:
 	int getPlayerLifes();
 
 
-
-
 	glm::vec2 getPosition();
 	glm::vec2 getVelocity();
 	

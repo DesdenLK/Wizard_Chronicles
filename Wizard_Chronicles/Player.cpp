@@ -315,10 +315,15 @@ void Player::playerKey_A(int deltaTime) {
 	glm::vec2 initialPosPlayer = posPlayer;
 	posPlayer.x -= playerVelocity.x;
 
-	if (isHurt != true and (map->lateralCollisionWithEnemy(posPlayer, glm::vec2(32, 32)) != -1 or map->collisionWithProjectile(posPlayer, glm::vec2(32, 32)) != -1)) {
-		isHurt = true;
-		hurtTime = HURT_TIME;
-		hurtFrameTime = HURT_FRAME_TIME;
+	if (isHurt == false) {
+		int lateralColId = map->lateralCollisionWithEnemy(posPlayer, glm::vec2(32, 32));
+		int projectileColId = map->collisionWithProjectile(posPlayer, glm::vec2(32, 32));
+		if (projectileColId != -1) map->eraseProjectile(projectileColId);
+		if (lateralColId != -1 or projectileColId != -1) {
+			isHurt = true;
+			hurtTime = HURT_TIME;
+			hurtFrameTime = HURT_FRAME_TIME;
+		}
 	}
 
 	if (!playerState.Jumping) {
@@ -353,10 +358,15 @@ void Player::playerKey_D(int deltaTime) {
 	glm::vec2 initialPosPlayer = posPlayer;
 	posPlayer.x += playerVelocity.x;
 
-	if (isHurt == false and (map->lateralCollisionWithEnemy(posPlayer, glm::vec2(32, 32)) != -1 or map->collisionWithProjectile(posPlayer, glm::vec2(32, 32)) != -1)) {
-		isHurt = true;
-		hurtTime = HURT_TIME;
-		hurtFrameTime = HURT_FRAME_TIME;
+	if (isHurt == false) {
+		int lateralColId = map->lateralCollisionWithEnemy(posPlayer, glm::vec2(32, 32));
+		int projectileColId = map->collisionWithProjectile(posPlayer, glm::vec2(32, 32));
+		if (projectileColId != -1) map->eraseProjectile(projectileColId);
+		if (lateralColId != -1 or projectileColId != -1) {
+			isHurt = true;
+			hurtTime = HURT_TIME;
+			hurtFrameTime = HURT_FRAME_TIME;
+		}
 	}
 
 	if (!playerState.Jumping) {
@@ -383,10 +393,15 @@ void Player::playerKey_D(int deltaTime) {
 }
 
 void Player::playerNOKeys(int deltaTime) {
-	if (isHurt == false and (map->lateralCollisionWithEnemy(posPlayer, glm::vec2(32, 32)) != -1 or map->collisionWithProjectile(posPlayer, glm::vec2(32, 32)) != -1)) {
-		isHurt = true;
-		hurtTime = HURT_TIME;
-		hurtFrameTime = HURT_FRAME_TIME;
+	if (isHurt == false) {
+		int lateralColId = map->lateralCollisionWithEnemy(posPlayer, glm::vec2(32, 32));
+		int projectileColId = map->collisionWithProjectile(posPlayer, glm::vec2(32, 32));
+		if (projectileColId != -1) map->eraseProjectile(projectileColId);
+		if (lateralColId != -1 or projectileColId != -1) {
+			isHurt = true;
+			hurtTime = HURT_TIME;
+			hurtFrameTime = HURT_FRAME_TIME;
+		}
 	}
 	switch (sprite->animation()) {
 
@@ -499,10 +514,15 @@ void Player::playerFalling(int deltaTime)
 void Player::playerKey_W(int deltaTime) {
 	// fet per l'escala, adaptar metodes per quan tinguem objectes que no es poden traspassar
 
-	if (isHurt == false and (map->lateralCollisionWithEnemy(posPlayer, glm::vec2(32, 32)) != -1 or map->collisionWithProjectile(posPlayer, glm::vec2(32, 32)) != -1)) {
-		isHurt = true;
-		hurtTime = HURT_TIME;
-		hurtFrameTime = HURT_FRAME_TIME;
+	if (isHurt == false) {
+		int lateralColId = map->lateralCollisionWithEnemy(posPlayer, glm::vec2(32, 32));
+		int projectileColId = map->collisionWithProjectile(posPlayer, glm::vec2(32, 32));
+		if (projectileColId != -1) map->eraseProjectile(projectileColId);
+		if (lateralColId != -1 or projectileColId != -1) {
+			isHurt = true;
+			hurtTime = HURT_TIME;
+			hurtFrameTime = HURT_FRAME_TIME;
+		}
 	}
 
 
@@ -622,10 +642,15 @@ void Player::playerKey_S(int deltaTime)
 			else verticalCollisionTimeout -= deltaTime;
 		}
 		else {
-			if (isHurt == false and (map->lateralCollisionWithEnemy(posPlayer, glm::vec2(32, 32)) != -1 or map->collisionWithProjectile(posPlayer, glm::vec2(32, 32)) != -1)) {
-				isHurt = true;
-				hurtTime = HURT_TIME;
-				hurtFrameTime = HURT_FRAME_TIME;
+			if (isHurt == false) {
+				int lateralColId = map->lateralCollisionWithEnemy(posPlayer, glm::vec2(32, 32));
+				int projectileColId = map->collisionWithProjectile(posPlayer, glm::vec2(32, 32));
+				if (projectileColId != -1) map->eraseProjectile(projectileColId);
+				if (lateralColId != -1 or projectileColId != -1) {
+					isHurt = true;
+					hurtTime = HURT_TIME;
+					hurtFrameTime = HURT_FRAME_TIME;
+				}
 			}
 		}
 

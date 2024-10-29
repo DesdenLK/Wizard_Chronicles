@@ -64,6 +64,7 @@ public:
 	int verticalCollisionWithEnemy(const glm::vec2& posPlayer, const glm::vec2& playerSize);
 	int collisionWithProjectile(const glm::vec2& posPlayer, const glm::vec2& playerSize);
 	void initProjectiles(const vector<glm::vec2>& projectileVectors, const glm::vec2& startPos);
+	void eraseProjectile(int projectileId);
 	void eraseEnemy(int enemyId);
 
 	int pickingObject(const glm::vec2& posPlayer, const glm::vec2& playerSize);
@@ -76,6 +77,7 @@ public:
 	void destroyDynamicObject(int index);
 
 	bool collisionWithInvisibleObject(const glm::vec2& pos, const glm::vec2& size);
+	//bool collisionWithPlayer(const glm::vec2& pos, const glm::vec2& size);
 
 	void renderDynamicObjects();
 
@@ -87,7 +89,7 @@ public:
 	int getTimeLeft();
 
 	string getPickableObjectType(int index);
-
+	
 	bool holeCollision(const glm::vec2& pos, const glm::vec2& size);
 
 	//void addPickableObject(PickableObject* object);
@@ -141,6 +143,7 @@ private:
 	std::map<int,Enemy*> enemies;		//(id_enemic,enemic)
 	int dragonBossId;
 	Dragon* dragonBoss;
+	//Player* player;
 	int enemyToErase = -1, eraseAnimationTime;
 	bool dragonErase, dragonRender;
 	int eraseDragonTime;
