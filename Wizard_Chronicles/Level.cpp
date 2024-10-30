@@ -238,7 +238,7 @@ void TutorialLevel::render()
 {
 	glm::mat4 modelview;
 
-	projection = camera->cameraPositionYDown(player->getPosition(), player->getVelocity());
+	projection = camera->cameraPositionNOCENTRAT(player->getPosition());
 	texProgram.use();
 	texProgram.setUniformMatrix4f("projection", projection);
 	texProgram.setUniform4f("color", 1.0f, 1.0f, 1.0f, 1.0f);
