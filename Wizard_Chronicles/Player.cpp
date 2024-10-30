@@ -87,6 +87,7 @@ void Player::update(int deltaTime)
 		string type = map->getPickableObjectType(pickableObjectID);
 		if (type == "Cake") { map->setPlayerScore(map->getPlayerScore() + 10); playerLifes = min(3, playerLifes + 1); }
 		else if (type == "Coin") { map->setPlayerScore(map->getPlayerScore() + 500); }
+		else { map->setPlayerScore(map->getPlayerScore() + 10000); }
 		map->erasePickableObject(pickableObjectID);
 	}
 
