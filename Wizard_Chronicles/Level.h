@@ -46,6 +46,7 @@ class TutorialLevel : public Level
 		~TutorialLevel();
 
 		void init() override;
+		void render() override;
 		int getLevel() override;
 };
 

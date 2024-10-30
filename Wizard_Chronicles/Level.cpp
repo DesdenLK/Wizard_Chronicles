@@ -234,6 +234,29 @@ void TutorialLevel::init()
 	setAnimations();
 }
 
+void TutorialLevel::render()
+{
+	glm::mat4 modelview;
+
+	projection = camera->cameraPositionYDown(player->getPosition(), player->getVelocity());
+	texProgram.use();
+	texProgram.setUniformMatrix4f("projection", projection);
+	texProgram.setUniform4f("color", 1.0f, 1.0f, 1.0f, 1.0f);
+	modelview = glm::mat4(1.0f);
+	texProgram.setUniformMatrix4f("modelview", modelview);
+	texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);
+	//map->renderDynamicObjects();
+	map->render();
+	player->render();
+
+	glm::mat4 guiProjection = glm::ortho(0.0f, float(SCREEN_WIDTH), float(SCREEN_HEIGHT), 0.0f);
+	texProgram.setUniformMatrix4f("projection", guiProjection);
+	texProgram.setUniformMatrix4f("modelview", modelview);
+	if (boolGameOver) gameOver->render();
+	else if (levelFinished) levelPassed->render();
+	gui->render();
+}
+
 int TutorialLevel::getLevel()
 {
 	return 0;
