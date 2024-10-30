@@ -656,7 +656,7 @@ void Player::playerKey_S(int deltaTime)
 		if (collidedEnemyId != -1) {
 			if (verticalCollisionTimeout <= 0) {
 				map->eraseEnemy(collidedEnemyId);
-				posPlayer.y -= playerVelocity.y;
+				//posPlayer.y -= playerVelocity.y;
 				sprite->setPosition(glm::vec2(float(tileMapDispl.x + posPlayer.x), float(tileMapDispl.y + posPlayer.y)));
 				sprite->changeAnimation(true, STAND_RIGHT);
 				verticalCollisionTimeout = VERTICAL_COL_TIMEOUT;
