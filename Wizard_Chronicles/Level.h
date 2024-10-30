@@ -57,6 +57,7 @@ class Level1 : public Level
 
 		void init() override;
 		void update(int deltaTime) override;
+		void render() override;
 		int getLevel() override;
 	private:
 		bool inUnderground;

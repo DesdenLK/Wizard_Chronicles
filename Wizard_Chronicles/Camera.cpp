@@ -94,8 +94,6 @@ glm::mat4 Camera::cameraPositionMix(glm::vec2 posPlayer, glm::vec2 PlayerV)
 			cameraVx = 2 * PlayerV.x;
 
 		}
-
-
 	}
 	else {
 		if ((posPlayer.x - cameraPos.x) < int(2 * CAMERA_WIDTH / 3))
@@ -112,6 +110,25 @@ glm::mat4 Camera::cameraPositionMix(glm::vec2 posPlayer, glm::vec2 PlayerV)
 	if ((posPlayer.y - cameraPos.y) < CAMERA_HEIGHT / 3) {
 		cameraPos.y = posPlayer.y - CAMERA_HEIGHT / 3;
 	}
+	if ((posPlayer.y - cameraPos.y) > (2 * CAMERA_HEIGHT / 3)) {
+		cameraPos.y = posPlayer.y - (2 * CAMERA_HEIGHT / 3);
+	}
+	return glm::ortho(float(cameraPos.x), float(cameraPos.x + CAMERA_WIDTH), float(cameraPos.y + CAMERA_HEIGHT), float(cameraPos.y));
+}
+
+glm::mat4 Camera::cameraPositionYDown(glm::vec2 posPlayer, glm::vec2 PlayerV) {
+	if ((posPlayer.x - cameraPos.x) < CAMERA_WIDTH / 2) {
+		cameraPos.x = posPlayer.x - CAMERA_WIDTH / 2;
+	}
+
+	if ((posPlayer.x - cameraPos.x) > (CAMERA_WIDTH / 2)) {
+		cameraPos.x = posPlayer.x - (CAMERA_WIDTH / 2);
+	}
+
+	if ((posPlayer.y - cameraPos.y) > CAMERA_HEIGHT / 3) {
+		cameraPos.y = posPlayer.y - CAMERA_HEIGHT / 3;
+	}
+
 	if ((posPlayer.y - cameraPos.y) > (2 * CAMERA_HEIGHT / 3)) {
 		cameraPos.y = posPlayer.y - (2 * CAMERA_HEIGHT / 3);
 	}

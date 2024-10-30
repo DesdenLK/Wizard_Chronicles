@@ -9,6 +9,7 @@ public:
 	glm::mat4 cameraPositionNOCENTRAT(glm::vec2 posPlayer);
 	glm::mat4 cameraPositionCENTRAT(glm::vec2 posPlayer, glm::vec2 PlayerV);
 	glm::mat4 cameraPositionMix(glm::vec2 posPlayer, glm::vec2 PlayerV);
+	glm::mat4 cameraPositionYDown(glm::vec2 posPlayer, glm::vec2 PlayerV);
 
 	glm::vec2 getCameraPos() { return cameraPos; }
 

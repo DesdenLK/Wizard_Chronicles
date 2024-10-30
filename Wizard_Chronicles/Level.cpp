@@ -11,7 +11,7 @@
 #define SCREEN_X 0
 #define SCREEN_Y 0
 
-#define INIT_PLAYER_X_TILES	140	//7
+#define INIT_PLAYER_X_TILES	140	//140 escala a underground
 #define INIT_PLAYER_Y_TILES 10
 
 
@@ -282,6 +282,7 @@ void Level1::init()
 	gameOver = Sprite::createSprite(glm::vec2(SCREEN_WIDTH, SCREEN_HEIGHT), glm::vec2(0.2, 1), &GameOverText, &texProgram);
 
 	levelFinished = false;
+	inUnderground = false;
 
 	setAnimations();
 }
@@ -295,13 +296,9 @@ void Level1::update(int deltaTime) {
 		currentTime += deltaTime;
 
 		float playerY = player->getPosition().y;
-		if (not inUnderground and playerY > 14 and playerY < 33) {		//player esta al underground
-			camera->cameraPositionCENTRAT(player->getPosition(), player->getVelocity());
-			inUnderground = true;
-		}
-		else if ((playerY < 14 or playerY > 33) and inUnderground) {
-			camera->cameraPositionNOCENTRAT(player->getPosition());
-		}
+		if (playerY > 14 * 32 and playerY < 33 * 32) inUnderground = true;
+		else inUnderground = false;
+
 		player->update(deltaTime);
 		map->update(deltaTime);
 
@@ -320,6 +317,29 @@ void Level1::update(int deltaTime) {
 	else {
 		gameOver->update(deltaTime);
 	}
+}
+
+void Level1::render() {
+	glm::mat4 modelview;
+
+	if (inUnderground) projection = camera->cameraPositionYDown(player->getPosition(), player->getVelocity());
+	else projection = camera->cameraPositionNOCENTRAT(player->getPosition());
+	texProgram.use();
+	texProgram.setUniformMatrix4f("projection", projection);
+	texProgram.setUniform4f("color", 1.0f, 1.0f, 1.0f, 1.0f);
+	modelview = glm::mat4(1.0f);
+	texProgram.setUniformMatrix4f("modelview", modelview);
+	texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);
+	//map->renderDynamicObjects();
+	map->render();
+	player->render();
+
+	glm::mat4 guiProjection = glm::ortho(0.0f, float(SCREEN_WIDTH), float(SCREEN_HEIGHT), 0.0f);
+	texProgram.setUniformMatrix4f("projection", guiProjection);
+	texProgram.setUniformMatrix4f("modelview", modelview);
+	if (boolGameOver) gameOver->render();
+	else if (levelFinished) levelPassed->render();
+	gui->render();
 }
 
 int Level1::getLevel()
