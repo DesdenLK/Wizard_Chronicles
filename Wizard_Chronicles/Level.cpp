@@ -11,7 +11,7 @@
 #define SCREEN_X 0
 #define SCREEN_Y 0
 
-#define INIT_PLAYER_X_TILES	7	//140 escala a underground
+#define INIT_PLAYER_X_TILES	140	//140 escala a underground
 #define INIT_PLAYER_Y_TILES 10
 
 
