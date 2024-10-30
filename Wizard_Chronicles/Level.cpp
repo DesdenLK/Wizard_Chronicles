@@ -11,7 +11,7 @@
 #define SCREEN_X 0
 #define SCREEN_Y 0
 
-#define INIT_PLAYER_X_TILES 14
+#define INIT_PLAYER_X_TILES	140	//7
 #define INIT_PLAYER_Y_TILES 10
 
 
@@ -284,6 +284,42 @@ void Level1::init()
 	levelFinished = false;
 
 	setAnimations();
+}
+
+void Level1::update(int deltaTime) {
+	if (not boolGameOver) {
+		if (player->getPlayerLifes() == 0) { init(); Game::instance().setTries(Game::instance().getTries() - 1); }
+		if (map->getTimeLeft() <= 0) { init(); Game::instance().setTries(Game::instance().getTries() - 1); }
+
+		//cout << "Lifes: " << player->getPlayerLifes() << endl;
+		currentTime += deltaTime;
+
+		float playerY = player->getPosition().y;
+		if (not inUnderground and playerY > 14 and playerY < 33) {		//player esta al underground
+			camera->cameraPositionCENTRAT(player->getPosition(), player->getVelocity());
+			inUnderground = true;
+		}
+		else if ((playerY < 14 or playerY > 33) and inUnderground) {
+			camera->cameraPositionNOCENTRAT(player->getPosition());
+		}
+		player->update(deltaTime);
+		map->update(deltaTime);
+
+		gui->update(deltaTime, player->getPlayerLifes(), Game::instance().getTries(), map->getPlayerScore(), map->getTimeLeft() / 1000);
+
+
+		if (not levelFinished) levelFinished = map->isGemObtained();
+		if (Game::instance().getKey(GLFW_KEY_F)) levelFinished = true;
+		if (levelFinished) levelPassed->update(deltaTime);
+
+
+		boolGameOver = Game::instance().getTries() == 0;
+
+	}
+
+	else {
+		gameOver->update(deltaTime);
+	}
 }
 
 int Level1::getLevel()

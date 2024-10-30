@@ -56,7 +56,10 @@ class Level1 : public Level
 		~Level1();
 
 		void init() override;
+		void update(int deltaTime) override;
 		int getLevel() override;
+	private:
+		bool inUnderground;
 };
 
 #endif // _LEVEL_INCLUDE
