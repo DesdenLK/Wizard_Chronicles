@@ -214,7 +214,7 @@ void TutorialLevel::init()
 	camera = new Camera();
 
 	player->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
-	player->setPosition(glm::vec2(7 * map->getTileSize(), 19 * map->getTileSize()));
+	player->setPosition(glm::vec2(3 * map->getTileSize(), 9 * map->getTileSize()));
 	player->setTileMap(map);
 	projection = camera->init(glm::vec2(0, 0), SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
 	currentTime = 0.0f;
@@ -259,7 +259,7 @@ Level1::~Level1()
 void Level1::init()
 {
 	initShaders();
-	map = TileMap::createTileMap("levels/Dragon.tmj", glm::vec2(SCREEN_X, SCREEN_Y), texProgram, 200 * 1000);
+	map = TileMap::createTileMap("levels/Level1.tmj", glm::vec2(SCREEN_X, SCREEN_Y), texProgram, 200 * 1000);
 	player = new Player();
 	camera = new Camera();
 
