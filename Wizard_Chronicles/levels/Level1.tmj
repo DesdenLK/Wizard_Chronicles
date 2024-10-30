@@ -568,6 +568,28 @@
                  "width":35.6670000000004,
                  "x":7229.6665,
                  "y":834
+                }, 
+                {
+                 "height":222,
+                 "id":170,
+                 "name":"",
+                 "rotation":0,
+                 "type":"Platform",
+                 "visible":true,
+                 "width":33,
+                 "x":13281.5,
+                 "y":1189.33333333333
+                }, 
+                {
+                 "height":7.33337,
+                 "id":172,
+                 "name":"",
+                 "rotation":0,
+                 "type":"Platform",
+                 "visible":true,
+                 "width":94.0003,
+                 "x":13439.6665166667,
+                 "y":1407.66664833333
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -798,6 +820,39 @@
                  "width":16,
                  "x":10684,
                  "y":1455
+                }, 
+                {
+                 "height":15,
+                 "id":167,
+                 "name":"Barrel",
+                 "rotation":0,
+                 "type":"Barrel",
+                 "visible":true,
+                 "width":15,
+                 "x":13388.5,
+                 "y":1453.16666666667
+                }, 
+                {
+                 "height":15,
+                 "id":168,
+                 "name":"Barrel",
+                 "rotation":0,
+                 "type":"Barrel",
+                 "visible":true,
+                 "width":15,
+                 "x":13599.1666666667,
+                 "y":1456.5
+                }, 
+                {
+                 "height":15,
+                 "id":169,
+                 "name":"Barrel",
+                 "rotation":0,
+                 "type":"Barrel",
+                 "visible":true,
+                 "width":15,
+                 "x":13411.8333333333,
+                 "y":1453.16666666667
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -1050,7 +1105,7 @@
                  "visible":true,
                  "width":16,
                  "x":8878,
-                 "y":784
+                 "y":766
                 }, 
                 {
                  "height":16,
@@ -1061,7 +1116,7 @@
                  "visible":true,
                  "width":16,
                  "x":9024,
-                 "y":784
+                 "y":766
                 }, 
                 {
                  "height":16,
@@ -1072,7 +1127,7 @@
                  "visible":true,
                  "width":16,
                  "x":9138,
-                 "y":786
+                 "y":768
                 }, 
                 {
                  "height":16,
@@ -1083,51 +1138,7 @@
                  "visible":true,
                  "width":16,
                  "x":9284,
-                 "y":786
-                }, 
-                {
-                 "height":7.33337,
-                 "id":159,
-                 "name":"",
-                 "rotation":0,
-                 "type":"Platform",
-                 "visible":true,
-                 "width":94.0003,
-                 "x":13440.55,
-                 "y":1411.41
-                }, 
-                {
-                 "height":222,
-                 "id":160,
-                 "name":"",
-                 "rotation":0,
-                 "type":"Platform",
-                 "visible":true,
-                 "width":33,
-                 "x":13280.75,
-                 "y":1187.41666666667
-                }, 
-                {
-                 "height":15,
-                 "id":161,
-                 "name":"Barrel",
-                 "rotation":0,
-                 "type":"Barrel",
-                 "visible":true,
-                 "width":15,
-                 "x":13403.0166666667,
-                 "y":1455.25
-                }, 
-                {
-                 "height":15,
-                 "id":162,
-                 "name":"Barrel",
-                 "rotation":0,
-                 "type":"Barrel",
-                 "visible":true,
-                 "width":15,
-                 "x":13369.05,
-                 "y":1454.25
+                 "y":768
                 }, 
                 {
                  "height":112,
@@ -1139,17 +1150,6 @@
                  "width":80,
                  "x":13629.25,
                  "y":1264.07666666667
-                }, 
-                {
-                 "height":15,
-                 "id":164,
-                 "name":"Barrel",
-                 "rotation":0,
-                 "type":"Barrel",
-                 "visible":true,
-                 "width":15,
-                 "x":13738.5,
-                 "y":1453.16666666667
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -1653,7 +1653,7 @@
          "y":0
         }],
  "nextlayerid":10,
- "nextobjectid":167,
+ "nextobjectid":173,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.11.0",
